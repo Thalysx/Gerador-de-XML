@@ -1682,6 +1682,11 @@
           <button type="button" onclick="gerarConteinerComLacre()"><i class="bi bi-box-seam" aria-hidden="true"></i> Contêiner e lacre</button>
         </div>
 
+        <div class="section-label" id="docs-imo-title">Embarcação — IMO</div>
+        <div class="btn-grid" role="group" aria-labelledby="docs-imo-title">
+          <button type="button" onclick="gerarIMO()"><i class="bi bi-anchor" aria-hidden="true"></i> Gerar número IMO</button>
+        </div>
+
         <hr class="divider">
 
         <div class="section-label" id="docs-validar-title">Validar CPF ou CNPJ</div>
@@ -2152,7 +2157,7 @@ function salvarCamposTravados() {
   const snap = {};
   LOCKABLE_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) snap[id] = el.value; });
   document.querySelectorAll('.produto-item').forEach((item, idx) => {
-    ['nome','ncm','codigo','qCom','qTrib','valor','uCom'].forEach(campo => {
+    ['select','nome','ncm','codigo','qCom','qTrib','valor','uCom'].forEach(campo => {
       const el = document.getElementById(`nfes_prod_${idx}_${campo}`);
       if (el) snap[`nfes_prod_${idx}_${campo}`] = el.value;
     });
@@ -2345,7 +2350,19 @@ function onProdutoChange(idx) {
 }
 
 function setUnidade(idx, unidade) {
-  document.getElementById(`nfes_prod_${idx}_uCom`).value = unidade;
+  const hiddenInput = document.getElementById(`nfes_prod_${idx}_uCom`);
+  const prevUnit = hiddenInput.value;
+  hiddenInput.value = unidade;
+  if (prevUnit && prevUnit !== unidade) {
+    const qComEl  = document.getElementById(`nfes_prod_${idx}_qCom`);
+    const qTribEl = document.getElementById(`nfes_prod_${idx}_qTrib`);
+    if (qComEl) {
+      const raw = parseFloat(qComEl.value.replace(',', '.')) || 0;
+      const converted = unidade === 'TON' ? (raw / 1000).toFixed(4) : (raw * 1000).toFixed(4);
+      qComEl.value = converted;
+      if (qTribEl) qTribEl.value = converted;
+    }
+  }
   const kgBtn = document.getElementById(`nfes_prod_${idx}_uCom_kg`);
   const tonBtn = document.getElementById(`nfes_prod_${idx}_uCom_ton`);
   kgBtn.classList.toggle('active', unidade === 'KG');
@@ -2428,7 +2445,11 @@ function alteraCamposEmFuncaoDasNovasChaves(xml, chaves) {
     if (g('ncm'))    det.querySelector(h.item.ncm).textContent    = g('ncm').value;
     const n = (tag) => det.querySelector(tag);
     if (g('qCom'))  { const e = n('prod > qCom');  if (e) e.textContent = g('qCom').value; }
-    if (g('uCom'))  { const e = n('prod > uCom');  if (e) e.textContent = g('uCom').value; }
+    if (g('uCom'))  {
+      const uComVal = g('uCom').value;
+      const eCom  = n('prod > uCom');  if (eCom)  eCom.textContent = uComVal;
+      const eTrib = n('prod > uTrib'); if (eTrib) eTrib.textContent = uComVal;
+    }
     if (g('qTrib')) { const e = n('prod > qTrib'); if (e) e.textContent = g('qTrib').value; }
     if (g('valor')) { const e = n('prod > vProd'); if (e) e.textContent = g('valor').value; }
   });
@@ -2555,27 +2576,93 @@ function rolarParaElemento(el) {
   el.focus?.({ preventScroll: true });
 }
 
-const primeirosMasc = ['André','Bruno','Carlos','Daniel','Eduardo','Felipe','Gabriel','Henrique','Igor','João','Lucas','Marcos','Nicolas','Pedro','Rafael','Roberto','Samuel','Thiago','Victor','William','Alexandre','Antônio','Caio','Diego','Fábio','Gustavo','Hugo','Ivan','Jorge','Leonardo'];
-const primeirosFem  = ['Ana','Beatriz','Camila','Daniela','Elisa','Fernanda','Gabriela','Helena','Isabela','Juliana','Karla','Larissa','Mariana','Natália','Olívia','Patrícia','Rafaela','Sabrina','Tatiana','Valentina','Amanda','Bianca','Clara','Débora','Eduarda','Flávia','Giovanna','Heloísa','Ingrid','Joana'];
-const sobrenomes    = ['Silva','Santos','Oliveira','Souza','Rodrigues','Ferreira','Alves','Pereira','Lima','Gomes','Costa','Ribeiro','Martins','Carvalho','Almeida','Lopes','Soares','Fernandes','Vieira','Barbosa','Rocha','Dias','Nascimento','Andrade','Moreira','Nunes','Marques','Machado','Mendes','Freitas'];
+const primeirosMasc = [
+  // Simples
+  'André','Bruno','Carlos','Daniel','Eduardo','Felipe','Gabriel','Henrique','Igor','João',
+  'Lucas','Marcos','Nicolas','Pedro','Rafael','Roberto','Samuel','Thiago','Victor','William',
+  'Alexandre','Antônio','Caio','Diego','Fábio','Gustavo','Hugo','Ivan','Jorge','Leonardo',
+  'Adriano','Alan','Cláudio','Cristiano','Davi','Emanuel','Erick','Fernando','Francisco','Gilberto',
+  'Guilherme','Leandro','Luiz','Mateus','Maurício','Miguel','Murilo','Paulo','Ricardo','Rodrigo',
+  'Rogério','Sérgio','Vitor','Wagner','Wesley','Renan','Renato','Evandro','Celso','Tiago',
+  // Compostos
+  'João Paulo','Luiz Carlos','João Pedro','Carlos Eduardo','Pedro Henrique','Luiz Felipe',
+  'João Victor','Marco Antônio','Paulo Roberto','André Luís','Caio Felipe','Luis Gustavo',
+  'João Marcos','José Carlos',
+];
+const primeirosFem = [
+  // Simples
+  'Ana','Beatriz','Camila','Daniela','Elisa','Fernanda','Gabriela','Helena','Isabela','Juliana',
+  'Karla','Larissa','Mariana','Natália','Olívia','Patrícia','Rafaela','Sabrina','Tatiana','Valentina',
+  'Amanda','Bianca','Clara','Débora','Eduarda','Flávia','Giovanna','Heloísa','Ingrid','Joana',
+  'Adriana','Aline','Bruna','Caroline','Cristina','Denise','Elaine','Evelyn','Gisele','Jéssica',
+  'Kelly','Letícia','Luciana','Marta','Michele','Mônica','Paula','Priscila','Renata','Sandra',
+  'Simone','Vanessa','Viviane','Yasmin','Raquel','Rebeca','Tânia','Vera','Lídia','Célia',
+  // Compostos
+  'Ana Paula','Maria Clara','Ana Luíza','Ana Carolina','Maria Eduarda','Maria Fernanda',
+  'Ana Beatriz','Ana Júlia','Maria Alice','Ana Lívia','Maria Luíza','Sara Helena',
+  'Lara Sofia','Ana Flávia',
+];
+const sobrenomesSimples = [
+  'Silva','Santos','Oliveira','Souza','Rodrigues','Ferreira','Alves','Pereira','Lima','Gomes',
+  'Costa','Ribeiro','Martins','Carvalho','Almeida','Lopes','Soares','Fernandes','Vieira','Barbosa',
+  'Rocha','Dias','Nascimento','Andrade','Moreira','Nunes','Marques','Machado','Mendes','Freitas',
+  'Borges','Cardoso','Cavalcanti','Correia','Cruz','Cunha','Faria','Figueiredo','Gonçalves','Guerra',
+  'Guimarães','Leal','Leite','Melo','Miranda','Monteiro','Moraes','Nogueira','Pinheiro','Pinto',
+  'Queiroz','Ramos','Reis','Sales','Sampaio','Santana','Tavares','Teixeira','Torres','Xavier',
+  'Azevedo','Braga','Campos','Castro','Coutinho','Fonseca','Lacerda','Maia','Paiva','Rezende',
+  'Vasconcelos','Viana','Aragão','Bezerra','Duarte','Esteves','Falcão','Galvão','Meireles','Siqueira',
+];
+const sobrenomesPrep = [
+  'de Souza','dos Santos','da Silva','de Oliveira','de Lima','da Costa','do Nascimento',
+  'de Almeida','dos Reis','de Jesus','da Rocha','de Castro','de Andrade','de Moraes',
+  'de Freitas','de Carvalho','de Melo','das Neves','de Farias','do Carmo',
+];
+// Mantido para retrocompatibilidade com gerarNumeroConteiner e outros usos internos
+const sobrenomes = sobrenomesSimples;
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function rand(n)   { return Math.floor(Math.random() * n); }
 function randomDigits(n) { return Array.from({length: n}, () => rand(10)); }
 
 function gerarNomePessoa() {
-  const fem = Math.random() < 0.5;
+  const fem     = Math.random() < 0.5;
   const primeiro = pick(fem ? primeirosFem : primeirosMasc);
-  const sob1 = pick(sobrenomes);
-  const sob2 = pick(sobrenomes.filter(s => s !== sob1));
-  return `${primeiro} ${sob1} ${sob2}`;
+  const usarPrep = Math.random() < 0.25;
+  const sob1     = usarPrep ? pick(sobrenomesPrep) : pick(sobrenomesSimples);
+  const sob1Base = sob1.split(' ').pop();
+  const sob2     = pick(sobrenomesSimples.filter(s => s !== sob1Base));
+  return Math.random() < 0.25
+    ? `${primeiro} ${sob1}`
+    : `${primeiro} ${sob1} ${sob2}`;
 }
 
 function gerarNomeEmpresa() {
-  const prefixos = ['Alpha','Beta','Nova','Prime','Top','Master','Ultra','Pro','Real','Nacional','Grupo','Central','Inter','Trans','Global','Mega','Sul','Norte','Leste','Oeste'];
-  const tipos    = ['Comércio','Serviços','Soluções','Tecnologia','Consultoria','Indústria','Transportes','Logística','Engenharia','Construções','Alimentos','Distribuidora'];
-  const sufixos  = ['e Cia.','Ltda.','S.A.','ME','EPP','& Associados','Corporação','Group'];
-  return `${pick(prefixos)} ${pick(tipos)} ${pick(sufixos)}`;
+  const tipos   = ['Transportes','Logística','Distribuidora','Comércio','Serviços','Indústria',
+                   'Engenharia','Construções','Alimentos','Agropecuária','Granéis','Exportadora',
+                   'Importadora','Armazéns','Cargas','Soluções','Consultoria','Frigorificados',
+                   'Terminais','Navegação'];
+  const sufixos = ['Ltda.','S.A.','ME','EPP','Eireli','& Cia. Ltda.','S/A'];
+  const regioes = ['Paulista','Gaúcha','Catarinense','Mineira','Baiana','Paranaense','Fluminense',
+                   'Goiana','Capixaba','Nordestina','Sul','Norte','Central','Pantaneira','Interiorana'];
+  const tipo = pick(tipos);
+  const suf  = pick(sufixos);
+  switch (rand(4)) {
+    case 0: { // "Oliveira Transportes Ltda."
+      return `${pick(sobrenomesSimples)} ${tipo} ${suf}`;
+    }
+    case 1: { // "Pereira & Santos Logística Ltda."
+      const s1 = pick(sobrenomesSimples);
+      const s2 = pick(sobrenomesSimples.filter(s => s !== s1));
+      return `${s1} & ${s2} ${tipo} ${suf}`;
+    }
+    case 2: { // "Paulista Distribuidora S.A."
+      return `${pick(regioes)} ${tipo} ${suf}`;
+    }
+    case 3: { // "TBL Transportes Ltda."
+      const sigla = Array.from({length: 3}, () => String.fromCharCode(65 + rand(26))).join('');
+      return `${sigla} ${tipo} ${suf}`;
+    }
+  }
 }
 
 function mostrarNome(nome, tipo) {
@@ -2677,6 +2764,25 @@ function gerarCNPJAlfanumerico(mask) {
 }
 
 function formatCNPJ(s) { return `${s.slice(0,2)}.${s.slice(2,5)}.${s.slice(5,8)}/${s.slice(8,12)}-${s.slice(12)}`; }
+
+// ── IMO ───────────────────────────────────────────────────────
+function calcDVIMO(seisDigitos) {
+  let soma = 0;
+  for (let i = 0; i < 6; i++) {
+    soma += parseInt(seisDigitos[i]) * (7 - i);
+  }
+  return soma % 10;
+}
+
+function gerarIMO() {
+  const base = Array.from({length: 6}, () => rand(10)).join('');
+  const dv   = calcDVIMO(base);
+  const num  = `IMO ${base}${dv}`;
+  currentType = 'imo'; currentValue = num;
+  setOutput(num); esconderPlaca(); esconderConteiner();
+  document.getElementById('nome-box').classList.remove('visible'); nomeAtualDoc = '';
+  registrarHistoricoDocs('IMO', num, { imo: num });
+}
 
 // ── Placas ────────────────────────────────────────────────────
 const LETRAS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -2896,6 +3002,7 @@ function gerarNovoDocumentoAtual() {
     case 'conteiner': gerarConteiner(); break;
     case 'conteiner-lacre': gerarConteinerComLacre(); break;
     case 'lacre': gerarLacreSomente(); break;
+    case 'imo': gerarIMO(); break;
     default: mostrarStatus('Gere um documento primeiro.', 'error');
   }
 }

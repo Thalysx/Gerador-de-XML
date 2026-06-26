@@ -124,7 +124,6 @@
 
     .page-wrapper {
       width: 100%;
-      max-width: 1280px;
       min-width: 0;
       margin: 0 auto;
       animation: pageFadeIn 260ms ease-out both;
@@ -795,11 +794,9 @@
     /* ── DOC GEN TAB ── */
     .doc-gen-wrapper {
       display: grid;
-      grid-template-columns: 1fr 380px;
+      grid-template-columns: 1fr 400px;
       gap: 1.5rem;
       align-items: start;
-      max-width: 1100px;
-      margin: 0;
     }
     .doc-gen-left { /* buttons column */ }
     .doc-gen-right { position: sticky; top: 1.5rem; }
@@ -1010,7 +1007,7 @@
     .status.idle    { background: var(--info-bg); color: var(--text-muted); border: 1px solid var(--border); }
 
     /* ── CADASTRO GERAL TAB ── */
-    .cadastro-wrapper { max-width: 1100px; margin: 0; }
+    .cadastro-wrapper { margin: 0; }
 
     .cadastro-header {
       display: flex;
@@ -1424,7 +1421,6 @@
     }
 
     .docs-history-wrapper {
-      max-width: 1100px;
       margin-top: 1.5rem;
     }
 
@@ -1700,7 +1696,7 @@
 
       <!-- ── Coluna direita: resultado ── -->
       <div class="doc-gen-right">
-        <div class="output-box shadow-sm" aria-labelledby="docs-result-label">
+        <div class="output-box shadow-sm" id="docs-output-box" aria-labelledby="docs-result-label" style="display:none">
           <div class="output-label" id="docs-result-label">Resultado</div>
           <div class="output-value placeholder" id="output-val" role="status" aria-live="polite" aria-atomic="true" tabindex="-1">Clique em um botão para gerar</div>
           <div class="copy-row">
@@ -1794,56 +1790,56 @@
                 <div class="cad-field cad-field-wide">
                   <label class="cad-label" for="cad_nome">Nome completo</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_nome" placeholder="Nome do motorista" readonly />
+                    <input class="cad-input" id="cad_nome" placeholder="Nome do motorista" maxlength="80" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('nome')" aria-label="Gerar novo nome completo">Novo</button>
                   </div>
                 </div>
                 <div class="cad-field">
                   <label class="cad-label" for="cad_cpf">CPF</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_cpf" placeholder="000.000.000-00" readonly />
+                    <input class="cad-input" id="cad_cpf" placeholder="000.000.000-00" maxlength="14" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('cpf')" aria-label="Gerar novo CPF">Novo</button>
                   </div>
                 </div>
                 <div class="cad-field">
                   <label class="cad-label" for="cad_rg">RG — Registro geral</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_rg" placeholder="00.000.000-0" readonly />
+                    <input class="cad-input" id="cad_rg" placeholder="00.000.000-0" maxlength="12" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('rg')" aria-label="Gerar novo RG">Novo</button>
                   </div>
                 </div>
                 <div class="cad-field">
                   <label class="cad-label" for="cad_cnh">CNH</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_cnh" placeholder="00000000000" readonly />
+                    <input class="cad-input" id="cad_cnh" placeholder="00000000000" maxlength="11" inputmode="numeric" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('cnh')" aria-label="Gerar nova CNH">Novo</button>
                   </div>
                 </div>
                 <div class="cad-field">
                   <label class="cad-label" for="cad_cracha">Crachá</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_cracha" placeholder="CR-000000" readonly />
+                    <input class="cad-input" id="cad_cracha" placeholder="CR-000000" maxlength="9" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('cracha')" aria-label="Gerar novo crachá">Novo</button>
                   </div>
                 </div>
                 <div class="cad-field">
                   <label class="cad-label" for="cad_tel">Telefone</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_tel" placeholder="(11) 99999-9999" readonly />
+                    <input class="cad-input" id="cad_tel" placeholder="(11) 99999-9999" maxlength="15" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('tel')" aria-label="Gerar novo telefone">Novo</button>
                   </div>
                 </div>
                 <div class="cad-field">
                   <label class="cad-label" for="cad_email">E-mail</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_email" placeholder="nome.sobrenome@email.com" readonly />
+                    <input class="cad-input" id="cad_email" placeholder="nome.sobrenome@email.com" maxlength="60" inputmode="email" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('email')" aria-label="Gerar novo e-mail">Novo</button>
                   </div>
                 </div>
                 <div class="cad-field cad-field-wide">
                   <label class="cad-label" for="cad_endereco">Endereço</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_endereco" placeholder="Rua, número - bairro, cidade/UF" readonly />
+                    <input class="cad-input" id="cad_endereco" placeholder="Rua, número - bairro, cidade/UF" maxlength="120" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('endereco')" aria-label="Gerar novo endereço">Novo</button>
                   </div>
                 </div>
@@ -1855,7 +1851,7 @@
                       <option value="passaporte">Passaporte</option>
                       <option value="identidade">Identidade estrangeira</option>
                     </select>
-                    <input class="cad-input" id="cad_doc_pessoa" placeholder="Documento estrangeiro" readonly />
+                    <input class="cad-input" id="cad_doc_pessoa" placeholder="Documento estrangeiro" maxlength="12" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('doc_pessoa')" aria-label="Gerar novo documento estrangeiro da pessoa">Novo</button>
                   </div>
                 </div>
@@ -1869,7 +1865,7 @@
                 <div class="cad-field">
                   <label class="cad-label" for="cad_empresa">Razão social</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_empresa" placeholder="Transportadora Ltda." readonly />
+                    <input class="cad-input" id="cad_empresa" placeholder="Transportadora Ltda." maxlength="80" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('empresa')" aria-label="Gerar nova razão social">Novo</button>
                   </div>
                 </div>
@@ -1881,7 +1877,7 @@
                       <option value="normal">Numérico</option>
                       <option value="alfanumerico">Alfanumérico</option>
                     </select>
-                    <input class="cad-input" id="cad_cnpj" placeholder="00.000.000/0001-00" readonly />
+                    <input class="cad-input" id="cad_cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('cnpj')" aria-label="Gerar novo CNPJ">Novo</button>
                   </div>
                 </div>
@@ -1893,7 +1889,7 @@
                       <option value="passaporte">Passaporte da empresa</option>
                       <option value="identidade">Identidade estrangeira da empresa</option>
                     </select>
-                    <input class="cad-input" id="cad_doc_empresa" placeholder="Documento estrangeiro" readonly />
+                    <input class="cad-input" id="cad_doc_empresa" placeholder="Documento estrangeiro" maxlength="12" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('doc_empresa')" aria-label="Gerar novo documento estrangeiro da empresa">Novo</button>
                   </div>
                 </div>
@@ -1907,21 +1903,21 @@
                 <div class="cad-field">
                   <label class="cad-label" for="cad_placa">Placa (Mercosul)</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_placa" placeholder="ABC1D23" readonly />
+                    <input class="cad-input" id="cad_placa" placeholder="ABC1D23" maxlength="7" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('placa')" aria-label="Gerar nova placa">Novo</button>
                   </div>
                 </div>
                 <div class="cad-field">
                   <label class="cad-label" for="cad_conteiner">Contêiner</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_conteiner" placeholder="MSCU0000000" readonly />
+                    <input class="cad-input" id="cad_conteiner" placeholder="MSCU0000000" maxlength="11" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('conteiner')" aria-label="Gerar novo contêiner">Novo</button>
                   </div>
                 </div>
                 <div class="cad-field">
                   <label class="cad-label" for="cad_lacre">Lacre de armador</label>
                   <div class="cad-input-wrap">
-                    <input class="cad-input" id="cad_lacre" placeholder="AB0000000" readonly />
+                    <input class="cad-input" id="cad_lacre" placeholder="AB0000000" maxlength="9" oninput="cadAtualizarResultado()" />
                     <button type="button" class="cad-gen-btn" onclick="cadGerar('lacre')" aria-label="Gerar novo lacre de armador">Novo</button>
                   </div>
                 </div>
@@ -1996,6 +1992,20 @@
 
 <script>
 // ══════════════════════════════════════════════════════════
+//  STORAGE HELPERS
+// ══════════════════════════════════════════════════════════
+function storageGet(key, fallback = null) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw !== null ? JSON.parse(raw) : fallback;
+  } catch { return fallback; }
+}
+
+function storageSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
+
+// ══════════════════════════════════════════════════════════
 //  TAB SWITCHING
 // ══════════════════════════════════════════════════════════
 function switchTab(tab, btn) {
@@ -2062,6 +2072,7 @@ function toggleTheme() {
     btn.setAttribute('aria-pressed', 'false');
     btn.setAttribute('aria-label', 'Alternar para tema escuro');
   }
+  storageSet('gerador:tema', document.body.classList.contains('dark') ? 'dark' : 'light');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2150,6 +2161,7 @@ function toggleLock() {
       lockAtivo ? el.classList.add('locked') : el.classList.remove('locked');
     });
   });
+  salvarEstadoXml();
 }
 
 function salvarCamposTravados() {
@@ -2178,7 +2190,10 @@ let xmlAutoTimer = null;
 function scheduleGerarXMLComCampos() {
   clearTimeout(xmlAutoTimer);
   xmlAutoTimer = setTimeout(() => {
-    if (document.getElementById('tab-xml')?.classList.contains('active')) gerarXMLComCampos();
+    if (document.getElementById('tab-xml')?.classList.contains('active')) {
+      gerarXMLComCampos();
+      salvarEstadoXml();
+    }
   }, 120);
 }
 
@@ -2424,7 +2439,7 @@ function alteraCamposEmFuncaoDasNovasChaves(xml, chaves) {
   xml.nfeList[0].querySelector(h.chave).textContent  = chaves.nfes[0].chave;
   xml.nfeList[0].querySelector(h.codigo).textContent = chaves.nfes[0].partes.codigo;
   xml.nfeList[0].querySelector(h.numero).textContent = chaves.nfes[0].partes.numero;
-  xml.nfeList[0].querySelector(h.emit).textContent   = chaves.nfes[0].partes.cnpj;
+  xml.nfeList[0].querySelector(h.emit).textContent   = document.getElementById("Emitente_Nota").value || chaves.nfes[0].partes.cnpj;
   xml.nfeList[0].querySelector(h.emitNome).textContent   = document.getElementById("nfe_nomeEmit").value;
   const setNFeText = (selector, inputId) => {
     const node = xml.nfeList[0].querySelector(selector);
@@ -2487,11 +2502,54 @@ const nfeModel = `<?xml version="1.0" encoding="UTF-8"?><nfeProc versao="4.00" x
 
 const cteModel = `<cteProc versao="3.00" xmlns="http://www.portalfiscal.inf.br/cte"><CTe xmlns="http://www.portalfiscal.inf.br/cte"><infCte Id="CTe31221001417222000339570310012487531396350257" versao="3.00"><ide><cUF>31</cUF><cCT>39635025</cCT><CFOP>6352</CFOP><natOp>Prest.serv. transp. p/ estab. industrial</natOp><mod>57</mod><serie>31</serie><nCT>1248753</nCT><dhEmi>2022-10-08T10:44:00-03:00</dhEmi><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>1</tpAmb><tpCTe>0</tpCTe><procEmi>0</procEmi><verProc>SynchroDFe_3.3.3</verProc><cMunEnv>3145901</cMunEnv><xMunEnv>OURO BRANCO</xMunEnv><UFEnv>MG</UFEnv><modal>04</modal><tpServ>0</tpServ><cMunIni>3145901</cMunIni><xMunIni>OURO BRANCO</xMunIni><UFIni>MG</UFIni><cMunFim>3302007</cMunFim><xMunFim>ITAGUAI</xMunFim><UFFim>RJ</UFFim><retira>0</retira><indIEToma>1</indIEToma><toma3><toma>0</toma></toma3></ide><emit><CNPJ>01417222000339</CNPJ><IE>3671980170038</IE><xNome>MRS Logistica S/A</xNome><enderEmit><xLgr>Av Brasil,</xLgr><nro>2001</nro><xBairro>Centro</xBairro><cMun>3136702</cMun><xMun>JUIZ DE FORA</xMun><CEP>36060010</CEP><UF>MG</UF><fone>3232393669</fone></enderEmit></emit><rem><CNPJ>17227422000105</CNPJ><IE>4590181680017</IE><xNome>GERDAU ACOMINAS S.A.</xNome><enderReme><xLgr>ROD MG 443 KM 7</xLgr><nro>SN</nro><xBairro>FAZENDA DO CADETE</xBairro><cMun>3145901</cMun><xMun>OURO BRANCO</xMun><CEP>36497899</CEP><UF>MG</UF></enderReme></rem><receb><CNPJ>00000000000000</CNPJ><IE>00000000</IE><xNome>RECEB NOME S/A</xNome><enderReceb><xLgr>RECEB Logradouro</xLgr><nro>S/N</nro><xBairro>Bairro XYZ</xBairro><cMun>3302007</cMun><xMun>ITAGUAI</xMun><CEP>23826600</CEP><UF>RJ</UF></enderReceb></receb><dest><CNPJ>00000000000000</CNPJ><IE>ISENTO</IE><xNome>VESTAS ARGENTINA SA</xNome><enderDest><xLgr>AVENIDA CARLOS PELLEGRINI</xLgr><nro>1023</nro><xBairro>EXTERIOR</xBairro><cMun>9999999</cMun><xMun>EXTERIOR</xMun><CEP>99999999</CEP><UF>EX</UF></enderDest></dest><vPrest><vTPrest>5221.91</vTPrest><vRec>5221.91</vRec><Comp><xNome>Frete</xNome><vComp>5221.91</vComp></Comp></vPrest><imp><ICMS><ICMS45><CST>40</CST></ICMS45></ICMS><infAdFisco>TRANSPORTE DE MERCADORIA DESTINADA AO EXTERIOR</infAdFisco></imp><infCteNorm><infCarga><vCarga>524412.57</vCarga><proPred>PRD.SIDERURGICOS - OUTROS</proPred><infQ><cUnid>02</cUnid><tpMed>PESO BRUTO</tpMed><qCarga>71.6800</qCarga></infQ></infCarga><infDoc><infNFe><chave>31221017227422000105550060002936881944955014</chave><infUnidTransp><tpUnidTransp>6</tpUnidTransp><idUnidTransp>6424571</idUnidTransp><qtdRat>5.150</qtdRat></infUnidTransp></infNFe></infDoc><infModal versaoModal="3.00"><ferrov><tpTraf>0</tpTraf><fluxo>26262</fluxo></ferrov></infModal></infCteNorm></infCte><infCteSupl><qrCodCTe>https://cte.fazenda.mg.gov.br/portalcte/sistema/qrcode.xhtml?chCTe=31221001417222000339570310012487531396350257&amp;tpAmb=1</qrCodCTe></infCteSupl><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" /><Reference URI="#CTe31221001417222000339570310012487531396350257"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /><DigestValue>CSvyBt2LfM/ircgkkKcRYzswyxk=</DigestValue></Reference></SignedInfo><SignatureValue>ASSINATURA_EXEMPLO</SignatureValue><KeyInfo><X509Data><X509Certificate>CERTIFICADO_EXEMPLO</X509Certificate></X509Data></KeyInfo></Signature></CTe><protCTe versao="3.00"><infProt Id="ID131221369180509"><tpAmb>1</tpAmb><verAplic>2.1.63</verAplic><chCTe>31221001417222000339570310012487531396350257</chCTe><dhRecbto>2022-10-08T10:47:08-03:00</dhRecbto><nProt>131221369180509</nProt><digVal>CSvyBt2LfM/ircgkkKcRYzswyxk=</digVal><cStat>100</cStat><xMotivo>Autorizado o uso do CT-e</xMotivo></infProt></protCTe></cteProc>`;
 
+function salvarEstadoXml() {
+  const snap = {};
+  [
+    'cte_codigo','cte_numero','cte_cnpjEmit','cte_nomeEmit','cte_cnpjRem',
+    'cte_nomeRem','cte_cnpjReceb','cte_nomeReceb','cte_cnpjDest','cte_nomeDest',
+    'nfe_codigo','nfe_numero','Emitente_Nota','nfe_nomeEmit','nfe_cnpjDest',
+    'nfe_nomeDest','nfe_cnpjTransp','nfe_nomeTransp'
+  ].forEach(id => { const el = document.getElementById(id); if (el) snap[id] = el.value; });
+  document.querySelectorAll('.produto-item').forEach((_, idx) => {
+    ['select','nome','ncm','codigo','qCom','qTrib','valor','uCom'].forEach(campo => {
+      const el = document.getElementById(`nfes_prod_${idx}_${campo}`);
+      if (el) snap[`nfes_prod_${idx}_${campo}`] = el.value;
+    });
+  });
+  storageSet('gerador:xml_campos', snap);
+  storageSet('gerador:lock', lockAtivo);
+}
+
+function restaurarEstadoXml() {
+  const snap = storageGet('gerador:xml_campos');
+  const lockSalvo = storageGet('gerador:lock', false);
+  if (snap) {
+    Object.entries(snap).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    });
+    document.querySelectorAll('.produto-item').forEach((_, idx) => {
+      const uCom = snap[`nfes_prod_${idx}_uCom`];
+      if (uCom) setUnidade(idx, uCom);
+    });
+    gerarXMLComCampos();
+  }
+  if (lockSalvo && !lockAtivo) toggleLock();
+}
+
 window.onload = () => {
   initializeTabs();
   initializeBootstrapUi();
+
+  const temaSalvo = storageGet('gerador:tema', 'light');
+  if (temaSalvo === 'dark') toggleTheme();
+
   processarXML(acao.inicio);
+  restaurarEstadoXml();
   setupXmlAutoGenerate();
+
+  historicoList = storageGet('gerador:historico', []);
+  historicoDocsList = storageGet('gerador:historico_docs', []);
   renderHistorico();
   renderHistoricoDocs();
 };
@@ -2872,12 +2930,10 @@ function gerarConteinerComLacre() {
   const num   = gerarNumeroConteiner();
   const lacre = gerarLacreArmador();
   currentType = 'conteiner-lacre'; currentValue = `${num} / ${lacre}`;
-  // O resultado principal funciona como aviso; os valores ficam na visualização dedicada.
   esconderPlaca();
-  document.getElementById('output-val').textContent = '';
-  document.getElementById('output-val').classList.add('placeholder');
-  document.getElementById('output-val').textContent = 'Contêiner e lacre gerados na visualização.';
-  document.getElementById('new-doc-btn').style.display = 'inline-block';
+  const box = document.getElementById('docs-output-box');
+  if (box) box.style.display = 'none';
+  document.getElementById('new-doc-btn').style.display = 'none';
   document.getElementById('copy-btn').style.display = 'none';
   document.getElementById('nome-box').classList.remove('visible'); nomeAtualDoc = '';
   document.getElementById('container-num-val').textContent  = num;
@@ -3035,6 +3091,8 @@ function gerarCNPJComToggle()             { gerarCNPJ(document.getElementById('t
 function gerarCNPJAlfanumericoComToggle() { gerarCNPJAlfanumerico(document.getElementById('toggle-mascara').checked); }
 
 function setOutput(val) {
+  const box = document.getElementById('docs-output-box');
+  if (box) box.style.display = '';
   const el = document.getElementById('output-val');
   el.textContent = val;
   el.classList.remove('placeholder');
@@ -3472,6 +3530,7 @@ function registrarHistoricoDocs(tipo, valor, extras = {}) {
 function adicionarHistoricoDocs(dados) {
   historicoDocsList.unshift({ dados, ts: Date.now() });
   if (historicoDocsList.length > 20) historicoDocsList.pop();
+  storageSet('gerador:historico_docs', historicoDocsList);
   renderHistoricoDocs();
 }
 
@@ -3539,9 +3598,9 @@ function restaurarHistoricoDocs(idx) {
   nomeAtualDoc = '';
 
   if (d.tipo === 'Contêiner e lacre') {
-    document.getElementById('output-val').textContent = 'Contêiner e lacre restaurados na visualização.';
-    document.getElementById('output-val').classList.add('placeholder');
-    document.getElementById('new-doc-btn').style.display = 'inline-block';
+    const box = document.getElementById('docs-output-box');
+    if (box) box.style.display = 'none';
+    document.getElementById('new-doc-btn').style.display = 'none';
     document.getElementById('copy-btn').style.display = 'none';
     document.getElementById('container-num-val').textContent = d.conteiner || '';
     document.getElementById('lacre-val').textContent = d.lacre || '';
@@ -3584,6 +3643,7 @@ function copiarHistoricoDocsJSON(idx) {
 
 function limparHistoricoDocs() {
   historicoDocsList = [];
+  storageSet('gerador:historico_docs', []);
   renderHistoricoDocs();
   mostrarStatus('Histórico de dados cadastrais limpo.');
 }
@@ -3599,6 +3659,7 @@ function formatarHora(ts) {
 function adicionarAoHistorico(dados) {
   historicoList.unshift({ dados, ts: Date.now() });
   if (historicoList.length > 20) historicoList.pop();
+  storageSet('gerador:historico', historicoList);
   renderHistorico();
 }
 
@@ -3695,6 +3756,7 @@ function copiarHistoricoJSON(idx) {
 
 function limparHistorico() {
   historicoList = [];
+  storageSet('gerador:historico', []);
   renderHistorico();
   mostrarStatus('Histórico do cadastro geral limpo.');
 }

@@ -1497,6 +1497,246 @@
         transform: none !important;
       }
     }
+
+    /* ══ EDITOR XML ══ */
+    .editor-dropzone {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 420px;
+      padding: 2rem;
+    }
+    .editor-dropzone-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 2.5rem 3.5rem;
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 160ms, background 160ms;
+      max-width: 560px;
+      width: 100%;
+    }
+    .editor-dropzone-inner:hover,
+    .editor-dropzone-over .editor-dropzone-inner {
+      border-color: var(--accent);
+      background: var(--surface-2);
+    }
+    .editor-dropzone-inner p {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+    .editor-dropzone-inner > span {
+      font-size: 12.5px;
+      color: var(--accent);
+      font-style: italic;
+    }
+    .editor-dropzone-recursos {
+      margin-top: 0.75rem;
+      padding: 0.875rem 1.25rem;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      text-align: left;
+      font-size: 12px;
+      color: var(--text-dim);
+      width: 100%;
+    }
+    .editor-dropzone-recursos strong {
+      font-size: 10px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: .4rem;
+    }
+    .editor-dropzone-recursos ul {
+      margin: 0;
+      padding-left: 1.1rem;
+    }
+    .editor-dropzone-recursos li {
+      margin-bottom: .15rem;
+      color: var(--accent);
+    }
+    .editor-workspace { display: flex; flex-direction: column; }
+    .editor-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: calc(100vh - 220px);
+    }
+    .editor-sidebar {
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+    }
+    .editor-sidebar-header {
+      padding: .875rem 1rem .625rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .editor-sidebar-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .editor-arquivo-lista {
+      flex: 1;
+      overflow-y: auto;
+      padding: .375rem 0;
+    }
+    .editor-arquivo-item {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .55rem 1rem;
+      cursor: pointer;
+      transition: background 100ms;
+      border-left: 3px solid transparent;
+    }
+    .editor-arquivo-item:hover { background: var(--surface-2); }
+    .editor-arquivo-item.ativo {
+      background: var(--surface-2);
+      border-left-color: var(--accent);
+    }
+    .editor-arquivo-item-nome {
+      flex: 1;
+      font-size: 12px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .editor-modificado-badge {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 100px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .editor-arquivo-remove {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 1;
+      flex-shrink: 0;
+      transition: background 100ms, color 100ms;
+    }
+    .editor-arquivo-remove:hover { background: var(--surface-2); color: var(--text); }
+    .editor-campos {
+      padding: 1.25rem 1.5rem;
+      overflow-y: auto;
+    }
+    .editor-campos-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      gap: 1rem;
+    }
+    .editor-campos-filename {
+      font-family: 'DM Mono', monospace;
+      font-size: 12.5px;
+      color: var(--text-dim);
+    }
+    .editor-campos-empty {
+      color: var(--text-dim);
+      font-size: 13.5px;
+      font-style: italic;
+      padding: 3rem 0;
+      text-align: center;
+    }
+    .editor-field-group {
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .editor-field-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .5rem .875rem;
+      background: var(--surface-2);
+      cursor: pointer;
+      user-select: none;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--text-dim);
+      gap: .5rem;
+      transition: background 100ms;
+    }
+    .editor-field-group-header:hover { filter: brightness(0.97); }
+    .editor-field-item {
+      display: grid;
+      grid-template-columns: 200px 1fr auto;
+      align-items: center;
+      gap: .625rem;
+      padding: .45rem .875rem;
+      border-top: 1px solid var(--border);
+      transition: background 80ms;
+    }
+    .editor-field-item:hover { background: var(--surface-2); }
+    .editor-field-label {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .editor-field-input {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text);
+      width: 100%;
+      transition: border-color 100ms;
+    }
+    .editor-field-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .editor-field-remove {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 2px 7px;
+      font-size: 11px;
+      cursor: pointer;
+      color: var(--text-dim);
+      white-space: nowrap;
+      transition: all 100ms;
+    }
+    .editor-field-remove:hover { border-color: #e53e3e; color: #e53e3e; }
+    .editor-field-remove.confirmar { border-color: #e53e3e; color: #e53e3e; }
+    @media (max-width: 860px) {
+      .editor-layout { grid-template-columns: 1fr; }
+      .editor-sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+      .editor-field-item { grid-template-columns: 1fr auto; }
+      .editor-field-label { display: none; }
+    }
   </style>
 </head>
 <body data-bs-theme="light">
@@ -1532,6 +1772,7 @@
       <button type="button" class="tab-btn nav-link active" id="tab-btn-xml" role="tab" aria-selected="true" aria-controls="tab-xml" tabindex="0" onclick="switchTab('xml', this)"><i class="bi bi-file-earmark-code" aria-hidden="true"></i> XML NFe/CTe</button>
       <button type="button" class="tab-btn nav-link" id="tab-btn-docs" role="tab" aria-selected="false" aria-controls="tab-docs" tabindex="-1" onclick="switchTab('docs', this)"><i class="bi bi-person-vcard" aria-hidden="true"></i> Dados cadastrais</button>
       <button type="button" class="tab-btn nav-link" id="tab-btn-cadastro" role="tab" aria-selected="false" aria-controls="tab-cadastro" tabindex="-1" onclick="switchTab('cadastro', this)"><i class="bi bi-card-list" aria-hidden="true"></i> Cadastro geral</button>
+      <button type="button" class="tab-btn nav-link" id="tab-btn-editor" role="tab" aria-selected="false" aria-controls="tab-editor" tabindex="-1" onclick="switchTab('editor', this)"><i class="bi bi-pencil-square" aria-hidden="true"></i> Editor XML</button>
     </div>
   </nav>
 
@@ -1622,7 +1863,6 @@
           <div class="field-group" role="group" aria-labelledby="nfe-produtos-title">
             <div class="field-group-title" id="nfe-produtos-title">Produtos e itens</div>
             <div id="produtos-container"></div>
-            <button type="button" class="btn-sm" onclick="adicionarProduto()" id="add-produto-btn" style="margin-top:8px;" aria-label="Adicionar produto à NFe"><i class="bi bi-plus-circle" aria-hidden="true"></i> Adicionar produto</button>
           </div>
         </div>
       </section>
@@ -1989,6 +2229,67 @@
     </div>
   </div>
 
+  <!-- ══ TAB: EDITOR XML ══ -->
+  <div class="tab-panel" id="tab-editor" role="tabpanel" aria-labelledby="tab-btn-editor" tabindex="0" hidden>
+
+    <!-- Drop zone (visible when no files loaded) -->
+    <div class="editor-dropzone" id="editor-dropzone">
+      <input type="file" id="editor-file-input" accept=".xml" multiple style="display:none">
+      <div class="editor-dropzone-inner" onclick="document.getElementById('editor-file-input').click()" role="button" tabindex="0" aria-label="Clique para selecionar arquivos XML">
+        <i class="bi bi-file-earmark-arrow-up" style="font-size:2.5rem;color:var(--accent)" aria-hidden="true"></i>
+        <p>Arraste NFes em XML aqui para adicionar</p>
+        <span>ou clique para selecionar do seu computador</span>
+        <div class="editor-dropzone-recursos">
+          <strong>RECURSOS</strong>
+          <ul>
+            <li>Altere qualquer valor numérico ou de texto</li>
+            <li>Edite múltiplos XMLs simultaneamente</li>
+            <li>Remova nós e elementos indesejados</li>
+            <li>Exporte de volta mantendo a estrutura</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workspace (visible when files loaded) -->
+    <div class="editor-workspace" id="editor-workspace" style="display:none">
+
+      <div class="toolbar shadow-sm">
+        <span class="toolbar-label">Editor XML</span>
+        <div class="toolbar-actions">
+          <button type="button" onclick="document.getElementById('editor-file-input-add').click()"><i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar XML</button>
+          <input type="file" id="editor-file-input-add" accept=".xml" multiple style="display:none">
+          <button type="button" id="editor-baixar-todos-btn" onclick="editorBaixarTodos()"><i class="bi bi-download" aria-hidden="true"></i> Baixar todos</button>
+          <button type="button" onclick="editorLimparTudo()"><i class="bi bi-trash" aria-hidden="true"></i> Limpar tudo</button>
+        </div>
+      </div>
+
+      <div class="editor-layout">
+
+        <!-- Painel esquerdo: lista de arquivos -->
+        <aside class="editor-sidebar" aria-label="Arquivos carregados">
+          <div class="editor-sidebar-header">
+            <span class="editor-sidebar-title">Arquivos <span id="editor-arquivo-count" class="historico-count">0</span></span>
+          </div>
+          <div class="editor-arquivo-lista" id="editor-arquivo-lista"></div>
+        </aside>
+
+        <!-- Painel direito: editor de campos -->
+        <section class="editor-campos" aria-label="Campos do XML selecionado">
+          <div class="editor-campos-empty" id="editor-campos-empty">Selecione um arquivo ao lado para editar seus campos.</div>
+          <div id="editor-campos-header" style="display:none">
+            <div class="editor-campos-title-row">
+              <span class="editor-campos-filename" id="editor-campos-filename"></span>
+              <button type="button" class="btn btn-primary" onclick="editorBaixar(editorAtivo)"><i class="bi bi-download" aria-hidden="true"></i> Baixar XML</button>
+            </div>
+          </div>
+          <div id="editor-campos-lista"></div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script>
@@ -2140,7 +2441,6 @@ function getHierarquiaCTe() {
 }
 
 let lockAtivo = false;
-let numProdutos = 1;
 const LOCKABLE_FIELDS = [
   'cte_cnpjEmit','cte_nomeEmit','cte_cnpjRem','cte_nomeRem','cte_cnpjReceb','cte_nomeReceb','cte_cnpjDest','cte_nomeDest',
   'Emitente_Nota','nfe_nomeEmit','nfe_cnpjDest','nfe_nomeDest','nfe_cnpjTransp','nfe_nomeTransp'
@@ -2267,19 +2567,7 @@ function finalizarEGerarXML(xml, hierarquia) {
 
 function xmlStringModelToObject() {
   const parser = new DOMParser();
-  const nfeDoc = parser.parseFromString(nfeModel, "text/xml");
-  if (numProdutos > 1) {
-    const firstDet = nfeDoc.querySelector(getHierarquiaNFe().itens);
-    if (firstDet) {
-      firstDet.setAttribute('nItem', '1');
-      for (let i = 1; i < numProdutos; i++) {
-        const clone = firstDet.cloneNode(true);
-        clone.setAttribute('nItem', String(i + 1));
-        firstDet.parentNode.appendChild(clone);
-      }
-    }
-  }
-  return { cte: parser.parseFromString(cteModel, "text/xml"), nfeList: [nfeDoc] };
+  return { cte: parser.parseFromString(cteModel, "text/xml"), nfeList: [parser.parseFromString(nfeModel, "text/xml")] };
 }
 
 function preencherCamposFormulario(xml, hierarquia) {
@@ -2332,12 +2620,9 @@ function preencherCamposFormulario(xml, hierarquia) {
     );
     const nomeVisual = produtoAtual?.nome || nomeAtual;
     const options = catalogoProdutos.map(p => `<option value="${escapeAttr(p.nome)}" data-ncm="${escapeAttr(p.ncm)}" data-codigo="${escapeAttr(p.codigo)}" ${p.nome === nomeVisual ? 'selected' : ''}>${escapeHtml(p.nome)}</option>`).join('');
-    const removeBtn = numProdutos > 1
-      ? `<button type="button" class="btn-xs" onclick="removerProduto(${idx})" style="margin-left:auto;" aria-label="Remover item ${idx + 1} da NFe">Remover</button>`
-      : '';
     container.innerHTML += `
       <div class="produto-item" role="group" aria-labelledby="nfes_prod_${idx}_title">
-        <div class="produto-header" id="nfes_prod_${idx}_title">Item ${idx + 1}${removeBtn}</div>
+        <div class="produto-header" id="nfes_prod_${idx}_title">Item ${idx + 1}</div>
         <div class="field-row">
           <label class="field-label" for="nfes_prod_${idx}_select">Produto do item</label>
           <select class="produto-select" id="nfes_prod_${idx}_select" onchange="onProdutoChange(${idx})">
@@ -2409,11 +2694,6 @@ function geraNovosNumerosCodigosAleatorios(xml, hierarquia) {
   xml.cte.querySelector(hierarquia.cte.numero).textContent        = gerarNumeroAleatorio();
   xml.nfeList[0].querySelector(hierarquia.nfe.codigo).textContent = gerarCodigoAleatorio();
   xml.nfeList[0].querySelector(hierarquia.nfe.numero).textContent = gerarNumeroAleatorio();
-  const agora = new Date().toISOString().slice(0, 19) + '-03:00';
-  [xml.cte, xml.nfeList[0]].forEach(doc => {
-    const dhEmi    = doc.querySelector('dhEmi');    if (dhEmi)    dhEmi.textContent    = agora;
-    const dhSaiEnt = doc.querySelector('dhSaiEnt'); if (dhSaiEnt) dhSaiEnt.textContent = agora;
-  });
   return xml;
 }
 
@@ -2448,20 +2728,9 @@ function formarNovaChave(chavesObject) {
   return chavesObject;
 }
 
-const CTE_PORTAIS = {
-  '31': 'https://cte.fazenda.mg.gov.br/portalcte/sistema/qrcode.xhtml',
-  '35': 'https://www.nfe.fazenda.sp.gov.br/cte/qrcode.aspx',
-  '43': 'https://www.sefaz.rs.gov.br/cte/qrcode.aspx',
-  '41': 'https://www.sefaz.pr.gov.br/cte/qrcode.aspx',
-};
-function urlQrCodeCTe(cuf, chave) {
-  const base = CTE_PORTAIS[cuf] || 'https://www.cte.fazenda.gov.br/portal/consultaRecaptcha.aspx';
-  return `${base}?chCTe=${chave}&tpAmb=1`;
-}
-
 function alteraCamposEmFuncaoDasNovasChaves(xml, chaves) {
   const h = getHierarquiaNFe(), hc = getHierarquiaCTe();
-  const qrCode = urlQrCodeCTe(chaves.cte.partes.uf, chaves.cte.chave);
+  const qrCode = `https://cte.fazenda.mg.gov.br/portalcte/sistema/qrcode.xhtml?chCTe=${chaves.cte.chave}&tpAmb=1`;
   xml.cte.querySelector(hc.chave).textContent  = chaves.cte.chave;
   xml.cte.querySelector(hc.codigo).textContent = chaves.cte.partes.codigo;
   xml.cte.querySelector(hc.numero).textContent = chaves.cte.partes.numero;
@@ -2551,7 +2820,6 @@ function salvarEstadoXml() {
   });
   storageSet('gerador:xml_campos', snap);
   storageSet('gerador:lock', lockAtivo);
-  storageSet('gerador:num_produtos', numProdutos);
 }
 
 function restaurarEstadoXml() {
@@ -2578,7 +2846,6 @@ window.onload = () => {
   const temaSalvo = storageGet('gerador:tema', 'light');
   if (temaSalvo === 'dark') toggleTheme();
 
-  numProdutos = storageGet('gerador:num_produtos', 1);
   processarXML(acao.inicio);
   restaurarEstadoXml();
   setupXmlAutoGenerate();
@@ -2587,6 +2854,8 @@ window.onload = () => {
   historicoDocsList = storageGet('gerador:historico_docs', []);
   renderHistorico();
   renderHistoricoDocs();
+
+  editorInicializar();
 };
 
 // ══════════════════════════════════════════════════════════
@@ -2796,19 +3065,14 @@ function calcDigitoCPF(digits, weights) {
   return rem < 2 ? 0 : 11 - rem;
 }
 
-function gerarCPFPuro() {
+function gerarCPF(mask) {
   const d = randomDigits(9);
   const d10 = calcDigitoCPF(d, [10,9,8,7,6,5,4,3,2]); d.push(d10);
   const d11 = calcDigitoCPF(d, [11,10,9,8,7,6,5,4,3,2]); d.push(d11);
   const raw = d.join('');
-  return { raw, formatted: `${raw.slice(0,3)}.${raw.slice(3,6)}.${raw.slice(6,9)}-${raw.slice(9)}` };
-}
-
-function gerarCPF(mask) {
-  const { raw, formatted } = gerarCPFPuro();
   currentType = 'cpf'; currentValue = raw;
-  const val = mask ? formatted : raw;
-  setOutput(val); esconderPlaca(); esconderConteiner();
+  const val = mask ? `${raw.slice(0,3)}.${raw.slice(3,6)}.${raw.slice(6,9)}-${raw.slice(9)}` : raw;
+  setOutput(val); esconderPlaca(); esconderConteiner(); esconderTelefone();
   if (document.getElementById('toggle-nome').checked) mostrarNome(gerarNomePessoa(), 'cpf');
   registrarHistoricoDocs('CPF', val, { nome: getNomeDocsAtual() });
   return { raw, formatted: val };
@@ -2845,7 +3109,7 @@ function gerarCNPJ(mask) {
   const raw = gerarCNPJRawNumerico();
   currentType = 'cnpj'; currentValue = raw;
   const formatted = mask ? formatCNPJ(raw) : raw;
-  setOutput(formatted); esconderPlaca(); esconderConteiner();
+  setOutput(formatted); esconderPlaca(); esconderConteiner(); esconderTelefone();
   if (document.getElementById('toggle-nome').checked) mostrarNome(gerarNomeEmpresa(), 'cnpj');
   registrarHistoricoDocs('CNPJ', formatted, { nome: getNomeDocsAtual() });
   return { raw, formatted };
@@ -2855,7 +3119,7 @@ function gerarCNPJAlfanumerico(mask) {
   const raw = gerarCNPJRawAlfanumerico();
   currentType = 'cnpj-alfa'; currentValue = raw;
   const formatted = mask ? formatCNPJ(raw) : raw;
-  setOutput(formatted); esconderPlaca(); esconderConteiner();
+  setOutput(formatted); esconderPlaca(); esconderConteiner(); esconderTelefone();
   if (document.getElementById('toggle-nome').checked) mostrarNome(gerarNomeEmpresa(), 'cnpj');
   registrarHistoricoDocs('CNPJ alfanumérico', formatted, { nome: getNomeDocsAtual() });
   return { raw, formatted };
@@ -2903,7 +3167,7 @@ function gerarPlaca(tipo) {
     placa = gerarPlacaMercosulRaw();
   }
   currentType = 'placa'; currentValue = placa;
-  setOutput(placa); mostrarPlacaVisual(placa, subtipo); esconderConteiner();
+  setOutput(placa); mostrarPlacaVisual(placa, subtipo); esconderConteiner(); esconderTelefone();
   document.getElementById('nome-box').classList.remove('visible'); nomeAtualDoc = '';
   registrarHistoricoDocs('Placa', placa, { subtipo });
   return placa;
@@ -3001,6 +3265,7 @@ function esconderConteiner() {
   document.getElementById('container-num-card').style.display = '';
 }
 
+function esconderTelefone() { /* telefone usa output-box principal */ }
 
 function copiarContainerNum() {
   const val = document.getElementById('container-num-val').textContent;
@@ -3043,7 +3308,7 @@ function gerarCNHRaw() {
 function gerarCNH() {
   const cnh = gerarCNHRaw();
   currentType = 'cnh'; currentValue = cnh;
-  setOutput(cnh); esconderPlaca(); esconderConteiner();
+  setOutput(cnh); esconderPlaca(); esconderConteiner(); esconderTelefone();
   document.getElementById('nome-box').classList.remove('visible'); nomeAtualDoc = '';
   registrarHistoricoDocs('CNH', cnh);
   return cnh;
@@ -3074,7 +3339,7 @@ function gerarTelefone() {
 function gerarEmail() {
   const email = gerarEmailPessoa(nomeAtualDoc || '');
   currentType = 'email'; currentValue = email;
-  setOutput(email); esconderPlaca(); esconderConteiner();
+  setOutput(email); esconderPlaca(); esconderConteiner(); esconderTelefone();
   document.getElementById('nome-box').classList.remove('visible'); nomeAtualDoc = '';
   registrarHistoricoDocs('E-mail', email);
   return email;
@@ -3210,74 +3475,6 @@ function validarCNPJ(s) {
 }
 
 // ══════════════════════════════════════════════════════════
-//  PRODUTOS (adicionar / remover)
-// ══════════════════════════════════════════════════════════
-function capturarSnapProdutos() {
-  const snap = {};
-  document.querySelectorAll('.produto-item').forEach((_, idx) => {
-    ['select','nome','ncm','codigo','qCom','qTrib','valor','uCom'].forEach(campo => {
-      const el = document.getElementById(`nfes_prod_${idx}_${campo}`);
-      if (el) snap[`nfes_prod_${idx}_${campo}`] = el.value;
-    });
-  });
-  return snap;
-}
-
-function restaurarSnapProdutos(snap) {
-  Object.entries(snap).forEach(([id, val]) => { const el = document.getElementById(id); if (el) el.value = val; });
-  document.querySelectorAll('.produto-item').forEach((_, idx) => {
-    const uCom = snap[`nfes_prod_${idx}_uCom`];
-    if (uCom) setUnidade(idx, uCom);
-  });
-}
-
-function aplicarLockProdutos() {
-  if (!lockAtivo) return;
-  document.querySelectorAll('.produto-item').forEach((_, idx) => {
-    ['nome','ncm','codigo','qCom','qTrib','valor'].forEach(campo => {
-      const el = document.getElementById(`nfes_prod_${idx}_${campo}`);
-      if (el) el.classList.add('locked');
-    });
-  });
-}
-
-function adicionarProduto() {
-  const snap = capturarSnapProdutos();
-  numProdutos++;
-  const xml = xmlStringModelToObject();
-  const hierarquia = { nfe: getHierarquiaNFe(), cte: getHierarquiaCTe() };
-  preencherCamposFormulario(xml, hierarquia);
-  restaurarSnapProdutos(snap);
-  aplicarLockProdutos();
-  gerarXMLComCampos();
-  salvarEstadoXml();
-}
-
-function removerProduto(idx) {
-  if (numProdutos <= 1) return;
-  const snap = capturarSnapProdutos();
-  const oldCount = numProdutos;
-  numProdutos--;
-  const newSnap = {};
-  let newIdx = 0;
-  for (let i = 0; i < oldCount; i++) {
-    if (i === idx) continue;
-    ['select','nome','ncm','codigo','qCom','qTrib','valor','uCom'].forEach(campo => {
-      const val = snap[`nfes_prod_${i}_${campo}`];
-      if (val !== undefined) newSnap[`nfes_prod_${newIdx}_${campo}`] = val;
-    });
-    newIdx++;
-  }
-  const xml = xmlStringModelToObject();
-  const hierarquia = { nfe: getHierarquiaNFe(), cte: getHierarquiaCTe() };
-  preencherCamposFormulario(xml, hierarquia);
-  restaurarSnapProdutos(newSnap);
-  aplicarLockProdutos();
-  gerarXMLComCampos();
-  salvarEstadoXml();
-}
-
-// ══════════════════════════════════════════════════════════
 //  CADASTRO GERAL
 // ══════════════════════════════════════════════════════════
 function normalizarParaEmail(texto) {
@@ -3373,7 +3570,7 @@ function cadGerar(campo) {
     case 'tel':      document.getElementById('cad_tel').value      = gerarTelefoneBR().formatted; break;
     case 'email':    document.getElementById('cad_email').value    = gerarEmailPessoa(document.getElementById('cad_nome').value); break;
     case 'endereco': document.getElementById('cad_endereco').value = gerarEnderecoBR(); break;
-    case 'cpf':      document.getElementById('cad_cpf').value      = gerarCPFPuro().formatted; break;
+    case 'cpf':      document.getElementById('cad_cpf').value      = (() => { const d = randomDigits(9); const d10 = calcDigitoCPF(d,[10,9,8,7,6,5,4,3,2]); d.push(d10); const d11 = calcDigitoCPF(d,[11,10,9,8,7,6,5,4,3,2]); d.push(d11); const r = d.join(''); return `${r.slice(0,3)}.${r.slice(3,6)}.${r.slice(6,9)}-${r.slice(9)}`; })(); break;
     case 'cnh':      document.getElementById('cad_cnh').value      = gerarCNHRaw(); break;
     case 'cracha':   document.getElementById('cad_cracha').value   = `CR-${String(rand(900000)+100000)}`; break;
     case 'doc_pessoa': document.getElementById('cad_doc_pessoa').value = gerarDocumentoEstrangeiro(document.getElementById('cad_doc_pessoa_tipo').value); break;
@@ -3392,7 +3589,11 @@ function gerarCadastroCompleto() {
   const tel      = gerarTelefoneBR().formatted;
   const email    = gerarEmailPessoa(nome);
   const endereco = gerarEnderecoBR();
-  const { formatted: cpf } = gerarCPFPuro();
+  const d        = randomDigits(9);
+  const d10 = calcDigitoCPF(d,[10,9,8,7,6,5,4,3,2]); d.push(d10);
+  const d11 = calcDigitoCPF(d,[11,10,9,8,7,6,5,4,3,2]); d.push(d11);
+  const cpfRaw   = d.join('');
+  const cpf      = `${cpfRaw.slice(0,3)}.${cpfRaw.slice(3,6)}.${cpfRaw.slice(6,9)}-${cpfRaw.slice(9)}`;
   const rg       = gerarRGBR();
   const cnh      = gerarCNHRaw();
   const cracha   = `CR-${String(rand(900000)+100000)}`;
@@ -3696,6 +3897,7 @@ function restaurarHistoricoDocs(idx) {
   currentValue = d.currentValue || d.valor || '';
   esconderPlaca();
   esconderConteiner();
+  esconderTelefone();
   document.getElementById('nome-box').classList.remove('visible');
   nomeAtualDoc = '';
 
@@ -3861,6 +4063,219 @@ function limparHistorico() {
   storageSet('gerador:historico', []);
   renderHistorico();
   mostrarStatus('Histórico do cadastro geral limpo.');
+}
+
+// ══════════════════════════════════════════════════════════
+//  EDITOR XML
+// ══════════════════════════════════════════════════════════
+
+let editorArquivos = []; // [{ nome, doc, modificado, _grupos }]
+let editorAtivo = -1;
+
+function editorInicializar() {
+  const dropzone = document.getElementById('editor-dropzone');
+  const fileInput = document.getElementById('editor-file-input');
+  const fileInputAdd = document.getElementById('editor-file-input-add');
+
+  fileInput.addEventListener('change', e => { editorCarregarArquivos(e.target.files); e.target.value = ''; });
+  fileInputAdd.addEventListener('change', e => { editorCarregarArquivos(e.target.files); e.target.value = ''; });
+
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('editor-dropzone-over'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('editor-dropzone-over'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('editor-dropzone-over');
+    editorCarregarArquivos(e.dataTransfer.files);
+  });
+
+  const workspace = document.getElementById('editor-workspace');
+  workspace.addEventListener('dragover', e => e.preventDefault());
+  workspace.addEventListener('drop', e => { e.preventDefault(); editorCarregarArquivos(e.dataTransfer.files); });
+}
+
+function editorCarregarArquivos(files) {
+  const xmlFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.xml'));
+  if (!xmlFiles.length) return;
+  const parser = new DOMParser();
+  let loaded = 0;
+
+  xmlFiles.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const doc = parser.parseFromString(e.target.result, 'text/xml');
+      if (!doc.querySelector('parsererror')) {
+        editorArquivos.push({ nome: file.name, doc, modificado: false, _grupos: null });
+      } else {
+        mostrarStatus(`Erro: ${file.name} não é um XML válido.`);
+      }
+      if (++loaded === xmlFiles.length) editorPosCarga();
+    };
+    reader.readAsText(file, 'UTF-8');
+  });
+}
+
+function editorPosCarga() {
+  editorRenderizarLista();
+  if (editorAtivo < 0 || editorAtivo >= editorArquivos.length) {
+    editorSelecionarArquivo(editorArquivos.length - 1);
+  }
+  document.getElementById('editor-dropzone').style.display = 'none';
+  document.getElementById('editor-workspace').style.display = '';
+}
+
+function editorRenderizarLista() {
+  document.getElementById('editor-arquivo-count').textContent = editorArquivos.length;
+  document.getElementById('editor-arquivo-lista').innerHTML = editorArquivos.map((arq, idx) => `
+    <div class="editor-arquivo-item${idx === editorAtivo ? ' ativo' : ''}" onclick="editorSelecionarArquivo(${idx})" role="button" tabindex="0">
+      <i class="bi bi-file-earmark-code" style="font-size:13px;color:var(--accent);flex-shrink:0" aria-hidden="true"></i>
+      <span class="editor-arquivo-item-nome" title="${arq.nome}">${arq.nome}</span>
+      ${arq.modificado ? '<span class="editor-modificado-badge" title="Modificado">✏</span>' : ''}
+      <button class="editor-arquivo-remove" onclick="event.stopPropagation();editorRemoverArquivo(${idx})" aria-label="Remover ${arq.nome}">✕</button>
+    </div>`).join('');
+}
+
+function editorSelecionarArquivo(idx) {
+  if (idx < 0 || idx >= editorArquivos.length) return;
+  editorAtivo = idx;
+  editorRenderizarLista();
+  const arq = editorArquivos[idx];
+  document.getElementById('editor-campos-empty').style.display = 'none';
+  document.getElementById('editor-campos-header').style.display = '';
+  document.getElementById('editor-campos-filename').textContent = arq.nome;
+  editorRenderizarCampos(arq, idx);
+}
+
+function editorRenderizarCampos(arq, idx) {
+  const grupos = {};
+
+  function percorrer(no, caminho) {
+    no.childNodes.forEach(filho => {
+      if (filho.nodeType !== 1) return;
+      const tag = filho.localName;
+      const path = caminho ? `${caminho} › ${tag}` : tag;
+      const temFilhoEl = Array.from(filho.childNodes).some(n => n.nodeType === 1);
+      if (!temFilhoEl && filho.textContent.trim() !== '') {
+        const secao = path.split(' › ')[0];
+        if (!grupos[secao]) grupos[secao] = [];
+        grupos[secao].push({ path, no: filho });
+      } else {
+        percorrer(filho, path);
+      }
+    });
+  }
+
+  const raiz = arq.doc.documentElement;
+  percorrer(raiz, raiz.localName);
+  arq._grupos = grupos;
+
+  const secoes = Object.keys(grupos);
+  if (!secoes.length) {
+    document.getElementById('editor-campos-lista').innerHTML = '<p style="color:var(--text-dim);font-style:italic;padding:1rem 0">Nenhum campo editável encontrado.</p>';
+    return;
+  }
+
+  document.getElementById('editor-campos-lista').innerHTML = secoes.map(secao => {
+    const gid = `eg_${idx}_${secao}`.replace(/\W/g, '_');
+    const itens = grupos[secao].map((item, i) => {
+      const fid = `ef_${idx}_${secao}_${i}`.replace(/\W/g, '_');
+      const labelCurto = item.path.split(' › ').slice(1).join(' › ') || item.path;
+      const val = item.no.textContent.replace(/"/g, '&quot;');
+      return `<div class="editor-field-item">
+        <label class="editor-field-label" for="${fid}" title="${item.path}">${labelCurto}</label>
+        <input class="editor-field-input" id="${fid}" type="text" value="${val}"
+          oninput="editorAtualizarCampo(${idx},'${secao}',${i},this.value)"
+          aria-label="${item.path}" />
+        <button class="editor-field-remove" onclick="editorIniciarRemocao(this,${idx},'${secao}',${i})">Remover</button>
+      </div>`;
+    }).join('');
+    return `<div class="editor-field-group" id="${gid}">
+      <div class="editor-field-group-header" onclick="editorToggleGrupo('${gid}')">
+        <span>${secao}</span>
+        <span id="${gid}_count" style="font-weight:400;opacity:.6">${grupos[secao].length} campo${grupos[secao].length !== 1 ? 's' : ''}</span>
+      </div>
+      <div class="editor-field-group-body">${itens}</div>
+    </div>`;
+  }).join('');
+}
+
+function editorToggleGrupo(gid) {
+  const body = document.getElementById(gid).querySelector('.editor-field-group-body');
+  body.style.display = body.style.display === 'none' ? '' : 'none';
+}
+
+function editorAtualizarCampo(idx, secao, i, valor) {
+  const g = editorArquivos[idx]._grupos;
+  if (g && g[secao] && g[secao][i]) {
+    g[secao][i].no.textContent = valor;
+    editorArquivos[idx].modificado = true;
+    editorRenderizarLista();
+  }
+}
+
+function editorIniciarRemocao(btn, idx, secao, i) {
+  if (btn.classList.contains('confirmar')) {
+    const g = editorArquivos[idx]._grupos;
+    if (g && g[secao] && g[secao][i]) {
+      const no = g[secao][i].no;
+      no.parentNode && no.parentNode.removeChild(no);
+      g[secao].splice(i, 1);
+      editorArquivos[idx].modificado = true;
+      btn.closest('.editor-field-item').remove();
+      const countEl = document.getElementById(`eg_${idx}_${secao}`.replace(/\W/g, '_') + '_count');
+      if (countEl) {
+        const n = g[secao].length;
+        countEl.textContent = `${n} campo${n !== 1 ? 's' : ''}`;
+      }
+      editorRenderizarLista();
+    }
+  } else {
+    btn.classList.add('confirmar');
+    btn.textContent = 'Confirmar';
+    setTimeout(() => { btn.classList.remove('confirmar'); btn.textContent = 'Remover'; }, 2000);
+  }
+}
+
+function editorRemoverArquivo(idx) {
+  editorArquivos.splice(idx, 1);
+  if (!editorArquivos.length) {
+    editorAtivo = -1;
+    document.getElementById('editor-dropzone').style.display = '';
+    document.getElementById('editor-workspace').style.display = 'none';
+    document.getElementById('editor-campos-lista').innerHTML = '';
+    document.getElementById('editor-campos-header').style.display = 'none';
+    document.getElementById('editor-campos-empty').style.display = '';
+    return;
+  }
+  editorAtivo = Math.min(editorAtivo, editorArquivos.length - 1);
+  editorRenderizarLista();
+  editorSelecionarArquivo(editorAtivo);
+}
+
+function editorBaixar(idx) {
+  if (idx < 0 || idx >= editorArquivos.length) return;
+  const arq = editorArquivos[idx];
+  const xmlStr = new XMLSerializer().serializeToString(arq.doc);
+  const blob = new Blob([xmlStr], { type: 'text/xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = arq.nome; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function editorBaixarTodos() {
+  editorArquivos.forEach((_, idx) => setTimeout(() => editorBaixar(idx), idx * 200));
+}
+
+function editorLimparTudo() {
+  editorArquivos = [];
+  editorAtivo = -1;
+  document.getElementById('editor-dropzone').style.display = '';
+  document.getElementById('editor-workspace').style.display = 'none';
+  document.getElementById('editor-campos-lista').innerHTML = '';
+  document.getElementById('editor-campos-header').style.display = 'none';
+  document.getElementById('editor-campos-empty').style.display = '';
+  document.getElementById('editor-arquivo-count').textContent = '0';
+  document.getElementById('editor-arquivo-lista').innerHTML = '';
 }
 </script>
 </body>

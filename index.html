@@ -1622,6 +1622,7 @@
           <div class="field-group" role="group" aria-labelledby="nfe-produtos-title">
             <div class="field-group-title" id="nfe-produtos-title">Produtos e itens</div>
             <div id="produtos-container"></div>
+            <button type="button" class="btn-sm" onclick="adicionarProduto()" id="add-produto-btn" style="margin-top:8px;" aria-label="Adicionar produto à NFe"><i class="bi bi-plus-circle" aria-hidden="true"></i> Adicionar produto</button>
           </div>
         </div>
       </section>
@@ -2139,6 +2140,7 @@ function getHierarquiaCTe() {
 }
 
 let lockAtivo = false;
+let numProdutos = 1;
 const LOCKABLE_FIELDS = [
   'cte_cnpjEmit','cte_nomeEmit','cte_cnpjRem','cte_nomeRem','cte_cnpjReceb','cte_nomeReceb','cte_cnpjDest','cte_nomeDest',
   'Emitente_Nota','nfe_nomeEmit','nfe_cnpjDest','nfe_nomeDest','nfe_cnpjTransp','nfe_nomeTransp'
@@ -2265,7 +2267,19 @@ function finalizarEGerarXML(xml, hierarquia) {
 
 function xmlStringModelToObject() {
   const parser = new DOMParser();
-  return { cte: parser.parseFromString(cteModel, "text/xml"), nfeList: [parser.parseFromString(nfeModel, "text/xml")] };
+  const nfeDoc = parser.parseFromString(nfeModel, "text/xml");
+  if (numProdutos > 1) {
+    const firstDet = nfeDoc.querySelector(getHierarquiaNFe().itens);
+    if (firstDet) {
+      firstDet.setAttribute('nItem', '1');
+      for (let i = 1; i < numProdutos; i++) {
+        const clone = firstDet.cloneNode(true);
+        clone.setAttribute('nItem', String(i + 1));
+        firstDet.parentNode.appendChild(clone);
+      }
+    }
+  }
+  return { cte: parser.parseFromString(cteModel, "text/xml"), nfeList: [nfeDoc] };
 }
 
 function preencherCamposFormulario(xml, hierarquia) {
@@ -2318,9 +2332,12 @@ function preencherCamposFormulario(xml, hierarquia) {
     );
     const nomeVisual = produtoAtual?.nome || nomeAtual;
     const options = catalogoProdutos.map(p => `<option value="${escapeAttr(p.nome)}" data-ncm="${escapeAttr(p.ncm)}" data-codigo="${escapeAttr(p.codigo)}" ${p.nome === nomeVisual ? 'selected' : ''}>${escapeHtml(p.nome)}</option>`).join('');
+    const removeBtn = numProdutos > 1
+      ? `<button type="button" class="btn-xs" onclick="removerProduto(${idx})" style="margin-left:auto;" aria-label="Remover item ${idx + 1} da NFe">Remover</button>`
+      : '';
     container.innerHTML += `
       <div class="produto-item" role="group" aria-labelledby="nfes_prod_${idx}_title">
-        <div class="produto-header" id="nfes_prod_${idx}_title">Item ${idx + 1}</div>
+        <div class="produto-header" id="nfes_prod_${idx}_title">Item ${idx + 1}${removeBtn}</div>
         <div class="field-row">
           <label class="field-label" for="nfes_prod_${idx}_select">Produto do item</label>
           <select class="produto-select" id="nfes_prod_${idx}_select" onchange="onProdutoChange(${idx})">
@@ -2392,6 +2409,11 @@ function geraNovosNumerosCodigosAleatorios(xml, hierarquia) {
   xml.cte.querySelector(hierarquia.cte.numero).textContent        = gerarNumeroAleatorio();
   xml.nfeList[0].querySelector(hierarquia.nfe.codigo).textContent = gerarCodigoAleatorio();
   xml.nfeList[0].querySelector(hierarquia.nfe.numero).textContent = gerarNumeroAleatorio();
+  const agora = new Date().toISOString().slice(0, 19) + '-03:00';
+  [xml.cte, xml.nfeList[0]].forEach(doc => {
+    const dhEmi    = doc.querySelector('dhEmi');    if (dhEmi)    dhEmi.textContent    = agora;
+    const dhSaiEnt = doc.querySelector('dhSaiEnt'); if (dhSaiEnt) dhSaiEnt.textContent = agora;
+  });
   return xml;
 }
 
@@ -2426,9 +2448,20 @@ function formarNovaChave(chavesObject) {
   return chavesObject;
 }
 
+const CTE_PORTAIS = {
+  '31': 'https://cte.fazenda.mg.gov.br/portalcte/sistema/qrcode.xhtml',
+  '35': 'https://www.nfe.fazenda.sp.gov.br/cte/qrcode.aspx',
+  '43': 'https://www.sefaz.rs.gov.br/cte/qrcode.aspx',
+  '41': 'https://www.sefaz.pr.gov.br/cte/qrcode.aspx',
+};
+function urlQrCodeCTe(cuf, chave) {
+  const base = CTE_PORTAIS[cuf] || 'https://www.cte.fazenda.gov.br/portal/consultaRecaptcha.aspx';
+  return `${base}?chCTe=${chave}&tpAmb=1`;
+}
+
 function alteraCamposEmFuncaoDasNovasChaves(xml, chaves) {
   const h = getHierarquiaNFe(), hc = getHierarquiaCTe();
-  const qrCode = `https://cte.fazenda.mg.gov.br/portalcte/sistema/qrcode.xhtml?chCTe=${chaves.cte.chave}&tpAmb=1`;
+  const qrCode = urlQrCodeCTe(chaves.cte.partes.uf, chaves.cte.chave);
   xml.cte.querySelector(hc.chave).textContent  = chaves.cte.chave;
   xml.cte.querySelector(hc.codigo).textContent = chaves.cte.partes.codigo;
   xml.cte.querySelector(hc.numero).textContent = chaves.cte.partes.numero;
@@ -2518,6 +2551,7 @@ function salvarEstadoXml() {
   });
   storageSet('gerador:xml_campos', snap);
   storageSet('gerador:lock', lockAtivo);
+  storageSet('gerador:num_produtos', numProdutos);
 }
 
 function restaurarEstadoXml() {
@@ -2544,6 +2578,7 @@ window.onload = () => {
   const temaSalvo = storageGet('gerador:tema', 'light');
   if (temaSalvo === 'dark') toggleTheme();
 
+  numProdutos = storageGet('gerador:num_produtos', 1);
   processarXML(acao.inicio);
   restaurarEstadoXml();
   setupXmlAutoGenerate();
@@ -2761,14 +2796,19 @@ function calcDigitoCPF(digits, weights) {
   return rem < 2 ? 0 : 11 - rem;
 }
 
-function gerarCPF(mask) {
+function gerarCPFPuro() {
   const d = randomDigits(9);
   const d10 = calcDigitoCPF(d, [10,9,8,7,6,5,4,3,2]); d.push(d10);
   const d11 = calcDigitoCPF(d, [11,10,9,8,7,6,5,4,3,2]); d.push(d11);
   const raw = d.join('');
+  return { raw, formatted: `${raw.slice(0,3)}.${raw.slice(3,6)}.${raw.slice(6,9)}-${raw.slice(9)}` };
+}
+
+function gerarCPF(mask) {
+  const { raw, formatted } = gerarCPFPuro();
   currentType = 'cpf'; currentValue = raw;
-  const val = mask ? `${raw.slice(0,3)}.${raw.slice(3,6)}.${raw.slice(6,9)}-${raw.slice(9)}` : raw;
-  setOutput(val); esconderPlaca(); esconderConteiner(); esconderTelefone();
+  const val = mask ? formatted : raw;
+  setOutput(val); esconderPlaca(); esconderConteiner();
   if (document.getElementById('toggle-nome').checked) mostrarNome(gerarNomePessoa(), 'cpf');
   registrarHistoricoDocs('CPF', val, { nome: getNomeDocsAtual() });
   return { raw, formatted: val };
@@ -2805,7 +2845,7 @@ function gerarCNPJ(mask) {
   const raw = gerarCNPJRawNumerico();
   currentType = 'cnpj'; currentValue = raw;
   const formatted = mask ? formatCNPJ(raw) : raw;
-  setOutput(formatted); esconderPlaca(); esconderConteiner(); esconderTelefone();
+  setOutput(formatted); esconderPlaca(); esconderConteiner();
   if (document.getElementById('toggle-nome').checked) mostrarNome(gerarNomeEmpresa(), 'cnpj');
   registrarHistoricoDocs('CNPJ', formatted, { nome: getNomeDocsAtual() });
   return { raw, formatted };
@@ -2815,7 +2855,7 @@ function gerarCNPJAlfanumerico(mask) {
   const raw = gerarCNPJRawAlfanumerico();
   currentType = 'cnpj-alfa'; currentValue = raw;
   const formatted = mask ? formatCNPJ(raw) : raw;
-  setOutput(formatted); esconderPlaca(); esconderConteiner(); esconderTelefone();
+  setOutput(formatted); esconderPlaca(); esconderConteiner();
   if (document.getElementById('toggle-nome').checked) mostrarNome(gerarNomeEmpresa(), 'cnpj');
   registrarHistoricoDocs('CNPJ alfanumérico', formatted, { nome: getNomeDocsAtual() });
   return { raw, formatted };
@@ -2863,7 +2903,7 @@ function gerarPlaca(tipo) {
     placa = gerarPlacaMercosulRaw();
   }
   currentType = 'placa'; currentValue = placa;
-  setOutput(placa); mostrarPlacaVisual(placa, subtipo); esconderConteiner(); esconderTelefone();
+  setOutput(placa); mostrarPlacaVisual(placa, subtipo); esconderConteiner();
   document.getElementById('nome-box').classList.remove('visible'); nomeAtualDoc = '';
   registrarHistoricoDocs('Placa', placa, { subtipo });
   return placa;
@@ -2961,7 +3001,6 @@ function esconderConteiner() {
   document.getElementById('container-num-card').style.display = '';
 }
 
-function esconderTelefone() { /* telefone usa output-box principal */ }
 
 function copiarContainerNum() {
   const val = document.getElementById('container-num-val').textContent;
@@ -3004,7 +3043,7 @@ function gerarCNHRaw() {
 function gerarCNH() {
   const cnh = gerarCNHRaw();
   currentType = 'cnh'; currentValue = cnh;
-  setOutput(cnh); esconderPlaca(); esconderConteiner(); esconderTelefone();
+  setOutput(cnh); esconderPlaca(); esconderConteiner();
   document.getElementById('nome-box').classList.remove('visible'); nomeAtualDoc = '';
   registrarHistoricoDocs('CNH', cnh);
   return cnh;
@@ -3035,7 +3074,7 @@ function gerarTelefone() {
 function gerarEmail() {
   const email = gerarEmailPessoa(nomeAtualDoc || '');
   currentType = 'email'; currentValue = email;
-  setOutput(email); esconderPlaca(); esconderConteiner(); esconderTelefone();
+  setOutput(email); esconderPlaca(); esconderConteiner();
   document.getElementById('nome-box').classList.remove('visible'); nomeAtualDoc = '';
   registrarHistoricoDocs('E-mail', email);
   return email;
@@ -3171,6 +3210,74 @@ function validarCNPJ(s) {
 }
 
 // ══════════════════════════════════════════════════════════
+//  PRODUTOS (adicionar / remover)
+// ══════════════════════════════════════════════════════════
+function capturarSnapProdutos() {
+  const snap = {};
+  document.querySelectorAll('.produto-item').forEach((_, idx) => {
+    ['select','nome','ncm','codigo','qCom','qTrib','valor','uCom'].forEach(campo => {
+      const el = document.getElementById(`nfes_prod_${idx}_${campo}`);
+      if (el) snap[`nfes_prod_${idx}_${campo}`] = el.value;
+    });
+  });
+  return snap;
+}
+
+function restaurarSnapProdutos(snap) {
+  Object.entries(snap).forEach(([id, val]) => { const el = document.getElementById(id); if (el) el.value = val; });
+  document.querySelectorAll('.produto-item').forEach((_, idx) => {
+    const uCom = snap[`nfes_prod_${idx}_uCom`];
+    if (uCom) setUnidade(idx, uCom);
+  });
+}
+
+function aplicarLockProdutos() {
+  if (!lockAtivo) return;
+  document.querySelectorAll('.produto-item').forEach((_, idx) => {
+    ['nome','ncm','codigo','qCom','qTrib','valor'].forEach(campo => {
+      const el = document.getElementById(`nfes_prod_${idx}_${campo}`);
+      if (el) el.classList.add('locked');
+    });
+  });
+}
+
+function adicionarProduto() {
+  const snap = capturarSnapProdutos();
+  numProdutos++;
+  const xml = xmlStringModelToObject();
+  const hierarquia = { nfe: getHierarquiaNFe(), cte: getHierarquiaCTe() };
+  preencherCamposFormulario(xml, hierarquia);
+  restaurarSnapProdutos(snap);
+  aplicarLockProdutos();
+  gerarXMLComCampos();
+  salvarEstadoXml();
+}
+
+function removerProduto(idx) {
+  if (numProdutos <= 1) return;
+  const snap = capturarSnapProdutos();
+  const oldCount = numProdutos;
+  numProdutos--;
+  const newSnap = {};
+  let newIdx = 0;
+  for (let i = 0; i < oldCount; i++) {
+    if (i === idx) continue;
+    ['select','nome','ncm','codigo','qCom','qTrib','valor','uCom'].forEach(campo => {
+      const val = snap[`nfes_prod_${i}_${campo}`];
+      if (val !== undefined) newSnap[`nfes_prod_${newIdx}_${campo}`] = val;
+    });
+    newIdx++;
+  }
+  const xml = xmlStringModelToObject();
+  const hierarquia = { nfe: getHierarquiaNFe(), cte: getHierarquiaCTe() };
+  preencherCamposFormulario(xml, hierarquia);
+  restaurarSnapProdutos(newSnap);
+  aplicarLockProdutos();
+  gerarXMLComCampos();
+  salvarEstadoXml();
+}
+
+// ══════════════════════════════════════════════════════════
 //  CADASTRO GERAL
 // ══════════════════════════════════════════════════════════
 function normalizarParaEmail(texto) {
@@ -3266,7 +3373,7 @@ function cadGerar(campo) {
     case 'tel':      document.getElementById('cad_tel').value      = gerarTelefoneBR().formatted; break;
     case 'email':    document.getElementById('cad_email').value    = gerarEmailPessoa(document.getElementById('cad_nome').value); break;
     case 'endereco': document.getElementById('cad_endereco').value = gerarEnderecoBR(); break;
-    case 'cpf':      document.getElementById('cad_cpf').value      = (() => { const d = randomDigits(9); const d10 = calcDigitoCPF(d,[10,9,8,7,6,5,4,3,2]); d.push(d10); const d11 = calcDigitoCPF(d,[11,10,9,8,7,6,5,4,3,2]); d.push(d11); const r = d.join(''); return `${r.slice(0,3)}.${r.slice(3,6)}.${r.slice(6,9)}-${r.slice(9)}`; })(); break;
+    case 'cpf':      document.getElementById('cad_cpf').value      = gerarCPFPuro().formatted; break;
     case 'cnh':      document.getElementById('cad_cnh').value      = gerarCNHRaw(); break;
     case 'cracha':   document.getElementById('cad_cracha').value   = `CR-${String(rand(900000)+100000)}`; break;
     case 'doc_pessoa': document.getElementById('cad_doc_pessoa').value = gerarDocumentoEstrangeiro(document.getElementById('cad_doc_pessoa_tipo').value); break;
@@ -3285,11 +3392,7 @@ function gerarCadastroCompleto() {
   const tel      = gerarTelefoneBR().formatted;
   const email    = gerarEmailPessoa(nome);
   const endereco = gerarEnderecoBR();
-  const d        = randomDigits(9);
-  const d10 = calcDigitoCPF(d,[10,9,8,7,6,5,4,3,2]); d.push(d10);
-  const d11 = calcDigitoCPF(d,[11,10,9,8,7,6,5,4,3,2]); d.push(d11);
-  const cpfRaw   = d.join('');
-  const cpf      = `${cpfRaw.slice(0,3)}.${cpfRaw.slice(3,6)}.${cpfRaw.slice(6,9)}-${cpfRaw.slice(9)}`;
+  const { formatted: cpf } = gerarCPFPuro();
   const rg       = gerarRGBR();
   const cnh      = gerarCNHRaw();
   const cracha   = `CR-${String(rand(900000)+100000)}`;
@@ -3593,7 +3696,6 @@ function restaurarHistoricoDocs(idx) {
   currentValue = d.currentValue || d.valor || '';
   esconderPlaca();
   esconderConteiner();
-  esconderTelefone();
   document.getElementById('nome-box').classList.remove('visible');
   nomeAtualDoc = '';
 

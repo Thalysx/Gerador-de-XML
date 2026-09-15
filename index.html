@@ -2602,7 +2602,9 @@ function getHierarquiaNFe() {
   let proc = "nfeProc", doc = `${proc} > NFe`, inf = `${doc} > infNFe`, ide = `${inf} > ide`;
   return {
     inf_Id: inf, uf: `${ide} > cUF`, codigo: `${ide} > cNF`, natureza: `${ide} > natOp`,
+
     recinto: `${inf} > infAdic > infCpl`,
+
     modelo: `${ide} > mod`, serie: `${ide} > serie`, numero: `${ide} > nNF`,
     tipoEmissao: `${ide} > tpEmis`, dv: `${ide} > cDV`,
     reference_URI: `${doc} > Signature > SignedInfo > Reference`,
@@ -2922,10 +2924,12 @@ function preencherCamposFormulario(xml, hierarquia) {
     if (!el) return;
     const xmlDoc = f.doc === 'cte' ? xml.cte : xml.nfeList[0];
     const node = xmlDoc.querySelector(f.tag);
+
     if (node) {
       const valor = node.textContent.trim();
       el.value = f.id === 'nfe_recinto' ? valor.replace(/^C[oó]digo RA\s*[:\-]?\s*/i, '') : valor;
     }
+
   });
   const produtosTags = xml.nfeList[0].querySelectorAll(hierarquia.nfe.itens);
   const container = document.getElementById('produtos-container');
@@ -3077,12 +3081,14 @@ function alteraCamposEmFuncaoDasNovasChaves(xml, chaves) {
   };
   setNFeText(h.dest, 'nfe_cnpjDest');
   setNFeText(h.destNome, 'nfe_nomeDest');
+  
   const recinto = document.getElementById('nfe_recinto')?.value.trim();
   const infoComplementar = xml.nfeList[0].querySelector(h.recinto);
   if (infoComplementar) {
     if (recinto) infoComplementar.textContent = `Código RA ${recinto}`;
     else infoComplementar.remove();
   }
+
   xml.nfeList[0].querySelector(h.transp).textContent     = document.getElementById("nfe_cnpjTransp").value;
   xml.nfeList[0].querySelector(h.transpNome).textContent = document.getElementById("nfe_nomeTransp").value;
   xml.nfeList[0].querySelector(h.inf_Id).setAttribute("Id", "NFe" + chaves.nfes[0].chave);

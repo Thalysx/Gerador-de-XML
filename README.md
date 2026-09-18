@@ -1,106 +1,87 @@
-# 📄 Gerador Unificado — Documentos Fiscais & Identificação
+# Gerador de documentos
 
-Ferramenta web all-in-one para geração e validação de documentos fiscais brasileiros, dados cadastrais e identificadores de carga. Desenvolvida para uso em testes, homologação de sistemas e preenchimento de formulários com dados fictícios válidos.
+Abra `index.html` no navegador para usar os geradores, editor e validação local. Mantenha a pasta `assets` ao lado do HTML. O **chat com IA** precisa do servidor Node.js e de uma chave OpenAI, conforme abaixo.
 
----
+Bootstrap, ícones e fontes continuam sendo carregados de serviços externos e precisam de conexão para estar disponíveis.
 
-## ✨ Funcionalidades
+Veja [ATUALIZACOES.md](ATUALIZACOES.md) para as funcionalidades adicionadas, exemplos do chat, verificações e limitações.
 
-### 📄 Aba: XML NFe / CTe
-Gera arquivos XML de **Nota Fiscal Eletrônica (NFe)** e **Conhecimento de Transporte Eletrônico (CTe)** com estrutura completa e válida.
+## Organização
 
-- Regeneração automática de números, códigos e chaves de acesso
-- Cálculo automático do **Dígito Verificador (DV)** da chave de acesso
-- Edição manual de todos os campos: emitente, destinatário, remetente, recebedor, transportador
-- Suporte a múltiplos produtos/itens com catálogo de **20 mercadorias** pré-cadastradas (açúcar, soja, milho, café, celulose, etc.)
-- Seleção de unidade comercial: **KG** ou **Tonelada**
-- **Bloqueio seletivo de campos**: congela CNPJs e razões sociais enquanto regenera chaves e números
-- Geração automática dos XMLs ao editar qualquer campo
-- **Download direto** dos arquivos `NFe.xml` e `CTe.xml`
+| Arquivo | Responsabilidade |
+| --- | --- |
+| `index.html` | Estrutura da página, formulários e referências aos estilos e scripts |
+| `assets/css/base.css` | Tema, estrutura geral, componentes e formulário de geração XML |
+| `assets/css/documentos.css` | Interface do gerador de documentos |
+| `assets/css/cadastro.css` | Cadastro, resultados, histórico e ajustes responsivos compartilhados |
+| `assets/css/editor-xml.css` | Interface do editor XML |
+| `assets/css/evolucao.css` | Chat, lotes, prévia XML, cenários e ajustes de organização |
+| `assets/js/aleatorio.js` | Aleatoriedade compartilhada e controle de repetições recentes |
+| `assets/js/catalogos.js` | Novos nomes, sobrenomes, marcas, setores e DDDs por UF |
+| `assets/js/storage.js` | Leitura e gravação no armazenamento local |
+| `assets/js/interface.js` | Abas, tema e integração visual com Bootstrap |
+| `assets/js/produtos.js` | Catálogo de produtos |
+| `assets/js/modelos-xml.js` | Modelos de NF-e e CT-e |
+| `assets/js/gerador-xml.js` | Formulário fiscal, chaves, geração, downloads e persistência dos campos |
+| `assets/js/utils.js` | Escape de texto, mensagens, cópia e rolagem |
+| `assets/js/documentos.js` | Geração e validação de documentos, nomes e dados auxiliares |
+| `assets/js/cadastro.js` | Geração, edição e cópia do cadastro geral |
+| `assets/js/historico.js` | Histórico dos documentos e cadastros |
+| `assets/js/editor-xml.js` | Importação, edição e exportação de XML |
+| `assets/js/geracao-dados.js` | API de geração independente da interface, novos documentos e exportação |
+| `assets/js/chat.js` | Interpretação local de pedidos e interface de chat/lotes |
+| `assets/js/chat-ia.js` | Conversa com IA, anexos explícitos e artefatos |
+| `assets/js/validacao-xml.js` | Sintaxe e consistência básica de NF-e/CT-e |
+| `assets/css/validacao-xml.css` | Tela de validação XML |
+| `scripts/ai.cjs` | OpenAI Responses API, sessões e ferramentas |
+| `scripts/engine.cjs` | Reutilização do gerador e validador no servidor |
+| `assets/js/xml-workflow.js` | Prévia, integração com editor/cadastro, cenários e comparação de XML |
+| `assets/js/app.js` | Inicialização da aplicação e restauração do estado |
+| `tests/projeto.test.cjs` | Testes de geração e fluxos com DOM simulado |
+| `scripts/serve.cjs` | Servidor local opcional para desenvolvimento |
 
-### 🪪 Aba: Dados Cadastrais
-Geração avulsa de documentos e identificadores com cópia rápida.
+## Manutenção
 
-| Documento | Detalhes |
-|-----------|----------|
-| **CPF** | Com validação por dígitos verificadores |
-| **CNPJ numérico** | Padrão tradicional |
-| **CNPJ alfanumérico** | Novo formato com letras (Receita Federal 2026) |
-| **CNH** | Registro Nacional de Habilitação com DVs |
-| **Telefone** | Celular brasileiro com DDD válido |
-| **E-mail** | Gerado a partir do nome da pessoa |
-| **Placa Mercosul** | Formato `ABC1D23` com visual de placa |
-| **Contêiner + Lacre** | Número de contêiner com DV ISO 6346 + lacre de armador |
+Os scripts são carregados na ordem declarada no final do HTML, com `app.js` por último. Eles ainda compartilham o escopo global para preservar os eventos existentes no HTML e permitir a abertura direta pelo sistema de arquivos. Esta organização separa responsabilidades em arquivos; não converte a aplicação para módulos ES.
 
-**Recursos adicionais:**
-- Toggle para gerar **nome junto** (pessoa física ou razão social)
-- Toggle para **aplicar/remover máscara** (CPF, CNPJ, telefone)
-- Validador de CPF e CNPJ (numérico e alfanumérico)
-- Visualização gráfica da placa Mercosul
+A ordem dos arquivos CSS preserva a cascata original. Ao ajustar estilos, procure o arquivo da funcionalidade correspondente.
 
-### 🧾 Aba: Cadastro Geral
-Geração de um **perfil completo de motorista** com todos os dados associados em uma única ação.
+## Desenvolvimento e testes
 
-**Campos gerados:**
-- Nome completo, CPF, RG, CNH, Crachá
-- Telefone, E-mail, Endereço completo com CEP
-- Documento estrangeiro da pessoa (Passaporte ou Identidade estrangeira)
-- Razão Social, CNPJ (normal ou alfanumérico)
-- Documento estrangeiro da empresa
-- Placa Mercosul, Número de Contêiner, Lacre de armador
+O uso normal continua sem instalação. Para executar os testes automatizados, use Node.js 20.19 ou superior:
 
-**Outros recursos:**
-- Geração individual por campo com botão "Novo"
-- Painel de resultado visual com cópia por campo
-- **Exportação em JSON** de todos os dados
-- **Histórico** dos últimos 20 cadastros gerados com restauração e cópia rápida por chip
-
----
-
-## ⚙️ Como usar
-
-1. Abra o arquivo `index.html` diretamente no navegador — sem instalação, sem servidor
-2. Navegue pelas abas conforme a necessidade
-3. Clique em **"Gerar tudo"** ou nos botões individuais para obter os dados
-4. Use os botões **Copiar** para levar os valores para outros sistemas
-5. Na aba XML, clique em **Baixar NFe.xml / CTe.xml** para fazer o download
-
----
-
-## 🛠️ Tecnologias
-
-- **HTML5 + CSS3 + JavaScript puro** — zero dependências externas
-- **DOMParser / XMLSerializer** para manipulação dos XMLs
-- **Web Clipboard API** para cópia rápida
-- **CSS Grid** para layout responsivo
-- Fontes: [Syne](https://fonts.google.com/specimen/Syne), [Inter](https://fonts.google.com/specimen/Inter), [DM Mono](https://fonts.google.com/specimen/DM+Mono)
-
----
-
-## 🎨 Interface
-
-- Tema **claro e escuro** com alternância por botão
-- Design responsivo para desktop e mobile
-- Paleta roxa/violeta com tipografia Syne para identidade visual consistente
-
----
-
-## 📋 Catálogo de Produtos (NFe)
-
-Açúcar Cristal · Açúcar Refinado · Soja em Grão · Milho em Grão · Farinha de Soja · Óleo de Soja Bruto · Farelo de Soja · Trigo em Grão · Café Verde em Grão · Algodão em Pluma · Minério de Ferro · Celulose · Etanol Hidratado · Carne Bovina Congelada · Frango Inteiro Congelado · Produtos Siderúrgicos · Papel e Papelão · Farinha de Trigo · Arroz Beneficiado · Fertilizante Nitrogenado
-
----
-
-## ⚠️ Aviso
-
-> Os dados gerados por esta ferramenta são **fictícios e destinados exclusivamente a testes e homologação**. CNPJs, CPFs e chaves de acesso são matematicamente válidos, mas não correspondem a nenhuma pessoa, empresa ou documento real. Não utilize em sistemas de produção ou para fins ilegais.
-
----
-
-## 📁 Estrutura do Projeto
-
-```
-index.html          # Arquivo único — toda a aplicação
+```sh
+npm install
+npm test
 ```
 
-A aplicação é um **single-file app**: HTML, CSS e JavaScript estão contidos em um único arquivo, facilitando a distribuição e o uso offline.
+Para servir a aplicação localmente:
+
+```sh
+npm run dev
+```
+
+Abra `http://127.0.0.1:4173`. A dependência `jsdom` é usada nos testes e no servidor para reaproveitar as regras do gerador; ela não é carregada pelo navegador.
+
+## Ativar o chat com IA
+
+1. Execute `npm install` com Node.js 20.19 ou superior.
+2. Copie `.env.example` para `.env` na raiz.
+3. Preencha `OPENAI_API_KEY` no `.env`. Não coloque a chave no HTML nem no navegador. `OPENAI_MODEL` permite escolher o modelo; o padrão é `gpt-5-mini`.
+4. Execute `npm run dev` e abra `http://127.0.0.1:4173`. Reinicie o servidor após alterar o `.env`.
+
+A integração usa a API OpenAI, com cobrança e cota próprias da conta de API. Nenhuma chave foi incluída no projeto. `.env` está ignorado pelo Git e o servidor não publica arquivos internos. Sem chave, selecione **Comandos locais (sem IA)**.
+
+Exemplos: “Gere 3 CPFs e uma NF-e com 4 produtos”, “Explique os erros deste XML” (com anexo), “Qual a diferença entre a chave e o protocolo?”. A IA escolhe ferramentas para gerar dados, criar XMLs e ler/validar anexos ou XMLs anteriores. Os downloads completos aparecem na conversa. A geração de XML aceita tipo e quantidade de produtos; alterações específicas de campos continuam no editor, acessível pelo resultado.
+
+Somente mensagens e XMLs explicitamente anexados, além dos resultados necessários das ferramentas, entram no contexto enviado à OpenAI. O formulário e o histórico local não são enviados automaticamente. As sessões ficam na memória do servidor, limitadas a 20 pedidos; expiram após 30 minutos de inatividade e são removidas na próxima requisição. Recarregar ou limpar o chat abandona a sessão na interface. Reiniciar o servidor apaga todas as sessões. A API usa `store:false`; isso não equivale a uma garantia de retenção zero pelo provedor.
+
+O servidor é destinado ao uso local, em `127.0.0.1`, com verificação de origem e limite de pedidos. Publicação multiusuário requer autenticação e controle de uso por usuário antes de disponibilizar a chave em produção.
+
+## Validação XML
+
+A aba **Validação XML** aceita conteúdo colado, XML atual do gerador ou até 10 arquivos UTF-8 de 5 MB cada. Verifica sintaxe, estrutura básica, chave, CNPJ, campos e totais de produtos; exporta relatório JSON e abre cópia no editor. Essa tela funciona localmente, sem IA. Não verifica XSD, assinatura digital, regras tributárias completas ou autorização SEFAZ. O anexo do chat tem um limite separado de 100 KB.
+
+Os testes de IA usam um provedor simulado e verificam a execução real das ferramentas. Uma chamada real à OpenAI depende da configuração de uma chave válida.
+
+Os testes abrangem a geração, interpretação de pedidos, exportações e fluxos de XML. A atualização também foi conferida no Chrome, incluindo chat em largura de celular.

@@ -1,5 +1,19 @@
 # CLAUDE.md
 
+## Architecture update (2026-09-18)
+
+The project is now split into `index.html`, `assets/css/` and `assets/js/`.
+The older single-file description below documents the original architecture only.
+Use `README.md` and `ATUALIZACOES.md` for the current structure and feature coverage.
+The browser retains classic scripts in the order declared by `index.html`.
+Run `npm install` and `npm test` (Node.js 20.19+) to verify changes.
+`npm run dev` starts the local server; `scripts/ai.cjs` integrates the OpenAI
+Responses API and `scripts/engine.cjs` reuses generator functions in JSDOM.
+Keep API keys server-side in `.env`; never publish secrets or expose this local
+server publicly without authentication and per-user usage controls.
+The XML validation screen checks syntax and basic consistency, not XSD,
+digital signatures, full fiscal rules or SEFAZ authorization.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project overview

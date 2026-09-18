@@ -1,0 +1,54 @@
+/* Componentes compartilhados pelas novas áreas, usando o tema existente. */
+.painel-novo { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:1.25rem; min-width:0; margin-bottom:1.25rem; }
+.painel-novo h2, .painel-novo h3 { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin:0; }
+.painel-cabecalho { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1rem; }
+.texto-apoio { color:var(--text-muted); font-size:.8rem; line-height:1.6; margin:.6rem 0; }
+.acoes-inline { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+.acoes-inline label { font-size:.8rem; color:var(--text-muted); }
+.opcoes-geracao { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin:1rem 0; }
+.doc-gen-wrapper { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+.doc-gen-left { min-width:0; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:1.25rem; }
+.doc-gen-right { min-width:0; position:static; }
+.opcoes-geracao label, .campo-novo label { display:block; margin-bottom:.4rem; color:var(--text-label); font-size:.75rem; font-weight:600; }
+.opcoes-geracao select, .campo-novo select, .campo-novo input { width:100%; min-height:40px; border:1px solid var(--border); border-radius:8px; padding:.6rem; background:var(--input-bg); color:var(--text); font:inherit; font-size:.85rem; }
+.lote-form { display:grid; grid-template-columns:minmax(0,1fr) 110px auto; align-items:end; gap:.65rem; margin:1rem 0; }
+.lote-resultados { max-height:400px; overflow:auto; margin:1rem 0; }
+.registro-lote { border:1px solid var(--border); background:var(--surface-2); padding:.7rem .9rem; border-radius:10px; margin:.5rem 0; }
+.registro-tipo { font-size:.7rem; color:var(--text-muted); font-weight:600; }
+.registro-lote pre { font-family:'DM Mono',monospace; font-size:.85rem; white-space:pre-wrap; overflow-wrap:anywhere; margin:.35rem 0 0; color:var(--text); }
+.chat-painel { max-width:1120px; margin:0 auto; padding:0; overflow:hidden; }
+.chat-painel>.painel-cabecalho { padding:1.15rem 1.25rem; margin:0; border-bottom:1px solid var(--border); }
+.chat-vazio { display:flex; min-height:300px; padding:3rem 1.2rem; align-items:center; justify-content:center; flex-direction:column; text-align:center; }
+.chat-vazio i { font-size:2.4rem; color:var(--accent); margin-bottom:1rem; }
+.chat-mensagens { max-height:560px; overflow:auto; padding:0 1.25rem; }
+.chat-troca { margin:1.2rem 0; }
+.chat-pedido { margin-left:15%; background:var(--info-bg); border-radius:12px; padding:.85rem 1rem; overflow-wrap:anywhere; }
+.chat-pedido span { font-size:.7rem; color:var(--accent); font-weight:700; }
+.chat-pedido p { margin:.25rem 0 0; }
+.chat-resposta { margin-top:.8rem; }
+.chat-resposta>strong { font-size:.9rem; }
+.chat-sugestoes { padding:1rem 1.25rem; }
+.chat-sugestoes button { border-radius:20px; font-size:.75rem; padding:.4rem .75rem; }
+.chat-form { display:flex; gap:.6rem; padding:1rem 1.25rem; background:var(--surface-2); border-top:1px solid var(--border); }
+.chat-form input { min-width:0; flex:1; background:var(--input-bg); color:var(--text); border:1px solid var(--border); border-radius:10px; padding:.8rem; }
+.xml-workbench { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:1.25rem; align-items:start; }
+.xml-workbench>.xml-grid-2 { display:flex; flex-direction:column-reverse; gap:1.25rem; }
+.xml-preview { position:sticky; top:1rem; }
+.xml-preview pre { max-height:540px; overflow:auto; padding:1rem; background:var(--input-bg); border:1px solid var(--border); border-radius:10px; color:var(--text); font:12px/1.65 'DM Mono',monospace; tab-size:2; margin:1rem 0; }
+.xml-preview select { background:var(--input-bg); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:.5rem; }
+.xml-checks { font-size:.78rem; color:var(--text-muted); padding-left:1.1rem; max-height:180px; overflow:auto; }
+.cenario-form { display:flex; flex-wrap:wrap; gap:.6rem; align-items:end; margin-top:.7rem; }
+.cenario-form .campo-novo { flex:1; min-width:150px; }
+.tabela-alteracoes { width:100%; border-collapse:collapse; font-size:.8rem; }
+.tabela-alteracoes th, .tabela-alteracoes td { padding:.7rem; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; overflow-wrap:anywhere; max-width:280px; }
+.tabela-scroll { overflow:auto; }
+.app-rodape { text-align:center; color:var(--text-muted); font-size:.75rem; padding:2rem 1rem 0; }
+[hidden] { display:none !important; }
+@media(max-width:1000px) { .xml-workbench { grid-template-columns:1fr; } .xml-preview { position:static; } }
+@media(max-width:860px) { .doc-gen-left { width:100%; order:0; } .doc-gen-right { position:static; order:1; } }
+@media(max-width:600px) { .lote-form { grid-template-columns:1fr 90px; } .lote-form button { grid-column:1/-1; } .opcoes-geracao { grid-template-columns:1fr; } .chat-pedido { margin-left:0; } .chat-form { flex-wrap:wrap; } .chat-form input { flex-basis:100%; } .chat-form button { width:100%; } }
+/* Conversa com IA: textos e artefatos respeitam o tema existente. */
+.ia-texto { white-space: pre-wrap; overflow-wrap: anywhere; }
+.ia-artefato { border: 1px solid var(--border-color, #94a3b844); padding: 1rem; border-radius: .75rem; margin-top: 1rem; }
+#chat-anexo { width: 100%; min-height: 140px; margin-block: .5rem; font-family: monospace; }
+#chat-anexo-area { margin-block: 1rem; }

@@ -8,7 +8,7 @@
 .opcoes-geracao { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin:1rem 0; }
 .doc-gen-wrapper { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
 .doc-gen-left { min-width:0; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:1.25rem; }
-.doc-gen-right { min-width:0; position:static; }
+.doc-gen-right { min-width:0; position:sticky; top:1rem; }
 .opcoes-geracao label, .campo-novo label { display:block; margin-bottom:.4rem; color:var(--text-label); font-size:.75rem; font-weight:600; }
 .opcoes-geracao select, .campo-novo select, .campo-novo input { width:100%; min-height:40px; border:1px solid var(--border); border-radius:8px; padding:.6rem; background:var(--input-bg); color:var(--text); font:inherit; font-size:.85rem; }
 .lote-form { display:grid; grid-template-columns:minmax(0,1fr) 110px auto; align-items:end; gap:.65rem; margin:1rem 0; }
@@ -44,6 +44,18 @@
 .tabela-scroll { overflow:auto; }
 .app-rodape { text-align:center; color:var(--text-muted); font-size:.75rem; padding:2rem 1rem 0; }
 [hidden] { display:none !important; }
+/* Mantém o resultado visível ao subir e descer, dentro da própria coluna.
+   Painéis altos rolam internamente para não esconder os últimos resultados. */
+@media(min-width:861px) {
+  .doc-gen-right { align-self:start; max-height:calc(100vh - 2rem); max-height:calc(100dvh - 2rem); overflow:auto; scrollbar-gutter:stable; }
+}
+@media(min-width:901px) {
+  .cadastro-col-right { align-self:start; max-height:calc(100vh - 2rem); max-height:calc(100dvh - 2rem); overflow:auto; scrollbar-gutter:stable; }
+  .cadastro-col-right > * { flex-shrink:0; }
+}
+@media(min-width:1001px) {
+  .xml-preview { align-self:start; max-height:calc(100vh - 2rem); max-height:calc(100dvh - 2rem); overflow:auto; scrollbar-gutter:stable; }
+}
 @media(max-width:1000px) { .xml-workbench { grid-template-columns:1fr; } .xml-preview { position:static; } }
 @media(max-width:860px) { .doc-gen-left { width:100%; order:0; } .doc-gen-right { position:static; order:1; } }
 @media(max-width:600px) { .lote-form { grid-template-columns:1fr 90px; } .lote-form button { grid-column:1/-1; } .opcoes-geracao { grid-template-columns:1fr; } .chat-pedido { margin-left:0; } .chat-form { flex-wrap:wrap; } .chat-form input { flex-basis:100%; } .chat-form button { width:100%; } }

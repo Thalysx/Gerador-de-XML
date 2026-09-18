@@ -4,6 +4,10 @@ Data: 18/09/2026 · Versão do projeto: 2.0.0
 
 ## O que mudou
 
+### Ajuste de rolagem dos resultados
+
+Nas telas com duas colunas, os resultados de documentos, cadastro e a prévia XML acompanham a rolagem para cima e para baixo, respeitando os limites da seção. Painéis maiores que a janela têm rolagem interna para manter todos os resultados acessíveis. Em telas estreitas, os blocos permanecem no fluxo normal para não cobrir o formulário.
+
 A identidade visual original foi mantida. As imagens fornecidas serviram como referência para a organização dos painéis, a prévia de XML e o chat, sem adotar o nome ou a marca do outro projeto.
 
 ### Geração com mais possibilidades

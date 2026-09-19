@@ -123,17 +123,20 @@ test('interface IA envia somente anexo explícito, renderiza texto seguro e perm
   const { dom,w,run }=await abrir();
   try {
     let sent;
-    w.fetch=async (url,options)=>{sent=JSON.parse(options.body);return {ok:true,json:async()=>({sessionId:'mock',text:'<img src=x onerror=alert(1)>',artifacts:[{kind:'records',name:'dados.json',records:[{tipo:'nome',rotulo:'Nome',valor:'Pessoa teste'}]}],activities:['gerar_dados']})};};
+    let statusSignal;
+    w.fetch=async (url,options)=>{if(url==='/api/status'){statusSignal=options.signal;return {ok:true,json:async()=>({configured:true,provider:'groq'})};}if(options.method==='POST')assert.equal(options.signal,statusSignal);sent=JSON.parse(options.body);return {ok:true,json:async()=>({sessionId:'mock',text:'<img src=x onerror=alert(1)>',artifacts:[{kind:'records',name:'dados.json',records:[{tipo:'nome',rotulo:'Nome',valor:'Pessoa teste'}]}],activities:['gerar_dados']})};};
     w.document.getElementById('chat-pedido').value='Me ajude a gerar um nome';
     await w.enviarChatIa();
     assert.equal(sent.xml,undefined);
+    assert.ok(statusSignal);
     assert.equal(w.document.querySelectorAll('#chat-ia-mensagens img').length,0);
     assert.equal(w.document.querySelectorAll('#chat-ia-mensagens .registro-lote').length,1);
     w.document.getElementById('chat-anexo').value='<a/>';
     w.document.getElementById('chat-pedido').value='Analise este XML';
     await w.enviarChatIa();
     assert.equal(sent.sessionId,'mock'); assert.equal(sent.xml,'<a/>');
-    w.limparChat(); assert.equal(run('sessaoIa'),null);
+    w.AbortSignal.timeout=()=>undefined;
+    await w.limparChat(); assert.equal(run('sessaoIa'),null);
   } finally { dom.window.close(); }
 });
 

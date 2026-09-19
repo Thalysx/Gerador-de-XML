@@ -1,6 +1,8 @@
 # Gerador de documentos
 
-Abra `index.html` no navegador para usar os geradores, editor e validação local. Mantenha a pasta `assets` ao lado do HTML. O **chat com IA** precisa do servidor Node.js e de uma chave OpenAI, conforme abaixo.
+O desenvolvimento gradual do backend público está descrito em [PLANO-IA-PUBLICA.md](PLANO-IA-PUBLICA.md). A camada de provedor já permite testar Groq localmente com `AI_PROVIDER=groq` e `GROQ_API_KEY`; as rotas e a persistência estão implementadas, aguardando configuração e verificação real.
+
+Abra `index.html` no navegador para usar os geradores, editor e validação local. Mantenha a pasta `assets` ao lado do HTML. O **chat com IA** precisa do servidor Node.js e de uma chave do provedor escolhido, conforme abaixo.
 
 Bootstrap, ícones e fontes continuam sendo carregados de serviços externos e precisam de conexão para estar disponíveis.
 
@@ -35,7 +37,7 @@ A interface usa navegação lateral vertical e temas branco/roxo e preto/roxo. A
 | `assets/js/chat-ia.js` | Conversa com IA, anexos explícitos e artefatos |
 | `assets/js/validacao-xml.js` | Sintaxe e consistência básica de NF-e/CT-e |
 | `assets/css/validacao-xml.css` | Tela de validação XML |
-| `scripts/ai.cjs` | OpenAI Responses API, sessões e ferramentas |
+| `scripts/ai.cjs` | Orquestração dos provedores, sessões e ferramentas |
 | `scripts/engine.cjs` | Reutilização do gerador e validador no servidor |
 | `assets/js/xml-workflow.js` | Prévia, integração com editor/cadastro, cenários e comparação de XML |
 | `assets/js/app.js` | Inicialização da aplicação e restauração do estado |
@@ -67,18 +69,7 @@ Abra `http://127.0.0.1:4173`. A dependência `jsdom` é usada nos testes e no se
 
 ## Ativar o chat com IA
 
-1. Execute `npm install` com Node.js 20.19 ou superior.
-2. Copie `.env.example` para `.env` na raiz.
-3. Preencha `OPENAI_API_KEY` no `.env`. Não coloque a chave no HTML nem no navegador. `OPENAI_MODEL` permite escolher o modelo; o padrão é `gpt-5-mini`.
-4. Execute `npm run dev` e abra `http://127.0.0.1:4173`. Reinicie o servidor após alterar o `.env`.
-
-A integração usa a API OpenAI, com cobrança e cota próprias da conta de API. Nenhuma chave foi incluída no projeto. `.env` está ignorado pelo Git e o servidor não publica arquivos internos. Sem chave, selecione **Comandos locais (sem IA)**.
-
-Exemplos: “Gere 3 CPFs e uma NF-e com 4 produtos”, “Explique os erros deste XML” (com anexo), “Qual a diferença entre a chave e o protocolo?”. A IA escolhe ferramentas para gerar dados, criar XMLs e ler/validar anexos ou XMLs anteriores. Os downloads completos aparecem na conversa. A geração de XML aceita tipo e quantidade de produtos; alterações específicas de campos continuam no editor, acessível pelo resultado.
-
-Somente mensagens e XMLs explicitamente anexados, além dos resultados necessários das ferramentas, entram no contexto enviado à OpenAI. O formulário e o histórico local não são enviados automaticamente. As sessões ficam na memória do servidor, limitadas a 20 pedidos; expiram após 30 minutos de inatividade e são removidas na próxima requisição. Recarregar ou limpar o chat abandona a sessão na interface. Reiniciar o servidor apaga todas as sessões. A API usa `store:false`; isso não equivale a uma garantia de retenção zero pelo provedor.
-
-O servidor é destinado ao uso local, em `127.0.0.1`, com verificação de origem e limite de pedidos. Publicação multiusuário requer autenticação e controle de uso por usuário antes de disponibilizar a chave em produção.
+Consulte [ATIVACAO-IA.md](ATIVACAO-IA.md) para configurar Groq ou OpenAI, desenvolvimento local, Redis, limites e etapas de verificação na Vercel. O backend está implementado; a ativação pública ainda depende de credenciais e testes reais.
 
 ## Validação XML
 

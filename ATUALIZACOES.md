@@ -1,3 +1,9 @@
+# Preparação da IA pública — 19/09/2026
+
+Adicionados adaptadores Groq/OpenAI, rotas Vercel, sessões Redis, cookies assinados e cotas por visitante, IP e aplicação. O chat informa o provedor, exclui a sessão no servidor ao limpar e aplica tempo limite também à consulta inicial. O build separa arquivos públicos do backend.
+
+A ativação real ainda está pendente. Consulte [ATIVACAO-IA.md](ATIVACAO-IA.md) e [PLANO-IA-PUBLICA.md](PLANO-IA-PUBLICA.md). As verificações locais usam respostas simuladas; não comprovam funcionamento da Groq ou dos scripts Lua em produção.
+
 # Atualização — geradores, chat e fluxo XML
 
 Data: 18/09/2026 · Versão do projeto: 2.0.0

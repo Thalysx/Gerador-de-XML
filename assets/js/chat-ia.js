@@ -2,6 +2,16 @@ let sessaoIa = null;
 let mensagensIa = [];
 let requisicaoIa = null;
 let versaoIa = 0;
+let limpandoIa = false;
+let provedorIa = 'provedor configurado no servidor';
+async function consultarStatusIa(signal) {
+  const response=await fetch('/api/status',{credentials:'same-origin',signal});
+  const status=await response.json();
+  if(!response.ok||!status.configured)throw new Error(status.error || 'A IA ainda não está configurada. Use os comandos locais.');
+  provedorIa=status.provider==='groq'?'Groq':status.provider==='openai'?'OpenAI':'provedor configurado no servidor';
+  const aviso=document.getElementById('chat-privacidade');
+  if(aviso)aviso.textContent=`Mensagens e anexos são enviados à ${provedorIa}. A conversa fica no servidor por até 30 minutos de inatividade.`;
+}
 
 function atualizarModoChat() {
   const ia = document.getElementById('chat-modo').value === 'ia';
@@ -9,7 +19,7 @@ function atualizarModoChat() {
   document.getElementById('chat-ia-mensagens').hidden = !ia;
   document.getElementById('chat-anexo-area').hidden = !ia;
   document.getElementById('chat-vazio').hidden = ia ? mensagensIa.length > 0 : conversasChat.length > 0;
-  document.getElementById('chat-status').textContent = ia ? 'IA: mensagens e anexos enviados serão processados pela OpenAI.' : 'Modo local: comandos de geração, sem IA e sem envio externo.';
+  document.getElementById('chat-status').textContent = ia ? `IA: mensagens e anexos enviados serão processados pelo ${provedorIa}.` : 'Modo local: comandos de geração, sem IA e sem envio externo.';
 }
 
 function renderChatIa() {
@@ -25,7 +35,7 @@ function enviarChat(event) {
 }
 
 async function enviarChatIa() {
-  if (requisicaoIa) return;
+  if (requisicaoIa || limpandoIa) return;
   const input = document.getElementById('chat-pedido');
   const pedido = input.value.trim();
   if (!pedido) return;
@@ -43,6 +53,8 @@ async function enviarChatIa() {
   const timeout = setTimeout(() => controller.abort(),100000);
   try {
     if (location.protocol === 'file:') throw new Error('Abra o projeto com npm run dev para usar a IA.');
+    await consultarStatusIa(controller.signal);
+    if(versao!==versaoIa)return;
     const response = await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:pedido,sessionId:sessaoIa,mascara:document.getElementById('chat-mascara').checked,xml:xml || undefined}),signal:controller.signal});
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Não foi possível conversar com a IA.');
@@ -66,7 +78,17 @@ async function enviarChatIa() {
   }
 }
 
-function limparChat() {
+async function limparChat() {
+  if(limpandoIa)return;
+  if(requisicaoIa) { document.getElementById('chat-status').textContent='Aguarde a resposta antes de limpar a conversa.';return; }
+  if(sessaoIa) {
+    limpandoIa=true;
+    try {
+      const response=await fetch('/api/chat',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sessaoIa}),signal:AbortSignal.timeout(10000)});
+      if(!response.ok){const result=await response.json();throw new Error(result.error||'Não foi possível apagar a conversa.');}
+    } catch(e) { document.getElementById('chat-status').textContent=e.message;return; }
+    finally { limpandoIa=false; }
+  }
   versaoIa++; requisicaoIa?.abort(); requisicaoIa=null; sessaoIa=null; mensagensIa=[];
   document.getElementById('chat-enviar').disabled = false;
   document.getElementById('chat-modo').disabled = false;

@@ -4,6 +4,14 @@ Data: 18/09/2026 · Versão do projeto: 2.0.0
 
 ## O que mudou
 
+### Novo layout com navegação lateral
+
+A proposta aprovada da `visual-lab` agora é a interface principal. A navegação permanece vertical, com rótulos no desktop e ícones com nomes acessíveis em telas menores. As setas para cima e para baixo também navegam entre as ferramentas.
+
+A estrutura se inspira no Portus, mantendo a identidade do gerador: branco e roxo no tema claro, preto e tons de roxo no escuro. O tema escuro é o padrão para novos acessos, respeitando preferências já salvas. O cabeçalho acompanha a ferramenta ativa e os resultados continuam acompanhando a rolagem nas telas com duas colunas.
+
+Estilos em `assets/css/visual-lab.css` e `assets/css/portus.css`; comportamento do cabeçalho em `assets/js/visual-layout.js`. A entrada publicada continua sendo `index.html`.
+
 ### Ajuste de rolagem dos resultados
 
 Nas telas com duas colunas, os resultados de documentos, cadastro e a prévia XML acompanham a rolagem para cima e para baixo, respeitando os limites da seção. Painéis maiores que a janela têm rolagem interna para manter todos os resultados acessíveis. Em telas estreitas, os blocos permanecem no fluxo normal para não cobrir o formulário.

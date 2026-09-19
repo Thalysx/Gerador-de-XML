@@ -24,12 +24,12 @@ function initializeTabs() {
   tabs.forEach((tabBtn, index) => {
     tabBtn.addEventListener('keydown', (event) => {
       const key = event.key;
-      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(key)) return;
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(key)) return;
 
       event.preventDefault();
       let nextIndex = index;
-      if (key === 'ArrowRight') nextIndex = (index + 1) % tabs.length;
-      if (key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length;
+      if (key === 'ArrowRight' || key === 'ArrowDown') nextIndex = (index + 1) % tabs.length;
+      if (key === 'ArrowLeft' || key === 'ArrowUp') nextIndex = (index - 1 + tabs.length) % tabs.length;
       if (key === 'Home') nextIndex = 0;
       if (key === 'End') nextIndex = tabs.length - 1;
 

@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="assets/css/editor-xml.css">
   <link rel="stylesheet" href="assets/css/evolucao.css">
   <link rel="stylesheet" href="assets/css/validacao-xml.css">
+  <link rel="stylesheet" href="assets/css/visual-lab.css">
+  <link rel="stylesheet" href="assets/css/portus.css">
 </head>
 <body data-bs-theme="light">
 <a class="skip-link" href="#conteudo-principal">Ir para o conteúdo</a>
@@ -30,8 +32,9 @@
         </svg>
       </div>
       <div class="page-header-text">
+        <span class="workspace-eyebrow">ÁREA DE TRABALHO · DADOS PARA TESTES</span>
         <h1 id="app-title">Gerador de documentos</h1>
-        <p>XML fiscal · CPF · CNPJ · placas · contêineres · cadastro</p>
+        <p>Crie, organize e confira seus dados em um só lugar.</p>
       </div>
     </div>
     <div class="header-actions">
@@ -45,8 +48,10 @@
   <div class="app-status" id="app-status" aria-hidden="true"></div>
   <div class="sr-only" id="app-status-live" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <nav aria-label="Navegação principal do gerador">
-    <div class="tab-nav nav nav-pills" role="tablist" aria-label="Áreas do gerador" aria-orientation="horizontal">
+  <nav class="workspace-nav" aria-label="Navegação principal do gerador">
+    <div class="workspace-brand"><span aria-hidden="true"><i class="bi bi-boxes"></i></span><div>GERADOR<small>Central de dados de teste</small></div></div>
+    <p class="workspace-nav-label">FERRAMENTAS</p>
+    <div class="tab-nav nav nav-pills" role="tablist" aria-label="Áreas do gerador" aria-orientation="vertical">
       <button type="button" class="tab-btn nav-link active" id="tab-btn-xml" role="tab" aria-selected="true" aria-controls="tab-xml" tabindex="0" onclick="switchTab('xml', this)"><i class="bi bi-file-earmark-code" aria-hidden="true"></i> XML NFe/CTe</button>
       <button type="button" class="tab-btn nav-link" id="tab-btn-docs" role="tab" aria-selected="false" aria-controls="tab-docs" tabindex="-1" onclick="switchTab('docs', this)"><i class="bi bi-person-vcard" aria-hidden="true"></i> Dados cadastrais</button>
       <button type="button" class="tab-btn nav-link" id="tab-btn-cadastro" role="tab" aria-selected="false" aria-controls="tab-cadastro" tabindex="-1" onclick="switchTab('cadastro', this)"><i class="bi bi-card-list" aria-hidden="true"></i> Cadastro geral</button>
@@ -54,10 +59,16 @@
       <button type="button" class="tab-btn nav-link" id="tab-btn-chat" role="tab" aria-selected="false" aria-controls="tab-chat" tabindex="-1" onclick="switchTab('chat', this)"><i class="bi bi-chat-dots" aria-hidden="true"></i> Chat de geração</button>
       <button type="button" class="tab-btn nav-link" id="tab-btn-validacao" role="tab" aria-selected="false" aria-controls="tab-validacao" tabindex="-1" onclick="switchTab('validacao', this)">Validação XML</button>
     </div>
+    <div class="workspace-nav-note"><span class="workspace-dot" aria-hidden="true"></span> Ambiente de testes<small>Dados sintéticos para desenvolver com confiança.</small></div>
   </nav>
 
   <!-- ══ TAB: XML ══ -->
   <div class="tab-panel active" id="tab-xml" role="tabpanel" aria-labelledby="tab-btn-xml" tabindex="0">
+    <div class="workspace-summary" aria-label="Recursos do XML fiscal">
+      <article><i class="bi bi-file-earmark-code" aria-hidden="true"></i><div><strong>NF-e e CT-e</strong><small>Documentos sintéticos para testes</small></div></article>
+      <article><i class="bi bi-sliders" aria-hidden="true"></i><div><strong>Campos personalizáveis</strong><small>Empresas, produtos e identificação</small></div></article>
+      <article><i class="bi bi-shield-check" aria-hidden="true"></i><div><strong>Conferência integrada</strong><small>Chaves, documentos e totais</small></div></article>
+    </div>
     <div class="toolbar shadow-sm">
       <span class="toolbar-label" id="xml-actions-label">Ações</span>
       <div class="toolbar-actions" role="group" aria-labelledby="xml-actions-label">
@@ -669,5 +680,6 @@
 <script src="assets/js/validacao-xml.js"></script>
 <script src="assets/js/chat-ia.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/visual-layout.js"></script>
 </body>
 </html>

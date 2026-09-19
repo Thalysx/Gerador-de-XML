@@ -8,6 +8,8 @@ Veja [ATUALIZACOES.md](ATUALIZACOES.md) para as funcionalidades adicionadas, exe
 
 ## Organização
 
+A interface usa navegação lateral vertical e temas branco/roxo e preto/roxo. A camada visual está em `assets/css/visual-lab.css` e `assets/css/portus.css`, com cabeçalho contextual em `assets/js/visual-layout.js`.
+
 | Arquivo | Responsabilidade |
 | --- | --- |
 | `index.html` | Estrutura da página, formulários e referências aos estilos e scripts |

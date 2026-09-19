@@ -49,9 +49,16 @@ function createProvider({ provider = process.env.AI_PROVIDER || 'openai', apiKey
         if (signal?.aborted) throw e;
         throw new Error('Não foi possível conectar ao provedor de IA. Tente novamente.');
       }
-      if (!response.ok) throw Object.assign(new Error(response.status === 429
-        ? 'O provedor atingiu um limite de uso. Tente novamente mais tarde.'
-        : 'Não foi possível obter resposta da IA. Verifique a chave, o modelo e a conexão do servidor.'), {status:response.status===429 ? 429 : 502});
+      if (!response.ok) {
+        const messages={
+          401:'O provedor recusou a autenticação (HTTP 401). Atualize a chave de API no servidor e publique novamente.',
+          403:'O provedor negou acesso (HTTP 403). Confira as permissões da conta e do modelo.',
+          400:'O provedor rejeitou o pedido (HTTP 400). É necessário verificar o modelo e os parâmetros da integração.',
+          404:'O provedor não encontrou o recurso solicitado (HTTP 404). Confira o modelo configurado.',
+          429:'O provedor atingiu um limite de uso. Tente novamente mais tarde.'
+        };
+        throw Object.assign(new Error(messages[response.status] || 'O provedor de IA está indisponível. Tente novamente mais tarde.'),{status:response.status===429?429:502});
+      }
       const result = await response.json();
       if (provider === 'openai') return result;
       const choice = result.choices?.[0];

@@ -40,4 +40,8 @@ test('Groq: configuração ausente, cota excedida, resposta truncada e erro sem 
   const bad=createProvider({provider:'groq',apiKey:'secret',fetchImpl:async()=>{throw new Error('secret');}});
   await assert.rejects(bad.respond({input:[],tools:[],instructions:''}),e=>!e.message.includes('secret'));
   assert.throws(()=>createProvider({provider:'qualquer'}),/AI_PROVIDER/);
+  for(const status of [400,401,403,404]) {
+    const rejected=createProvider({provider:'groq',apiKey:'secret',fetchImpl:async()=>({ok:false,status,json:async()=>({error:'secret'})})});
+    await assert.rejects(rejected.respond({input:[],tools:[],instructions:''}),e=>e.status===502 && e.message.includes(String(status)) && !e.message.includes('secret'));
+  }
 });

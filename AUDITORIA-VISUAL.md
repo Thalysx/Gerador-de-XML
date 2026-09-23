@@ -31,7 +31,7 @@ Todos os pares medidos superam 4,5:1. Um teste automatizado protege esses valore
 - Alternância de formulário NF-e/CT-e sem perder edições.
 - Respostas da IA com tabelas, listas e código, mantendo HTML não confiável como texto.
 
-## Validação visual pendente
+## Validação visual em navegador
 
 Em 21/09/2026, a revisão foi concluída com um navegador Chromium local após a ferramenta integrada falhar. As seis telas foram alternadas em 360, 768 e 1440 px. Em todas, `documentElement.scrollWidth` permaneceu igual à largura da janela e nenhum elemento visível do painel ativo ultrapassou seus limites.
 
@@ -48,4 +48,16 @@ O painel XML permaneceu a 16–18 px do topo ao rolar para baixo e para cima e v
 
 Em 23/09/2026, a revisão intermediária foi publicada no commit `85bd6ab`. O arquivo público do chat contém os estados novos e o ajuste de espaçamento. A API pública respondeu com Groq configurada e uma chamada real gerou texto, executou `gerar_dados` e devolveu um artefato de registros. A recaptura visual posterior ao último ajuste não pôde ser feita porque a cota do navegador automatizado foi atingida.
 
-Continuam pendentes um leitor de tela real, zoom real de 200%, teste manual de todos os controles por teclado e uma nova captura visual do espaçamento final do chat.
+### Zoom de 200%, teclado e movimento reduzido — 23/09/2026
+
+O comando `npm run audit:browser` iniciou uma instância isolada do Chrome e aplicou escala 2 a uma janela física de 1280 × 900, oferecendo um viewport de 640 × 450 px CSS. As seis telas mantiveram a largura do documento dentro do viewport, sem rolagem horizontal nem elementos visíveis cortados nas laterais.
+
+O mesmo navegador percorreu 165 paradas de foco reais: 36 no XML fiscal, 33 em Dados cadastrais, 63 em Cadastro geral, 6 no Editor XML, 11 em Validação XML e 16 no Assistente. Nenhuma parada interativa ficou invisível, sem nome ou sem contorno de foco. A preferência `prefers-reduced-motion: reduce` também foi emulada e removeu a animação relevante dos componentes amostrados. O resultado estruturado fica em `artifacts/visual-review/auditoria-200.json` e a captura inspecionada em `artifacts/visual-review/200-percent.png`; ambos são artefatos locais ignorados pelo Git.
+
+A auditoria também leu a árvore de acessibilidade nativa do Chromium em cada uma das seis telas. Todos os controles focáveis expostos tinham função e nome acessível, e os marcos de navegação e lista de ferramentas estavam nomeados. A primeira execução encontrou a região focável dos resultados da validação XML sem nome; `aria-label="Resultados detalhados da validação XML"` foi adicionado e a repetição passou sem ocorrências.
+
+A identidade TheGenerator foi carregada no navegador com nome, assinatura, símbolo e favicon corretos. As capturas `thegenerator-desktop-dark.png` e `thegenerator-desktop-light.png` confirmam a aplicação nos dois temas, e o build contém os SVGs, PNGs e o manifesto da aplicação.
+
+O servidor isolado da auditoria remove dependências visuais externas para tornar o teste determinístico e usa os mesmos HTML, CSS e JavaScript locais. Por isso, essa execução comprova o reflow e o foco da aplicação, mas não a disponibilidade das fontes, dos ícones ou do Bootstrap servidos por CDN.
+
+Continua pendente apenas a validação auditiva manual com um leitor de tela real; a exposição estrutural à tecnologia assistiva foi aprovada pela árvore nativa do Chromium. A identidade aplicada já recebeu a captura final local antes da publicação.

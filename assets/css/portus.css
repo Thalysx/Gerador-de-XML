@@ -3,7 +3,7 @@ body, body.dark { padding:0 28px 24px 266px; }
 .page-wrapper.container-xxl { max-width:none; }
 .workspace-nav { width:238px; padding:24px 14px; }
 .workspace-brand { margin-bottom:25px; padding:0 10px; font-size:17px; letter-spacing:1.5px; }
-.workspace-brand>span { width:38px; height:38px; border-radius:10px; background:linear-gradient(145deg,var(--accent),var(--accent-2)); color:#fff; }
+.workspace-brand>span { width:38px; height:38px; border-radius:10px; background:var(--surface-2); color:#fff; }
 .workspace-brand small { font-size:10px; letter-spacing:0; }
 .workspace-nav-label { display:none; }
 .workspace-nav .tab-btn { padding:11px 13px; font-size:12px; border-radius:9px; }

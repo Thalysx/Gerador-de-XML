@@ -4,6 +4,7 @@ A interface foi reorganizada sem trocar a identidade roxa aprovada. O tema escur
 
 ## Principais mudanças
 
+- **Identidade:** o produto passou a se chamar **TheGenerator**, com símbolo “G” geométrico, assinatura “Dados de teste. Do seu jeito.”, versões para fundos claro e escuro, monocromáticas, favicon e manifesto da aplicação.
 - **Dados cadastrais:** busca sem diferença de acentos, quatro categorias, opções contextuais, ações padronizadas, lotes de até 500 registros e histórico filtrável.
 - **XML fiscal:** seleção entre NF-e, CT-e ou ambos sem perder campos; detalhes avançados recolhidos; prévia fixa durante a rolagem; copiar, baixar, validar e abrir no editor.
 - **Validação XML:** contadores e filtros por gravidade, localização por linha/coluna ou caminho do campo, relatório completo para exportação e encaminhamento ao editor.
@@ -14,11 +15,11 @@ A interface foi reorganizada sem trocar a identidade roxa aprovada. O tema escur
 
 ## Verificação
 
-A suíte completa passou com **53 testes** e o build de produção foi aprovado. A revisão em Chromium confirmou alternância dos seis painéis, persistência do tema, menu por teclado, rolagem dos resultados e ausência de erros no console. As evidências e limites estão em [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md).
+A suíte completa passou com **53 testes** e o build de produção foi aprovado. A revisão em Chromium confirmou alternância dos seis painéis, persistência do tema, menu por teclado, rolagem dos resultados e ausência de erros no console. Uma auditoria adicional em 200% percorreu 165 paradas de foco nas seis telas, sem foco invisível, sem nome, sem contorno ou rolagem horizontal. A árvore de acessibilidade do Chromium também expôs todos os controles focáveis com função e nome após a correção da região de resultados da validação XML. As evidências e limites estão em [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md).
 
 ## Itens ainda em decisão
 
-O nome atual continua provisório. Syntro é apenas uma proposta e já apresenta usos públicos por outros produtos. A aplicação não receberá nome ou logo definitivos antes da escolha do usuário e de nova triagem de disponibilidade. A revisão intermediária foi publicada no GitHub e na Netlify em 23/09/2026; permanecem pendentes a validação com leitor de tela real, zoom real de 200% e a identidade final.
+A identidade TheGenerator foi aprovada e aplicada localmente depois de uma nova triagem pública. Não houve coincidência exata no INPI, mas existem marcas compostas com “Generator” na classe 42, o domínio `.com` já está registrado e há um software estrangeiro com o mesmo nome separado; esses limites estão documentados em `IDENTIDADE.md`. A revisão intermediária anterior foi publicada no GitHub e na Netlify em 23/09/2026; esta identidade ainda aguarda a publicação final. Permanece pendente a validação auditiva com leitor de tela real.
 
 # Preparação da IA pública — 19/09/2026
 

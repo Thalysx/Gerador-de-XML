@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 396 72" role="img" aria-labelledby="title">
+  <title id="title">TheGenerator — versão monocromática preta</title>
+  <g fill="#111111">
+    <path d="M18 6h34a7 7 0 0 1 7 7v5H23a5 5 0 0 0-5 5v28a5 5 0 0 0 5 5h32V46H38a6 6 0 0 1 0-12h28v26a7 7 0 0 1-7 7H18A12 12 0 0 1 6 55V18A12 12 0 0 1 18 6Z"/>
+    <rect x="25" y="24" width="12" height="12" rx="3.5"/>
+    <text x="91" y="54" font-family="Inter, Arial, sans-serif" font-size="38" letter-spacing="-1.7"><tspan font-weight="500">The</tspan><tspan font-weight="750">Generator</tspan></text>
+  </g>
+</svg>

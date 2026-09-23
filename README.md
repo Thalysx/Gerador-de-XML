@@ -1,4 +1,4 @@
-# Gerador de documentos
+# TheGenerator
 
 O desenvolvimento gradual do backend público está descrito em [PLANO-IA-PUBLICA.md](PLANO-IA-PUBLICA.md). O chat com Groq, as rotas, as sessões Redis e os limites de uso já estão publicados na Netlify e foram verificados no ambiente real. As verificações de concorrência e expiração do Redis continuam registradas separadamente em [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md).
 
@@ -7,6 +7,8 @@ Abra `index.html` no navegador para usar os geradores, editor e validação loca
 Bootstrap, ícones e fontes continuam sendo carregados de serviços externos e precisam de conexão para estar disponíveis.
 
 Veja [ATUALIZACOES.md](ATUALIZACOES.md) para as funcionalidades adicionadas, exemplos do chat, verificações e limitações. O andamento da revisão de interface está em [PLANO-VISUAL.md](PLANO-VISUAL.md), com as evidências em [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md).
+
+A identidade, os arquivos de logo, as regras de uso e a triagem pública do nome estão documentados em [IDENTIDADE.md](IDENTIDADE.md).
 
 ## Organização
 
@@ -44,6 +46,8 @@ A interface usa navegação lateral vertical e temas branco/roxo e preto/roxo. O
 | `assets/js/app.js` | Inicialização da aplicação e restauração do estado |
 | `tests/projeto.test.cjs` | Testes de geração e fluxos com DOM simulado |
 | `scripts/serve.cjs` | Servidor local opcional para desenvolvimento |
+| `scripts/audit-browser.cjs` | Auditoria reproduzível de zoom, overflow, foco por teclado e movimento reduzido em Chrome/Edge |
+| `scripts/export-brand.cjs` | Exportação das versões PNG da marca a partir dos SVGs oficiais |
 
 ## Manutenção
 
@@ -67,6 +71,20 @@ npm run dev
 ```
 
 Abra `http://127.0.0.1:4173`. A dependência `jsdom` é usada nos testes e no servidor para reaproveitar as regras do gerador; ela não é carregada pelo navegador.
+
+Para conferir as seis telas em escala de 200%, percorrer os controles por teclado e verificar movimento reduzido em um Chrome ou Edge instalado:
+
+```sh
+npm run audit:browser
+```
+
+O comando cria um servidor temporário sem dependências externas, grava as evidências locais em `artifacts/visual-review` e encerra o navegador isolado ao concluir. A dependência de desenvolvimento `ws` é usada somente para essa comunicação com o navegador.
+
+Para recriar os PNGs da identidade em `assets/brand`:
+
+```sh
+npm run brand:export
+```
 
 ## Ativar o chat com IA
 

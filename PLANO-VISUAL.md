@@ -4,14 +4,16 @@
 
 Manter roxo/preto no escuro, branco/roxo no claro e navegação vertical. Melhorar organização, legibilidade e uso no celular. Implementações começam localmente e precisam de revisão visual antes da publicação.
 
-## 1. Identidade — proposta
+## 1. Identidade — concluída no produto
 
-- [ ] Escolher o nome definitivo. A primeira lista foi descartada após a triagem pública; nova shortlist: BaseFicta, DadoMatriz ou FictaBase.
-- [ ] Pesquisar disponibilidade de marca e domínio antes de consolidar a escolha.
-- [ ] Comparar três conceitos de logo: geométrico, minimalista e tecnológico.
-- [ ] Para Syntro, explorar um S formado por blocos conectados.
-- [ ] Produzir versões clara, escura, monocromática, favicon e símbolo independente.
-- [ ] Definir assinatura, tipografia e regras de uso. Sugestão: “Dados de teste. Do seu jeito.”
+- [x] Escolher o nome definitivo: **TheGenerator**, aprovado pelo usuário em 23/09/2026.
+- [x] Fazer triagem pública preliminar de marca e domínio para os três finalistas. As grafias exatas não retornaram marcas no INPI; BaseFicta e FictaBase tiveram o menor risco aparente, enquanto DadoMatriz encontrou sinais ativos com “MATRIZ” na classe 42 e “DADO” na classe 35. Os seis domínios consultados não tinham registro RDAP encontrado em 23/09/2026.
+- [x] Repetir a pesquisa para o nome escolhido antes da aplicação: não houve coincidência exata de TheGenerator no INPI; há três marcas compostas com “Generator” em vigor na classe 42; `thegenerator.com` está registrado e `thegenerator.com.br` não tinha registro RDAP encontrado. Existe ainda um software estrangeiro chamado “The Generator”. A triagem e seus limites estão em `IDENTIDADE.md`.
+- [x] Criar e documentar três conceitos de logo: geométrico, minimalista e tecnológico. O painel comparativo está em `assets/brand/conceitos-logo.jpg` e os critérios em `IDENTIDADE.md`.
+- [x] Escolher o conceito geométrico, decisão delegada pelo usuário e aplicada como um “G” modular.
+- [x] Adaptar o símbolo ao nome final e revisar sua leitura em tamanhos de 16 a 512 px.
+- [x] Produzir versões clara, escura, monocromática, favicon e símbolo independente em SVG e PNG.
+- [x] Definir assinatura, tipografia e regras de uso: “Dados de teste. Do seu jeito.”, Inter e DM Mono.
 
 ## 2. Base visual e acessibilidade — em andamento
 
@@ -19,8 +21,11 @@ Manter roxo/preto no escuro, branco/roxo no claro e navegação vertical. Melhor
 - [x] Menu vertical expansível com nomes no celular, Escape e transferência de foco.
 - [x] Consolidar os tokens de cores, bordas, sombras e foco em `base.css`, removendo paletas concorrentes de `visual-lab.css`, `portus.css` e `usabilidade.css`. A identidade final permanece roxa/preta e branca/roxa.
 - [x] Medir contraste dos pares principais nos dois temas, incluindo texto, apoio, roxo, sucesso, erro e foco. Todos superam 4,5:1 e estão protegidos por teste; transparências, bordas e herança ainda dependem de inspeção no navegador.
-- [ ] Conferir teclado, leitor de tela, zoom de 200% e movimento reduzido.
-  - Navegador real confirmou árvore acessível do menu, rótulos das seis ferramentas, abertura/fechamento por teclado e retorno do foco com Escape. Movimento reduzido está protegido por teste. Leitor de tela e zoom real de 200% continuam pendentes.
+- [x] Conferir a navegação por teclado: o Chromium percorreu 165 paradas de foco nas seis telas; todas estavam visíveis, nomeadas e com contorno de foco. Menu, Escape e retorno do foco também foram exercitados.
+- [x] Conferir a árvore de acessibilidade nativa do Chromium nas seis telas: todos os controles focáveis expostos têm função e nome; a região de resultados da validação recebeu um nome após a auditoria detectar a ausência.
+- [ ] Conferir com leitor de tela real. A estrutura acessível e os nomes estão cobertos por navegador e testes, mas a leitura auditiva ainda depende dessa etapa manual.
+- [x] Conferir zoom de 200%: uma janela física de 1280 × 900 com escala 2 deixou 640 × 450 px CSS; as seis telas ficaram sem rolagem horizontal e sem elementos ultrapassando o viewport.
+- [x] Conferir movimento reduzido: a preferência foi emulada no Chromium e todos os componentes amostrados ficaram sem animação relevante, além da proteção estática existente.
 - [x] Validar 360, 768 e 1440 px: as seis telas foram medidas no navegador real, sem largura excedente ou rolagem horizontal; capturas dos temas claro e escuro foram inspecionadas.
 
 ## 3. Navegação e descoberta
@@ -65,10 +70,24 @@ Manter roxo/preto no escuro, branco/roxo no claro e navegação vertical. Melhor
 - [x] Atualizar README e histórico de atualização com o estado real da interface, IA, testes e pendências.
 - [x] Publicar a revisão intermediária e validar o site público após a implantação. A `main` recebeu o commit `85bd6ab` em 23/09/2026; o Netlify serviu os novos estados do chat e o ajuste de espaçamento; `/api/status` confirmou Groq configurada e uma chamada real executou `gerar_dados`, retornando texto e artefato de registros.
 
-Itens marcados representam implementação local, não aprovação visual nem publicação. Nome e logo continuam propostas; nenhuma marca definitiva foi aplicada ao site.
+Itens marcados representam implementação local. A identidade TheGenerator foi aprovada e aplicada, mas esta versão ainda precisa passar pela verificação final e publicação.
 
 ## Triagem de nomes — atualizada em 23/09/2026
 
 Os cinco nomes iniciais apresentam conflitos públicos próximos ao projeto: Syntro é usado por várias plataformas de software e IA; NexoLab por estúdios de software; Datalume por uma plataforma de análise de dados; Prisma Dados por uma consultoria brasileira de dados e IA; e Molda por uma agência brasileira de software. Eles foram retirados da shortlist.
 
-Uma busca pública preliminar não encontrou produto de software com correspondência direta para **BaseFicta**, **DadoMatriz** ou **FictaBase**. Isso é apenas uma triagem para reduzir conflitos evidentes: ainda não comprova disponibilidade jurídica no INPI nem reserva de domínio. A verificação formal e de domínio será feita depois da escolha de um finalista, antes de aplicar a marca ao site.
+Uma busca pública preliminar não encontrou produto de software com correspondência direta para **BaseFicta**, **DadoMatriz** ou **FictaBase**. Na busca oficial do INPI, as grafias exatas, unidas ou separadas, também retornaram zero ocorrências. A pesquisa dos elementos centrais mostrou um único pedido antigo “FICTA”, definitivamente arquivado, e nenhuma ocorrência de “Ficta” nas classes 9, 35 ou 42. Em contraste, existem registros “MATRIZ” em vigor na classe 42 e ocorrências de “DADO” em vigor na classe 35, o que enfraquece DadoMatriz na comparação preliminar.
+
+A consulta foi feita em 23/09/2026 na [busca pública de marcas do INPI](https://servicos.busca.inpi.gov.br/marcas), com apoio do [Guia Básico de Marcas](https://www.gov.br/inpi/pt-br/servicos/marcas/guia-basico). Ela reduz conflitos evidentes, mas não comprova disponibilidade jurídica: a análise final depende do conjunto do sinal, da especificação de produtos e serviços e de direitos anteriores. A busca deve ser repetida para o nome escolhido antes da aplicação definitiva.
+
+### Consulta preliminar de domínios — 23/09/2026
+
+Os serviços RDAP oficiais da Verisign (`.com`) e do Registro.br (`.com.br`) responderam HTTP 404 para os seis endereços consultados, indicando ausência de registro encontrado naquele momento:
+
+| Nome | `.com` | `.com.br` | Avaliação de comunicação |
+| --- | --- | --- | --- |
+| BaseFicta | Sem registro RDAP encontrado | Sem registro RDAP encontrado | Mais claro em português: comunica uma base de dados sintéticos e é fácil de pronunciar. |
+| DadoMatriz | Sem registro RDAP encontrado | Sem registro RDAP encontrado | Tem tom técnico, mas não comunica testes com a mesma rapidez. |
+| FictaBase | Sem registro RDAP encontrado | Sem registro RDAP encontrado | Tem a mesma ideia de BaseFicta, porém com ordem menos natural em português. |
+
+Uma resposta RDAP 404 não reserva o domínio e pode mudar a qualquer momento. Essa shortlist foi encerrada quando o usuário escolheu **TheGenerator**. A pesquisa específica e as limitações do nome final estão registradas em `IDENTIDADE.md`.

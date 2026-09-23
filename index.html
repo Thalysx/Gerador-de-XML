@@ -3,8 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gerador unificado - documentos fiscais e identificação</title>
-  <meta name="description" content="Gerador de XML fiscal, CPF, CNPJ, CNH, telefone, e-mail, placa, contêiner, lacre e cadastro geral para rotinas operacionais." />
+  <title>TheGenerator — dados sintéticos, documentos e XML para testes</title>
+  <meta name="description" content="TheGenerator cria dados sintéticos, documentos brasileiros e XML fiscal para desenvolvimento, testes e validação." />
+  <meta name="application-name" content="TheGenerator" />
+  <meta name="theme-color" content="#131017" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="TheGenerator — dados de teste. Do seu jeito." />
+  <meta property="og:description" content="Gere dados sintéticos, documentos brasileiros e XML fiscal para desenvolvimento e testes." />
+  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/brand/favicon-192.png" />
+  <link rel="manifest" href="site.webmanifest" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -26,15 +34,10 @@
 
   <header class="page-header align-items-md-end">
     <div class="page-header-logo">
-      <div class="logo-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="3" y="4" width="18" height="16" rx="2"/>
-          <path d="M7 9h10M7 13h6"/>
-        </svg>
-      </div>
+      <div class="logo-icon" aria-hidden="true"><img src="assets/brand/thegenerator-mark.svg" alt="" /></div>
       <div class="page-header-text">
-        <span class="workspace-eyebrow">ÁREA DE TRABALHO · DADOS PARA TESTES</span>
-        <h1 id="app-title">Gerador de documentos</h1>
+        <span class="workspace-eyebrow">THEGENERATOR · DADOS PARA TESTES</span>
+        <h1 id="app-title">XML fiscal</h1>
         <p>Crie, organize e confira seus dados em um só lugar.</p>
       </div>
     </div>
@@ -50,10 +53,10 @@
   <div class="sr-only" id="app-status-live" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <button type="button" class="workspace-menu-toggle" id="workspace-menu-toggle" aria-expanded="false" aria-controls="workspace-navigation"><i class="bi bi-list" aria-hidden="true"></i> Ferramentas <span>Mostrar menu</span></button>
-  <nav class="workspace-nav" id="workspace-navigation" aria-label="Navegação principal do gerador">
-    <div class="workspace-brand"><span aria-hidden="true"><i class="bi bi-boxes"></i></span><div>GERADOR<small>Central de dados de teste</small></div></div>
+  <nav class="workspace-nav" id="workspace-navigation" aria-label="Navegação principal da TheGenerator">
+    <div class="workspace-brand"><span aria-hidden="true"><img src="assets/brand/thegenerator-mark.svg" alt="" /></span><div><strong><b>The</b>Generator</strong><small>Dados de teste. Do seu jeito.</small></div></div>
     <p class="workspace-nav-label">FERRAMENTAS</p>
-    <div class="tab-nav nav nav-pills" role="tablist" aria-label="Áreas do gerador" aria-orientation="vertical">
+    <div class="tab-nav nav nav-pills" role="tablist" aria-label="Ferramentas da TheGenerator" aria-orientation="vertical">
       <button type="button" class="tab-btn nav-link active" id="tab-btn-xml" role="tab" aria-selected="true" aria-controls="tab-xml" tabindex="0" onclick="switchTab('xml', this)"><i class="bi bi-file-earmark-code" aria-hidden="true"></i> XML fiscal</button>
       <button type="button" class="tab-btn nav-link" id="tab-btn-docs" role="tab" aria-selected="false" aria-controls="tab-docs" tabindex="-1" onclick="switchTab('docs', this)"><i class="bi bi-person-vcard" aria-hidden="true"></i> Dados cadastrais</button>
       <button type="button" class="tab-btn nav-link" id="tab-btn-cadastro" role="tab" aria-selected="false" aria-controls="tab-cadastro" tabindex="-1" onclick="switchTab('cadastro', this)"><i class="bi bi-card-list" aria-hidden="true"></i> Cadastro geral</button>
@@ -653,11 +656,11 @@
       <section class="validacao-resultados" aria-label="Relatórios de validação">
         <p id="validacao-resumo" class="texto-apoio" role="status" aria-live="polite"></p>
         <div class="campo-novo" id="validacao-filtro-area" hidden><label for="validacao-filtro">Mostrar verificações</label><select id="validacao-filtro" onchange="renderValidacaoXml()"><option value="todos">Todas</option><option value="erro">Erros</option><option value="aviso">Avisos</option><option value="sucesso">Verificações sem erro</option></select></div>
-        <div id="validacao-resultados" tabindex="-1"></div>
+        <div id="validacao-resultados" tabindex="-1" aria-label="Resultados detalhados da validação XML"></div>
       </section>
     </div>
   </div>
-  <footer class="app-rodape">Dados sintéticos gerados localmente para testes. A conferência de formato e dígitos não consulta registros oficiais.</footer>
+  <footer class="app-rodape"><strong>TheGenerator.</strong> Dados sintéticos gerados localmente para testes. A conferência de formato e dígitos não consulta registros oficiais.</footer>
 </main>
 
 <script src="assets/js/aleatorio.js"></script>

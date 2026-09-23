@@ -69,8 +69,9 @@ Manter roxo/preto no escuro, branco/roxo no claro e navegação vertical. Melhor
 - [x] Testar geradores locais, IA, downloads, persistência, nomes acessíveis e temas após as mudanças. A suíte completa passou com 53 testes; build aprovado; downloads foram acionados no navegador e seu conteúdo é validado nos testes; tema escuro persistiu ao reabrir a página.
 - [x] Atualizar README e histórico de atualização com o estado real da interface, IA, testes e pendências.
 - [x] Publicar a revisão intermediária e validar o site público após a implantação. A `main` recebeu o commit `85bd6ab` em 23/09/2026; o Netlify serviu os novos estados do chat e o ajuste de espaçamento; `/api/status` confirmou Groq configurada e uma chamada real executou `gerar_dados`, retornando texto e artefato de registros.
+- [x] Publicar a identidade final e validar a entrega pública. A `main` recebeu o commit `e6856b9` em 23/09/2026; HTML, símbolo SVG e manifesto servidos pela Netlify tiveram SHA-256 idêntico ao build local, e `/api/status` continuou indicando Groq configurada.
 
-Itens marcados representam implementação local. A identidade TheGenerator foi aprovada e aplicada, mas esta versão ainda precisa passar pela verificação final e publicação.
+Os itens implementáveis por código estão concluídos e a identidade TheGenerator está publicada. Permanece como verificação manual externa apenas a leitura auditiva com leitor de tela real; a árvore de acessibilidade, os nomes, o foco e o teclado já foram aprovados no Chromium.
 
 ## Triagem de nomes — atualizada em 23/09/2026
 

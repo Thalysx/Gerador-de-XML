@@ -13,6 +13,9 @@ Testes HTTP reais com Groq e armazenamento configurado na aplicação:
 - Em 20/09/2026, envio de XML malformado executou `consultar_xml` e explicou a tag de fechamento incorreta, retornando HTTP 200.
 - Outro visitante tentou continuar e excluir essa sessão: ambas as ações retornaram HTTP 403.
 - O proprietário excluiu a sessão com HTTP 200; tentar continuá-la depois retornou HTTP 410.
+- Em 23/09/2026, a identidade TheGenerator foi publicada pelo commit `e6856b9`. O HTML, `thegenerator-mark.svg` e `site.webmanifest` responderam HTTP 200 e tiveram SHA-256 idêntico ao build local.
+- O endpoint `/api/status` continuou retornando `configured: true`, provedor `groq` e retenção de 30 minutos após essa publicação.
+- A auditoria local em Chromium confirmou o nome, a assinatura, o símbolo e o favicon nos temas claro e escuro, sem rolagem horizontal nas seis telas em zoom simulado de 200%.
 
 O modelo configurado pelo usuário após a falha do Llama foi `openai/gpt-oss-120b`, hospedado pela Groq. O endpoint de status não expõe o nome do modelo; essa configuração foi informada na conversa, não inspecionada pelo painel Netlify.
 
@@ -20,11 +23,11 @@ O modelo configurado pelo usuário após a falha do Llama foi `openai/gpt-oss-12
 
 - Os fluxos acima exercitam Redis real, mas não comprovam concorrência de cotas, expiração por TTL ou recuperação após perda do bloqueio.
 - Não foi confirmado se requisições consecutivas executaram em instâncias distintas.
-- A revisão visual e a navegação por leitor de tela ainda precisam ser verificadas no navegador.
+- A leitura auditiva manual com leitor de tela real ainda não foi executada. A árvore de acessibilidade do Chromium, o teclado e os nomes acessíveis foram aprovados, mas não substituem essa escuta.
 - Não foi confirmada a rotação das credenciais compartilhadas no contexto da conversa.
 - Os testes HTTP não comprovam funcionamento visual dos botões de download.
 
-Não tratar esses itens como concluídos com base apenas no sucesso da geração. A revisão de front de 20/09 continua local, separada da versão testada em produção.
+Não tratar os itens restantes como concluídos com base apenas no sucesso da geração. A revisão visual e a identidade de 23/09 estão publicadas; as verificações de Redis real abaixo continuam separadas.
 
 ## Teste Redis isolado preparado
 

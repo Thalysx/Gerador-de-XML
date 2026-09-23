@@ -60,4 +60,4 @@ A identidade TheGenerator foi carregada no navegador com nome, assinatura, símb
 
 O servidor isolado da auditoria remove dependências visuais externas para tornar o teste determinístico e usa os mesmos HTML, CSS e JavaScript locais. Por isso, essa execução comprova o reflow e o foco da aplicação, mas não a disponibilidade das fontes, dos ícones ou do Bootstrap servidos por CDN.
 
-Continua pendente apenas a validação auditiva manual com um leitor de tela real; a exposição estrutural à tecnologia assistiva foi aprovada pela árvore nativa do Chromium. A identidade aplicada já recebeu a captura final local antes da publicação.
+Continua pendente apenas a validação auditiva manual com um leitor de tela real; a exposição estrutural à tecnologia assistiva foi aprovada pela árvore nativa do Chromium. A identidade aplicada recebeu a captura final local e foi publicada no commit `e6856b9`. O HTML, o símbolo SVG e o manifesto retornados por `https://gerador-all.netlify.app` coincidiram por SHA-256 com os arquivos do build local.

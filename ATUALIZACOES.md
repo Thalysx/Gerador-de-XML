@@ -19,7 +19,7 @@ A suíte completa passou com **53 testes** e o build de produção foi aprovado.
 
 ## Itens ainda em decisão
 
-A identidade TheGenerator foi aprovada e aplicada localmente depois de uma nova triagem pública. Não houve coincidência exata no INPI, mas existem marcas compostas com “Generator” na classe 42, o domínio `.com` já está registrado e há um software estrangeiro com o mesmo nome separado; esses limites estão documentados em `IDENTIDADE.md`. A revisão intermediária anterior foi publicada no GitHub e na Netlify em 23/09/2026; esta identidade ainda aguarda a publicação final. Permanece pendente a validação auditiva com leitor de tela real.
+A identidade TheGenerator foi aprovada depois de uma nova triagem pública. Não houve coincidência exata no INPI, mas existem marcas compostas com “Generator” na classe 42, o domínio `.com` já está registrado e há um software estrangeiro com o mesmo nome separado; esses limites estão documentados em `IDENTIDADE.md`. A versão final foi publicada no GitHub e na Netlify em 23/09/2026 no commit `e6856b9`; HTML, símbolo e manifesto públicos coincidiram por SHA-256 com o build local. Permanece pendente apenas a validação auditiva manual com leitor de tela real.
 
 # Preparação da IA pública — 19/09/2026
 

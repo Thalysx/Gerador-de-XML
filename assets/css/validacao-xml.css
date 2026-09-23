@@ -12,6 +12,7 @@
 .validacao-lista li { border-left:3px solid var(--border-strong); padding:.6rem .8rem; margin:.5rem 0; background:var(--surface-2); border-radius:0 8px 8px 0; font-size:.8rem; overflow-wrap:anywhere; }
 .validacao-lista strong, .validacao-lista span { display:block; }
 .validacao-lista span { margin-top:.25rem; line-height:1.6; }
+.validacao-lista .validacao-localizacao { font-family:'DM Mono',monospace; color:var(--text); font-size:.75rem; }
 .validacao-lista .validacao-erro { border-left-color:var(--error); }
 .validacao-lista .validacao-sucesso { border-left-color:var(--success); }
 .validacao-fonte { margin-top:1rem; font-size:.8rem; }

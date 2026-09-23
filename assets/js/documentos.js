@@ -458,6 +458,18 @@ function setOutput(val) {
   el.classList.remove('placeholder');
   document.getElementById('new-doc-btn').style.display = 'inline-block';
   document.getElementById('copy-btn').style.display = 'inline-block';
+  document.getElementById('download-doc-btn').style.display = 'inline-block';
+  atualizarOpcoesDocumento(currentType);
+}
+
+function atualizarOpcoesDocumento(tipoAtual = currentType, tipoLote = document.getElementById('lote-tipo')?.value || '') {
+  const comNome=['cpf','cnpj','cnpj-alfa'].includes(tipoAtual);
+  const comMascara=['cpf','cnpj','cnpj-alfa','rg','telefone','due'].includes(tipoAtual) || ['cpf','cnpj','cnpj-alfa','rg','telefone','due'].includes(tipoLote);
+  const comTelefone=tipoAtual==='telefone' || tipoLote==='telefone';
+  document.getElementById('docs-option-name').hidden=!comNome;
+  document.getElementById('docs-option-mask').hidden=!comMascara;
+  document.getElementById('docs-preferencias').hidden=!comNome&&!comMascara;
+  document.getElementById('docs-phone-options').hidden=!comTelefone;
 }
 
 function copyResult() {
@@ -468,6 +480,17 @@ function copyResult() {
     msg.style.opacity = '1';
     setTimeout(() => msg.style.opacity = '0', 1500);
   });
+}
+
+function baixarResultadoDocumento() {
+  const valorExibido = document.getElementById('output-val').textContent;
+  if (!currentType || !valorExibido) { mostrarStatus('Gere um documento antes de baixar.', 'error'); return; }
+  const rotulos = {cpf:'CPF',cnpj:'CNPJ','cnpj-alfa':'CNPJ alfanumérico',cnh:'CNH',rg:'RG',telefone:'Telefone',email:'E-mail',placa:'Placa',conteiner:'Contêiner','conteiner-lacre':'Contêiner e lacre',lacre:'Lacre',imo:'IMO',booking:'Booking',due:'DU-E',nome:'Nome',empresa:'Empresa'};
+  const linhas = [];
+  if (nomeAtualDoc && document.getElementById('nome-box').classList.contains('visible')) linhas.push(`${currentType === 'cpf' ? 'Nome' : 'Razão social'}: ${nomeAtualDoc}`);
+  linhas.push(`${rotulos[currentType] || 'Resultado'}: ${valorExibido}`);
+  baixarTexto(`dado-teste-${currentType.replace(/[^a-z0-9-]/gi,'-')}.txt`, linhas.join('\n'));
+  mostrarStatus('Arquivo TXT preparado para download.');
 }
 
 // ── Validação ─────────────────────────────────────────────────

@@ -1,27 +1,4 @@
 /* Estrutura inspirada no Portus, com a identidade roxa do gerador. */
-:root {
-  --bg:#f8f7fb; --surface:#fff; --surface-2:#f5f1fb;
-  --border:#e6def1; --border-strong:#c6b4e0; --text:#241b33;
-  --text-muted:#756782; --text-dim:#756782; --text-label:#625170;
-  --accent:#7c3aed; --accent-2:#6025bd; --input-bg:#fdfbff;
-  --input-disabled:#eee8f6; --info-bg:#f0e8fc; --tab-bg:#f0e8fc;
-  --btn-hover:#eee5fb; --produto-bg:#fdfbff; --produto-border:#e6def1;
-  --section-border:#e6def1; --card-header:#2a183f; --card-header-text:#faf5ff;
-  --toggle-inactive:#cfc4dd; --surface-glass:rgba(255,255,255,.94);
-  --focus-ring:#7c3aed80; --shadow-soft:none; --shadow-hover:none;
-}
-body.dark {
-  --bg:#09080c; --surface:#131017; --surface-2:#1c1624;
-  --border:#30243d; --border-strong:#544068; --text:#f5effc;
-  --text-muted:#b1a2c1; --text-dim:#b1a2c1; --text-label:#c3b2d6;
-  --accent:#a78bfa; --accent-2:#7c3aed; --input-bg:#18121f;
-  --input-disabled:#0d0a12; --info-bg:#291a3d; --tab-bg:#291a3d;
-  --btn-hover:#302043; --produto-bg:#18121f; --produto-border:#30243d;
-  --section-border:#30243d; --card-header:#241431; --card-header-text:#faf5ff;
-  --toggle-inactive:#544068; --surface-glass:rgba(19,16,23,.94);
-  --accent-green:#3bd68c; --success:#3bd68c; --error:#ef5b68;
-  --focus-ring:#a78bfa99; --shadow-soft:none; --shadow-hover:none;
-}
 body, body.dark { padding:0 28px 24px 266px; }
 .page-wrapper.container-xxl { max-width:none; }
 .workspace-nav { width:238px; padding:24px 14px; }

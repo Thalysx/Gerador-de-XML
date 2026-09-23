@@ -36,7 +36,7 @@ test('IA executa dados e XML reais, consulta artefato e preserva conversa',async
 test('IA trata ausência de chave, erros do provedor e ferramentas inválidas',async()=>{
   await assert.rejects(createAssistant({apiKey:''}).chat({message:'oi'}),/OPENAI_API_KEY/);
   const ai=createAssistant({apiKey:'secret-test',fetchImpl:async()=>({ok:false,status:401})});
-  await assert.rejects(ai.chat({message:'oi'}),/Verifique a chave/);
+  await assert.rejects(ai.chat({message:'oi'}),/HTTP 401/);
   await assert.rejects(ai.chat({message:'a'.repeat(6001)}),/6.000/);
   await assert.rejects(ai.chat({message:'oi',xml:'x'.repeat(100001)}),/100 KB/);
   let round=0;
@@ -55,7 +55,7 @@ test('servidor restringe origem, corpo, métodos e arquivos internos',async()=>{
   try {
     for(const file of ['/scripts/ai.cjs','/.env','/package.json','/tests/projeto.test.cjs']) assert.equal((await fetch(base+file)).status,404);
     assert.equal((await fetch(base+'/')).status,200);
-    assert.deepEqual(await (await fetch(base+'/api/status')).json(),{configured:false});
+    assert.equal((await (await fetch(base+'/api/status')).json()).configured,false);
     assert.equal((await fetch(base+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).status,403);
     const headers={'Content-Type':'application/json',Origin:base};
     assert.equal((await fetch(base+'/api/chat',{method:'POST',headers,body:'!'})).status,400);

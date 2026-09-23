@@ -1,18 +1,4 @@
 /* Proposta visual isolada. Regras funcionais continuam nos estilos originais. */
-:root {
-  --bg:#f6f7fb; --surface:#fff; --surface-2:#f5f4f9;
-  --border:#e5e5ee; --border-strong:#cbc6df; --text:#252337;
-  --text-muted:#716e83; --text-label:#615d74; --input-bg:#fafafe;
-  --accent:#7451d8; --accent-2:#8265de; --info-bg:#f0ebfc;
-  --shadow-soft:0 3px 16px rgba(40,30,80,.035);
-  --shadow-hover:0 6px 22px rgba(40,30,80,.07);
-}
-body.dark {
-  --bg:#14141d; --surface:#1c1c28; --surface-2:#242332;
-  --border:#323142; --border-strong:#4d465f; --text:#f0edf8;
-  --text-muted:#aaa5be; --text-label:#bbb4cf; --input-bg:#20202e;
-  --accent:#b69afa; --accent-2:#9e81e9; --info-bg:#302743;
-}
 body, body.dark { background-image:none; padding:36px 32px 24px 264px; }
 .page-wrapper.container-xxl { max-width:1480px; margin-inline:auto; }
 .page-header { margin-bottom:30px; padding-bottom:24px; border-bottom:1px solid var(--border); gap:20px; }

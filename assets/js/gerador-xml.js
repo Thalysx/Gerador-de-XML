@@ -377,10 +377,6 @@ function preencherCamposFormulario(xml, hierarquia) {
             <option value="">Selecione um produto</option>${options}
           </select>
         </div>
-        <div class="field-row-inline">
-          <div><label class="field-label" for="nfes_prod_${idx}_codigo">Código do produto</label><input class="field-input" id="nfes_prod_${idx}_codigo" value="${escapeAttr(codigoAtual)}" inputmode="numeric" autocomplete="off" /></div>
-          <div><label class="field-label" for="nfes_prod_${idx}_ncm">NCM</label><input class="field-input" id="nfes_prod_${idx}_ncm" value="${escapeAttr(ncmAtual)}" inputmode="numeric" autocomplete="off" /></div>
-        </div>
         <div class="field-row"><label class="field-label" for="nfes_prod_${idx}_nome">Nome ou descrição</label><input class="field-input" id="nfes_prod_${idx}_nome" value="${escapeAttr(nomeVisual)}" /></div>
         <div class="field-row-inline">
           <div><label class="field-label" for="nfes_prod_${idx}_qCom">Quantidade comercial (qCom)</label><input class="field-input" id="nfes_prod_${idx}_qCom" value="${escapeAttr(qCom)}" inputmode="decimal" autocomplete="off" /></div>
@@ -393,13 +389,21 @@ function preencherCamposFormulario(xml, hierarquia) {
             </div>
           </div>
         </div>
+        <div class="field-row">
+          <div><label class="field-label" for="nfes_prod_${idx}_valor">Valor total (vProd)</label><input class="field-input" id="nfes_prod_${idx}_valor" value="${escapeAttr(valor)}" inputmode="decimal" autocomplete="off" /></div>
+        </div>
+        <details class="xml-avancado"><summary>Identificação e tributação do item</summary><p class="texto-apoio">Confira código, NCM e quantidade tributária conforme o cenário de teste. Exemplo de NCM: 17019900.</p>
+        <div class="field-row-inline">
+          <div><label class="field-label" for="nfes_prod_${idx}_codigo">Código do produto</label><input class="field-input" id="nfes_prod_${idx}_codigo" value="${escapeAttr(codigoAtual)}" inputmode="numeric" autocomplete="off" /></div>
+          <div><label class="field-label" for="nfes_prod_${idx}_ncm">NCM</label><input class="field-input" id="nfes_prod_${idx}_ncm" value="${escapeAttr(ncmAtual)}" inputmode="numeric" autocomplete="off" /></div>
+        </div>
         <div class="field-row-inline">
           <div><label class="field-label" for="nfes_prod_${idx}_qTrib">Quantidade tributária (qTrib)</label><input class="field-input" id="nfes_prod_${idx}_qTrib" value="${escapeAttr(qTrib)}" inputmode="decimal" autocomplete="off" /></div>
-          <div><label class="field-label" for="nfes_prod_${idx}_valor">Valor total (vProd)</label><input class="field-input" id="nfes_prod_${idx}_valor" value="${escapeAttr(valor)}" inputmode="decimal" autocomplete="off" /></div>
         </div>
         <div class="field-row-inline">
           <div><label class="field-label" for="nfes_prod_${idx}_CFOP">CFOP (somente leitura)</label><input class="field-input" id="nfes_prod_${idx}_CFOP" value="${escapeAttr(cfop)}" inputmode="numeric" autocomplete="off" readonly /></div>
         </div>
+        </details>
       </div>`;
   });
 }

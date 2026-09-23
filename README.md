@@ -1,14 +1,16 @@
 # Gerador de documentos
 
-Abra `index.html` no navegador para usar os geradores, editor e validação local. Mantenha a pasta `assets` ao lado do HTML. O **chat com IA** precisa do servidor Node.js e de uma chave OpenAI, conforme abaixo.
+O desenvolvimento gradual do backend público está descrito em [PLANO-IA-PUBLICA.md](PLANO-IA-PUBLICA.md). O chat com Groq, as rotas, as sessões Redis e os limites de uso já estão publicados na Netlify e foram verificados no ambiente real. As verificações de concorrência e expiração do Redis continuam registradas separadamente em [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md).
+
+Abra `index.html` no navegador para usar os geradores, editor e validação local. Mantenha a pasta `assets` ao lado do HTML. O **chat com IA** precisa do servidor Node.js e de uma chave do provedor escolhido, conforme abaixo.
 
 Bootstrap, ícones e fontes continuam sendo carregados de serviços externos e precisam de conexão para estar disponíveis.
 
-Veja [ATUALIZACOES.md](ATUALIZACOES.md) para as funcionalidades adicionadas, exemplos do chat, verificações e limitações.
+Veja [ATUALIZACOES.md](ATUALIZACOES.md) para as funcionalidades adicionadas, exemplos do chat, verificações e limitações. O andamento da revisão de interface está em [PLANO-VISUAL.md](PLANO-VISUAL.md), com as evidências em [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md).
 
 ## Organização
 
-A interface usa navegação lateral vertical e temas branco/roxo e preto/roxo. A camada visual está em `assets/css/visual-lab.css` e `assets/css/portus.css`, com cabeçalho contextual em `assets/js/visual-layout.js`.
+A interface usa navegação lateral vertical e temas branco/roxo e preto/roxo. Os tokens compartilhados ficam em `assets/css/base.css`; `assets/css/visual-lab.css`, `assets/css/portus.css` e `assets/css/usabilidade.css` organizam layout, navegação, responsividade e acessibilidade. O cabeçalho contextual e os atalhos ficam em `assets/js/visual-layout.js`.
 
 | Arquivo | Responsabilidade |
 | --- | --- |
@@ -35,7 +37,8 @@ A interface usa navegação lateral vertical e temas branco/roxo e preto/roxo. A
 | `assets/js/chat-ia.js` | Conversa com IA, anexos explícitos e artefatos |
 | `assets/js/validacao-xml.js` | Sintaxe e consistência básica de NF-e/CT-e |
 | `assets/css/validacao-xml.css` | Tela de validação XML |
-| `scripts/ai.cjs` | OpenAI Responses API, sessões e ferramentas |
+| `assets/css/usabilidade.css` | Ajustes de foco, toque, responsividade, estados e movimento reduzido |
+| `scripts/ai.cjs` | Orquestração dos provedores, sessões e ferramentas |
 | `scripts/engine.cjs` | Reutilização do gerador e validador no servidor |
 | `assets/js/xml-workflow.js` | Prévia, integração com editor/cadastro, cenários e comparação de XML |
 | `assets/js/app.js` | Inicialização da aplicação e restauração do estado |
@@ -67,23 +70,12 @@ Abra `http://127.0.0.1:4173`. A dependência `jsdom` é usada nos testes e no se
 
 ## Ativar o chat com IA
 
-1. Execute `npm install` com Node.js 20.19 ou superior.
-2. Copie `.env.example` para `.env` na raiz.
-3. Preencha `OPENAI_API_KEY` no `.env`. Não coloque a chave no HTML nem no navegador. `OPENAI_MODEL` permite escolher o modelo; o padrão é `gpt-5-mini`.
-4. Execute `npm run dev` e abra `http://127.0.0.1:4173`. Reinicie o servidor após alterar o `.env`.
-
-A integração usa a API OpenAI, com cobrança e cota próprias da conta de API. Nenhuma chave foi incluída no projeto. `.env` está ignorado pelo Git e o servidor não publica arquivos internos. Sem chave, selecione **Comandos locais (sem IA)**.
-
-Exemplos: “Gere 3 CPFs e uma NF-e com 4 produtos”, “Explique os erros deste XML” (com anexo), “Qual a diferença entre a chave e o protocolo?”. A IA escolhe ferramentas para gerar dados, criar XMLs e ler/validar anexos ou XMLs anteriores. Os downloads completos aparecem na conversa. A geração de XML aceita tipo e quantidade de produtos; alterações específicas de campos continuam no editor, acessível pelo resultado.
-
-Somente mensagens e XMLs explicitamente anexados, além dos resultados necessários das ferramentas, entram no contexto enviado à OpenAI. O formulário e o histórico local não são enviados automaticamente. As sessões ficam na memória do servidor, limitadas a 20 pedidos; expiram após 30 minutos de inatividade e são removidas na próxima requisição. Recarregar ou limpar o chat abandona a sessão na interface. Reiniciar o servidor apaga todas as sessões. A API usa `store:false`; isso não equivale a uma garantia de retenção zero pelo provedor.
-
-O servidor é destinado ao uso local, em `127.0.0.1`, com verificação de origem e limite de pedidos. Publicação multiusuário requer autenticação e controle de uso por usuário antes de disponibilizar a chave em produção.
+Consulte [ATIVACAO-IA.md](ATIVACAO-IA.md) para configurar Groq ou OpenAI, desenvolvimento local, Redis, limites e etapas de verificação na Vercel. A IA está publicada na Netlify: [abrir gerador](https://gerador-all.netlify.app). Consulte [NETLIFY.md](NETLIFY.md) para configurar esse destino e [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md) para resultados reais e verificações pendentes.
 
 ## Validação XML
 
 A aba **Validação XML** aceita conteúdo colado, XML atual do gerador ou até 10 arquivos UTF-8 de 5 MB cada. Verifica sintaxe, estrutura básica, chave, CNPJ, campos e totais de produtos; exporta relatório JSON e abre cópia no editor. Essa tela funciona localmente, sem IA. Não verifica XSD, assinatura digital, regras tributárias completas ou autorização SEFAZ. O anexo do chat tem um limite separado de 100 KB.
 
-Os testes de IA usam um provedor simulado e verificam a execução real das ferramentas. Uma chamada real à OpenAI depende da configuração de uma chave válida.
+Os testes automatizados da IA usam um provedor simulado para manter a suíte determinística e verificam a execução real das ferramentas. A integração pública com Groq também foi exercitada no site implantado.
 
-Os testes abrangem a geração, interpretação de pedidos, exportações e fluxos de XML. A atualização também foi conferida no Chrome, incluindo chat em largura de celular.
+Os 53 testes abrangem geração, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API e fluxos de XML. A atualização também foi conferida em Chromium nas larguras de 360, 768 e 1440 px, incluindo chat e navegação móvel.

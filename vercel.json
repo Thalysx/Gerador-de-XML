@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".generated-public",
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 120,
+      "includeFiles": "{index.html,assets/js/**}"
+    }
+  }
+}

@@ -2,13 +2,13 @@
 
 ## Estado desta entrega
 
-O código possui integração com Groq e OpenAI, ferramentas reais do gerador, rotas para Vercel, sessões Redis e limites de uso. A integração foi testada com respostas simuladas. A ativação pública ainda depende das credenciais, de testes com Redis real e de uma conversa real no site publicado.
+O código possui integração com Groq e OpenAI, ferramentas reais do gerador, rotas para Vercel, sessões Redis e limites de uso. A publicação escolhida pelo usuário é a Netlify, com conversas e artefatos reais verificados. Siga [NETLIFY.md](NETLIFY.md) para esse destino e [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md) para a evidência. A seção Vercel abaixo permanece como alternativa, sem validação de produção nessa plataforma.
 
 ## Teste local
 
 1. Instale as dependências com `npm install` (Node.js 20.19 ou superior).
 2. Copie `.env.example` para `.env`.
-3. Defina `AI_PROVIDER=groq` e preencha `GROQ_API_KEY`. O modelo configurável por `GROQ_MODEL` começa em `llama-3.3-70b-versatile`.
+3. Defina `AI_PROVIDER=groq` e preencha `GROQ_API_KEY`. O modelo configurável por `GROQ_MODEL` começa em `openai/gpt-oss-120b`.
 4. Execute `npm run dev` e abra `http://127.0.0.1:4173`.
 
 O servidor local usa sessões em memória. Reiniciá-lo apaga as conversas. Para usar OpenAI, escolha `AI_PROVIDER=openai` e configure `OPENAI_API_KEY` e, opcionalmente, `OPENAI_MODEL`. Nunca inclua chaves no HTML ou no Git.
@@ -21,7 +21,7 @@ Na equipe `thalys-projects2`, abra o projeto `gerador-de-xml-e-cadastro-de-pesso
 | --- | --- |
 | `AI_PROVIDER` | `groq` |
 | `GROQ_API_KEY` | Chave secreta da conta Groq |
-| `GROQ_MODEL` | `llama-3.3-70b-versatile`, sujeito à disponibilidade da conta |
+| `GROQ_MODEL` | `openai/gpt-oss-120b`, sujeito à disponibilidade da conta |
 | `UPSTASH_REDIS_REST_URL` | URL HTTPS REST do banco Redis |
 | `UPSTASH_REDIS_REST_TOKEN` | Token secreto REST com acesso de leitura e escrita |
 | `AI_COOKIE_SECRET` | Segredo aleatório forte, com pelo menos 32 caracteres |

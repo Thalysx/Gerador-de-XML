@@ -36,7 +36,7 @@ test('IA executa dados e XML reais, consulta artefato e preserva conversa',async
 test('IA trata ausência de chave, erros do provedor e ferramentas inválidas',async()=>{
   await assert.rejects(createAssistant({apiKey:''}).chat({message:'oi'}),/OPENAI_API_KEY/);
   const ai=createAssistant({apiKey:'secret-test',fetchImpl:async()=>({ok:false,status:401})});
-  await assert.rejects(ai.chat({message:'oi'}),/Verifique a chave/);
+  await assert.rejects(ai.chat({message:'oi'}),/HTTP 401/);
   await assert.rejects(ai.chat({message:'a'.repeat(6001)}),/6.000/);
   await assert.rejects(ai.chat({message:'oi',xml:'x'.repeat(100001)}),/100 KB/);
   let round=0;

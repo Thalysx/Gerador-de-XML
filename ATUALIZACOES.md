@@ -1,8 +1,30 @@
+# Revisão visual e de acessibilidade — 21/09/2026
+
+A interface foi reorganizada sem trocar a identidade roxa aprovada. O tema escuro usa preto e tons de roxo; o claro usa branco e roxo. A navegação vertical continua sendo a base do produto e passa a agrupar as ferramentas por tarefa, com menu responsivo, favoritos e últimas ferramentas usadas.
+
+## Principais mudanças
+
+- **Dados cadastrais:** busca sem diferença de acentos, quatro categorias, opções contextuais, ações padronizadas, lotes de até 500 registros e histórico filtrável.
+- **XML fiscal:** seleção entre NF-e, CT-e ou ambos sem perder campos; detalhes avançados recolhidos; prévia fixa durante a rolagem; copiar, baixar, validar e abrir no editor.
+- **Validação XML:** contadores e filtros por gravidade, localização por linha/coluna ou caminho do campo, relatório completo para exportação e encaminhamento ao editor.
+- **Editor XML:** busca em produtos e volumes, indicação de arquivo alterado e revisão acessível dos campos modificados, adicionados e removidos.
+- **Assistente:** listas, tabelas e código renderizados com escape; cartões de arquivos; anexos XML; sugestões revisáveis; estados de conexão, análise, ferramentas executadas, sucesso, falha e limite; início explícito de nova conversa.
+- **Acessibilidade:** foco visível, áreas de toque maiores, retorno do foco no menu, mensagens em região ao vivo, contraste principal acima de 4,5:1 e suporte a `prefers-reduced-motion`.
+- **Responsividade:** as seis telas foram verificadas em 360, 768 e 1440 px sem rolagem horizontal. O painel de resultado acompanha a página em telas largas e volta ao fluxo normal em telas menores.
+
+## Verificação
+
+A suíte completa passou com **53 testes** e o build de produção foi aprovado. A revisão em Chromium confirmou alternância dos seis painéis, persistência do tema, menu por teclado, rolagem dos resultados e ausência de erros no console. As evidências e limites estão em [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md).
+
+## Itens ainda em decisão
+
+O nome atual continua provisório. Syntro é apenas uma proposta e já apresenta usos públicos por outros produtos. A aplicação não receberá nome ou logo definitivos antes da escolha do usuário e de nova triagem de disponibilidade. Também permanecem pendentes a validação com leitor de tela real, zoom real de 200% e a publicação desta revisão local.
+
 # Preparação da IA pública — 19/09/2026
 
 Adicionados adaptadores Groq/OpenAI, rotas Vercel, sessões Redis, cookies assinados e cotas por visitante, IP e aplicação. O chat informa o provedor, exclui a sessão no servidor ao limpar e aplica tempo limite também à consulta inicial. O build separa arquivos públicos do backend.
 
-A ativação real ainda está pendente. Consulte [ATIVACAO-IA.md](ATIVACAO-IA.md) e [PLANO-IA-PUBLICA.md](PLANO-IA-PUBLICA.md). As verificações locais usam respostas simuladas; não comprovam funcionamento da Groq ou dos scripts Lua em produção.
+A ativação real foi concluída na Netlify e o fluxo principal com Groq foi verificado em produção. Consulte [ATIVACAO-IA.md](ATIVACAO-IA.md), [PLANO-IA-PUBLICA.md](PLANO-IA-PUBLICA.md) e [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md). A concorrência isolada e a expiração real dos scripts Redis continuam pendentes e não são cobertas pela suíte simulada.
 
 # Atualização — geradores, chat e fluxo XML
 
@@ -151,7 +173,7 @@ Os arquivos anteriores foram ajustados para consumir as regras compartilhadas. N
 
 Execute `npm install` e `npm test` com Node.js 20.19 ou superior. `jsdom` permite testar o DOM e reutilizar o motor do projeto no servidor sem exigir navegador instalado.
 
-A suíte atual tem 14 testes, incluindo ferramentas da IA com provedor simulado, contexto da conversa, tratamento de chave ausente/erros, restrições do servidor, anexos explícitos, escape de respostas e validação XML com prefixos, arquivos malformados e divergências de protocolo.
+A suíte atual tem 53 testes, incluindo ferramentas da IA com provedor simulado, contexto da conversa, tratamento de chave ausente/erros, restrições do servidor, anexos explícitos, escape de respostas, nomes acessíveis dos controles e validação XML com prefixos, arquivos malformados e divergências de protocolo.
 
 Os testes cobrem inicialização, IDs únicos, amostras de 500 CPFs e CNPJs de cada formato, diversidade, telefones filtrados, DU-E, comandos válidos/inválidos, cenários, bloqueio, integração cadastro/XML, edição isolada, persistência, conversão de peso, verificadores das chaves, exportação integral e escape de conteúdo.
 

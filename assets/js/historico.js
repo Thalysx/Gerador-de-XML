@@ -30,6 +30,14 @@ function adicionarHistoricoDocs(dados) {
   renderHistoricoDocs();
 }
 
+function categoriaHistoricoDocs(dados) {
+  const tipo = (dados.currentType || dados.tipo || '').toLowerCase();
+  if (['empresa','cnpj','cnpj-alfa'].includes(tipo) || tipo.includes('cnpj') || tipo.includes('empresa')) return 'empresas';
+  if (['telefone','email'].includes(tipo) || tipo.includes('telefone') || tipo.includes('e-mail')) return 'contato';
+  if (['placa','conteiner','conteiner-lacre','lacre','imo','booking','due'].includes(tipo) || /placa|contêiner|lacre|imo|booking|du-e/.test(tipo)) return 'transporte';
+  return 'pessoas';
+}
+
 function renderHistoricoDocs() {
   const countEl = document.getElementById('docs-historico-count');
   const statusEl = document.getElementById('docs-historico-status');
@@ -56,7 +64,7 @@ function renderHistoricoDocs() {
     ].filter(c => c.value);
 
     return `
-    <div class="historico-item">
+    <div class="historico-item" data-category="${categoriaHistoricoDocs(d)}">
       <div class="historico-item-header">
         <div>
           <div class="historico-item-nome">${escapeHtml(d.tipo)}</div>

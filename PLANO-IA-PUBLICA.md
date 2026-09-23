@@ -2,7 +2,7 @@
 
 ## Estado atual
 
-O trabalho acontece na pasta `projeto`, clonada da versão publicada com o layout aprovado. O site publicado ainda não oferece um backend público de IA ativo.
+O trabalho acontece na pasta `projeto`. Por escolha do usuário, a publicação migrou para Netlify. A IA está ativa em https://gerador-all.netlify.app, com geração real de dados e XML confirmada. Consulte [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md) para a evidência e os testes restantes. As etapas abaixo registram o histórico da implementação; afirmações de testes pendentes são substituídas apenas pela evidência explícita desse relatório.
 
 ### 1. Provedores — implementado e testado com respostas simuladas
 

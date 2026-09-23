@@ -136,11 +136,13 @@ function editorRenderizarAbasArquivos() {
   const arqs = editorArquivos.filter(a => a.grupoId === editorGrupoAtivo);
   const bar = document.getElementById('editor-abas-arquivos');
   bar.innerHTML = arqs.length ? arqs.map(a => `
-    <div class="nfe-file-tab${a.id === editorArquivoAtivoId ? ' active' : ''}" onclick="editorSelecionarArquivo(${a.id})" role="button" tabindex="0">
+    <div class="nfe-file-tab${a.id === editorArquivoAtivoId ? ' active' : ''}">
+      <button type="button" class="editor-file-select" id="editor-file-${a.id}" aria-pressed="${a.id === editorArquivoAtivoId}" onclick="editorSelecionarArquivo(${a.id});document.getElementById('editor-file-${a.id}').focus()">
       <i class="bi bi-file-earmark-code" style="font-size:12px" aria-hidden="true"></i>
       <span title="${escapeAttr(a.nome)}">${escapeHtml(a.nome)}</span>
-      ${a.modificado ? '<span class="editor-modificado-badge" title="Modificado">✏</span>' : ''}
-      <button class="nfe-file-tab-close" onclick="event.stopPropagation();editorRemoverArquivo(${a.id})" aria-label="Fechar ${escapeAttr(a.nome)}">✕</button>
+      ${a.modificado ? '<span class="editor-modificado-badge" title="Este arquivo contém alterações">Alterado</span>' : ''}
+      </button>
+      <button type="button" class="nfe-file-tab-close" onclick="editorRemoverArquivo(${a.id})" aria-label="Fechar ${escapeAttr(a.nome)}">✕</button>
     </div>`).join('') : '<span style="font-size:12px;color:var(--text-dim);font-style:italic;padding:6px 4px">Nenhum arquivo neste grupo.</span>';
 }
 
@@ -277,11 +279,16 @@ function editorAtualizarCampoNFe(arqId, tipo, idx, campoSel, valor) {
   }
 }
 function editorFiltrarCards(valor, className) {
-  const termo = (valor || '').toLowerCase();
+  const normalizar = texto => String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  const termo = normalizar(valor);
+  let encontrados=0;
   document.querySelectorAll('.' + className).forEach(card => {
-    const busca = card.dataset.busca || '';
-    card.style.display = busca.includes(termo) ? '' : 'none';
+    const visivel=normalizar(card.dataset.busca).includes(termo);
+    card.style.display = visivel ? '' : 'none';
+    if(visivel)encontrados++;
   });
+  const status=document.getElementById(className+'-busca-status');
+  if(status)status.textContent=encontrados?`${encontrados} resultados encontrados.`:'Nenhum resultado. Apague a busca ou tente outro termo.';
 }
 
 function editorColetarCamposFolha(root) {
@@ -347,11 +354,12 @@ function editorHtmlProdutos(arq) {
     <div class="nfe-section-header">
       <span class="nfe-section-title">PRODUTOS <span class="nfe-count-badge">${dets.length}</span></span>
       <div class="nfe-section-actions">
-        <div class="nfe-search"><i class="bi bi-search" aria-hidden="true"></i><input type="text" placeholder="Buscar produtos..." oninput="editorFiltrarCards(this.value,'nfe-produto-card')"></div>
+        <div class="nfe-search"><label for="editor-busca-produto" class="sr-only">Buscar produto por descrição, código ou NCM</label><input id="editor-busca-produto" type="search" placeholder="Descrição, código ou NCM" oninput="editorFiltrarCards(this.value,'nfe-produto-card')" aria-describedby="nfe-produto-card-busca-status"></div>
         <button type="button" class="nfe-btn nfe-btn-primary" onclick="editorAdicionarItem(${arq.id})"><i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar Item</button>
       </div>
     </div>
-    <div class="nfe-cards-grid">${cards || '<div class="editor-campos-empty">Nenhum produto encontrado.</div>'}</div>
+    <p class="texto-apoio" id="nfe-produto-card-busca-status" role="status" aria-live="polite">${dets.length} produtos neste arquivo.</p>
+    <div class="nfe-cards-grid">${cards || '<div class="editor-campos-empty">Nenhum produto encontrado. Use Adicionar Item para começar.</div>'}</div>
   `;
 }
 
@@ -437,11 +445,12 @@ function editorHtmlVolumes(arq) {
     <div class="nfe-section-header">
       <span class="nfe-section-title">VOLUMES (VOL) <span class="nfe-count-badge">${vols.length}</span></span>
       <div class="nfe-section-actions">
-        <div class="nfe-search"><i class="bi bi-search" aria-hidden="true"></i><input type="text" placeholder="Buscar (espécie, marca, num)..." oninput="editorFiltrarCards(this.value,'nfe-volume-card')"></div>
+        <div class="nfe-search"><label for="editor-busca-volume" class="sr-only">Buscar volume por espécie, marca ou número</label><input id="editor-busca-volume" type="search" placeholder="Espécie, marca ou número" oninput="editorFiltrarCards(this.value,'nfe-volume-card')" aria-describedby="nfe-volume-card-busca-status"></div>
         <button type="button" class="nfe-btn nfe-btn-primary" onclick="editorAdicionarVolume(${arq.id})"><i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar Volume</button>
       </div>
     </div>
-    <div class="nfe-cards-grid">${cards || '<div class="editor-campos-empty">Nenhum volume encontrado.</div>'}</div>
+    <p class="texto-apoio" id="nfe-volume-card-busca-status" role="status" aria-live="polite">${vols.length} volumes neste arquivo.</p>
+    <div class="nfe-cards-grid">${cards || '<div class="editor-campos-empty">Nenhum volume encontrado. Use Adicionar Volume para começar.</div>'}</div>
   `;
 }
 

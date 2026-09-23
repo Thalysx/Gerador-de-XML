@@ -1,6 +1,6 @@
 # Publicação na Netlify
 
-Adaptação implementada localmente; publicação e chamadas reais ainda pendentes. A configuração existente da Vercel continua disponível.
+Publicado em https://gerador-all.netlify.app. Chamadas reais de geração de dados, XML e exclusão de conversa foram verificadas. Consulte [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md) para os resultados e pendências. A configuração existente da Vercel continua disponível.
 
 ## Conectar o projeto
 
@@ -17,7 +17,7 @@ Configurar no painel Netlify, disponíveis para Functions no ambiente de produç
 | --- | --- |
 | AI_PROVIDER | groq |
 | GROQ_API_KEY | Chave da Groq; não inserir no Git |
-| GROQ_MODEL | llama-3.3-70b-versatile |
+| GROQ_MODEL | openai/gpt-oss-120b |
 | UPSTASH_REDIS_REST_URL | URL REST do Redis |
 | UPSTASH_REDIS_REST_TOKEN | Token REST do Redis |
 | AI_COOKIE_SECRET | Segredo aleatório forte de pelo menos 32 caracteres |

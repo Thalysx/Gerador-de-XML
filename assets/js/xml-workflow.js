@@ -72,6 +72,25 @@ function copiarXmlGerado() {
   if (doc) copiarTexto(serializarXml(doc), 'XML copiado.');
 }
 
+function baixarXmlGeradoAtual() {
+  gerarXMLComCampos();
+  const tipo = document.getElementById('xml-preview-tipo').value;
+  const doc = xmlsGerados[tipo];
+  if (!doc) { mostrarStatus('Gere o XML antes de baixar.', 'error'); return; }
+  baixarTexto(`${tipo.toUpperCase()}-teste.xml`, serializarXml(doc), 'application/xml');
+  mostrarStatus('Arquivo XML preparado para download.');
+}
+
+function validarXmlGeradoAtual() {
+  gerarXMLComCampos();
+  const tipo = document.getElementById('xml-preview-tipo').value;
+  const seletor = document.getElementById('validacao-gerado-tipo');
+  seletor.value = tipo;
+  validarXmlDoGerador();
+  switchTab('validacao');
+  document.getElementById('validacao-resultados').focus({preventScroll:true});
+}
+
 function abrirXmlGeradoNoEditor() {
   // Atualiza antes de copiar, mesmo se o debounce do formulário ainda não rodou.
   gerarXMLComCampos();
@@ -179,12 +198,15 @@ function editorHtmlAlteracoes(arq) {
   const antes = new DOMParser().parseFromString(arq.original, 'text/xml');
   const mudancas = compararXml(antes, arq.doc);
   const problemas = verificarConsistenciaXml(arq.doc);
+  const tipoMudanca = m => m.antes === undefined ? 'Adicionado' : m.depois === undefined ? 'Removido' : 'Alterado';
+  const contagens = Object.fromEntries(['Adicionado','Removido','Alterado'].map(tipo => [tipo,mudancas.filter(m=>tipoMudanca(m)===tipo).length]));
   return `<h3>Revisão antes de exportar</h3><p class="texto-apoio">${mudancas.length} ${mudancas.length === 1 ? 'diferença' : 'diferenças'} em relação ao arquivo aberto. Elementos repetidos são comparados pela posição.</p>
+    <div class="editor-change-summary" aria-label="Resumo das alterações"><span>${contagens.Alterado} alterados</span><span>${contagens.Adicionado} adicionados</span><span>${contagens.Removido} removidos</span></div>
     <p class="texto-apoio">Verificações básicas; não valida schema, regras fiscais ou assinatura digital.</p>
     ${problemas.length ? `<ul class="xml-checks">${problemas.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul>` : '<p class="texto-apoio">Sem divergências nas verificações básicas.</p>'}
-    <div class="tabela-scroll"><table class="tabela-alteracoes"><thead><tr><th>Campo</th><th>Original</th><th>Atual</th></tr></thead><tbody>
-    ${mudancas.map(m => `<tr><td>${escapeHtml(m.campo)}</td><td>${escapeHtml(m.antes ?? '(ausente)')}</td><td>${escapeHtml(m.depois ?? '(removido)')}</td></tr>`).join('')}
-    </tbody></table></div>${mudancas.length ? '' : '<p>Nenhuma alteração.</p>'}`;
+    ${mudancas.length ? `<div class="tabela-scroll" tabindex="0" role="region" aria-label="Comparação entre XML original e atual"><table class="tabela-alteracoes"><caption class="sr-only">Campos modificados no XML</caption><thead><tr><th scope="col">Situação</th><th scope="col">Campo</th><th scope="col">Original</th><th scope="col">Atual</th></tr></thead><tbody>
+    ${mudancas.map(m => `<tr><td><span class="editor-modificado-badge">${tipoMudanca(m)}</span></td><td>${escapeHtml(m.campo)}</td><td>${escapeHtml(m.antes ?? '(ausente)')}</td><td>${escapeHtml(m.depois ?? '(removido)')}</td></tr>`).join('')}
+    </tbody></table></div>` : '<p>Nenhuma alteração em relação ao arquivo aberto.</p>'}`;
 }
 
 function alterarItensXml(remover = -1) {

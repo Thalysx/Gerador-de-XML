@@ -81,7 +81,11 @@ function enviarChatLocal(event) {
   return false;
 }
 
-function sugerirChat(pedido) { document.getElementById('chat-pedido').value = pedido; enviarChat(); }
+function sugerirChat(pedido) {
+  const input=document.getElementById('chat-pedido');
+  input.value=pedido;input.focus();
+  document.getElementById('chat-status').textContent='Sugestão preenchida. Revise o pedido e pressione Enviar.';
+}
 function limparChatLocal() { conversasChat = []; renderChat(); document.getElementById('chat-status').textContent = 'Conversa limpa.'; }
 function copiarChat(idx) { copiarTexto(conversasChat[idx].registros.map(r => `${r.rotulo}: ${textoRegistro(r)}`).join('\n\n')); }
 function exportarChat(idx, formato) { exportarRegistros(conversasChat[idx].registros, formato); }
@@ -95,14 +99,25 @@ function gerarLoteInterface(event) {
       telefoneTipo: document.getElementById('gerador-telefone-tipo').value
     });
     document.getElementById('lote-resultados').innerHTML = renderRegistros(ultimoLote);
-    document.getElementById('lote-status').textContent = `${ultimoLote.length} registros gerados, sem repetições neste lote.`;
+    document.getElementById('lote-status').textContent = `${ultimoLote.length} registros gerados, sem repetições neste lote.${ultimoLote.length > 50 ? ' A prévia mostra os primeiros 50; copiar e baixar incluem todos.' : ''}`;
     document.getElementById('lote-exportacao').hidden = false;
+    document.getElementById('lote-resultados').focus({preventScroll:true});
   } catch (erro) { mostrarStatus(erro.message, 'error'); }
   return false;
+}
+
+function limparLoteInterface() {
+  ultimoLote = [];
+  document.getElementById('lote-resultados').replaceChildren();
+  document.getElementById('lote-exportacao').hidden = true;
+  document.getElementById('lote-status').textContent = 'Lote limpo. Escolha o tipo e a quantidade para gerar novamente.';
+  document.getElementById('lote-tipo').focus();
 }
 
 function inicializarGeracao() {
   document.getElementById('gerador-uf').innerHTML = '<option value="">Todas as UFs</option>' + Object.keys(DDD_POR_UF).sort().map(uf => `<option>${uf}</option>`).join('');
   document.getElementById('lote-tipo').innerHTML = Object.entries(TIPOS_DADOS).map(([tipo, rotulo]) => `<option value="${tipo}">${rotulo}</option>`).join('');
+  document.getElementById('lote-tipo').addEventListener('change',()=>atualizarOpcoesDocumento(currentType,document.getElementById('lote-tipo').value));
+  atualizarOpcoesDocumento(currentType,document.getElementById('lote-tipo').value);
   renderChat();
 }

@@ -56,7 +56,7 @@ test('limite por IP persiste entre visitantes e novas conversas',async()=>{
 test('erro do provedor consome reserva e libera bloqueio para nova tentativa',async()=>{
   const store=createMemoryStore({limits:{minute:1}});
   const ai=createAssistant({store,apiKey:'fake',fetchImpl:async()=>({ok:false,status:503})});
-  await assert.rejects(ai.chat({message:'oi'},identity),/Verifique/);
+  await assert.rejects(ai.chat({message:'oi'},identity),/indisponível/);
   await assert.rejects(ai.chat({message:'oi'},identity),hasStatus(429));
 });
 

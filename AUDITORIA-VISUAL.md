@@ -40,9 +40,12 @@ Capturas locais inspecionadas:
 - `artifacts/visual-review/360-dark.png`: XML fiscal no tema escuro e menu móvel recolhido.
 - `artifacts/visual-review/768-light.png`: XML fiscal no tema claro com conteúdo em uma coluna.
 - `artifacts/visual-review/768-chat-dark.png`: assistente no tema escuro.
+- `artifacts/visual-review/768-chat-states-dark.png`: primeira revisão dos novos estados e das ferramentas executadas; a captura revelou um selo encostado no título e levou ao ajuste de ordem e espaçamento aplicado em seguida.
 - `artifacts/visual-review/1440-dark.png`: XML fiscal em duas colunas e navegação vertical.
 - `artifacts/visual-review/1440-docs-dark.png`: documentos, lote, resultado e histórico.
 
 O painel XML permaneceu a 16–18 px do topo ao rolar para baixo e para cima e voltou à posição original no topo. O painel de documentos acompanhou a rolagem e respeitou o final da área, sem cobrir o histórico. O menu móvel expôs os seis rótulos na árvore acessível; Escape fechou o menu e devolveu o foco ao botão após uma correção feita durante a revisão. Não foram registrados erros JavaScript.
 
-Continuam pendentes um leitor de tela real, zoom real de 200%, teste manual de todos os controles por teclado e validação pública após a publicação.
+Em 23/09/2026, a revisão intermediária foi publicada no commit `85bd6ab`. O arquivo público do chat contém os estados novos e o ajuste de espaçamento. A API pública respondeu com Groq configurada e uma chamada real gerou texto, executou `gerar_dados` e devolveu um artefato de registros. A recaptura visual posterior ao último ajuste não pôde ser feita porque a cota do navegador automatizado foi atingida.
+
+Continuam pendentes um leitor de tela real, zoom real de 200%, teste manual de todos os controles por teclado e uma nova captura visual do espaçamento final do chat.

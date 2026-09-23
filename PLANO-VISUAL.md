@@ -63,7 +63,7 @@ Manter roxo/preto no escuro, branco/roxo no claro e navegação vertical. Melhor
 - [x] Animações discretas e opcionais, com entradas curtas e regra global `prefers-reduced-motion` que remove animações, transições e rolagem suave.
 - [x] Testar geradores locais, IA, downloads, persistência, nomes acessíveis e temas após as mudanças. A suíte completa passou com 53 testes; build aprovado; downloads foram acionados no navegador e seu conteúdo é validado nos testes; tema escuro persistiu ao reabrir a página.
 - [x] Atualizar README e histórico de atualização com o estado real da interface, IA, testes e pendências.
-- [ ] Publicar a versão revisada e validar o site público após a implantação.
+- [x] Publicar a revisão intermediária e validar o site público após a implantação. A `main` recebeu o commit `85bd6ab` em 23/09/2026; o Netlify serviu os novos estados do chat e o ajuste de espaçamento; `/api/status` confirmou Groq configurada e uma chamada real executou `gerar_dados`, retornando texto e artefato de registros.
 
 Itens marcados representam implementação local, não aprovação visual nem publicação. Nome e logo continuam propostas; nenhuma marca definitiva foi aplicada ao site.
 

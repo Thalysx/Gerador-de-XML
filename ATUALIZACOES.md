@@ -18,7 +18,7 @@ A suíte completa passou com **53 testes** e o build de produção foi aprovado.
 
 ## Itens ainda em decisão
 
-O nome atual continua provisório. Syntro é apenas uma proposta e já apresenta usos públicos por outros produtos. A aplicação não receberá nome ou logo definitivos antes da escolha do usuário e de nova triagem de disponibilidade. Também permanecem pendentes a validação com leitor de tela real, zoom real de 200% e a publicação desta revisão local.
+O nome atual continua provisório. Syntro é apenas uma proposta e já apresenta usos públicos por outros produtos. A aplicação não receberá nome ou logo definitivos antes da escolha do usuário e de nova triagem de disponibilidade. A revisão intermediária foi publicada no GitHub e na Netlify em 23/09/2026; permanecem pendentes a validação com leitor de tela real, zoom real de 200% e a identidade final.
 
 # Preparação da IA pública — 19/09/2026
 

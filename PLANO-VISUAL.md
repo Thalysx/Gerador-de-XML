@@ -23,7 +23,7 @@ Manter roxo/preto no escuro, branco/roxo no claro e navegação vertical. Melhor
 - [x] Medir contraste dos pares principais nos dois temas, incluindo texto, apoio, roxo, sucesso, erro e foco. Todos superam 4,5:1 e estão protegidos por teste; transparências, bordas e herança ainda dependem de inspeção no navegador.
 - [x] Conferir a navegação por teclado: o Chromium percorreu 165 paradas de foco nas seis telas; todas estavam visíveis, nomeadas e com contorno de foco. Menu, Escape e retorno do foco também foram exercitados.
 - [x] Conferir a árvore de acessibilidade nativa do Chromium nas seis telas: todos os controles focáveis expostos têm função e nome; a região de resultados da validação recebeu um nome após a auditoria detectar a ausência.
-- [ ] Conferir com leitor de tela real. A estrutura acessível e os nomes estão cobertos por navegador e testes, mas a leitura auditiva ainda depende dessa etapa manual.
+- [ ] Conferir com leitor de tela real. A estrutura acessível e os nomes estão cobertos por navegador e testes; o roteiro auditivo e o modelo de registro estão prontos em `CHECKLIST-LEITOR-TELA.md`, mas a conclusão depende de uma pessoa ouvir a saída.
 - [x] Conferir zoom de 200%: uma janela física de 1280 × 900 com escala 2 deixou 640 × 450 px CSS; as seis telas ficaram sem rolagem horizontal e sem elementos ultrapassando o viewport.
 - [x] Conferir movimento reduzido: a preferência foi emulada no Chromium e todos os componentes amostrados ficaram sem animação relevante, além da proteção estática existente.
 - [x] Validar 360, 768 e 1440 px: as seis telas foram medidas no navegador real, sem largura excedente ou rolagem horizontal; capturas dos temas claro e escuro foram inspecionadas.
@@ -92,3 +92,4 @@ Os serviços RDAP oficiais da Verisign (`.com`) e do Registro.br (`.com.br`) res
 | FictaBase | Sem registro RDAP encontrado | Sem registro RDAP encontrado | Tem a mesma ideia de BaseFicta, porém com ordem menos natural em português. |
 
 Uma resposta RDAP 404 não reserva o domínio e pode mudar a qualquer momento. Essa shortlist foi encerrada quando o usuário escolheu **TheGenerator**. A pesquisa específica e as limitações do nome final estão registradas em `IDENTIDADE.md`.
+

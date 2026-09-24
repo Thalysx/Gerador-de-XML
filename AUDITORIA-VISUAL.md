@@ -68,3 +68,5 @@ A nova camada `minimal.css` reduziu o conteúdo simultâneo sem remover funçõe
 
 A repetição da auditoria aprovou as seis telas em zoom simulado de 200%: nenhuma apresentou rolagem horizontal, elemento excedente, controle exposto sem nome, foco invisível ou foco sem contorno. A captura `thegenerator-docs-minimal-dark.png` registra a nova proporção da tela antes da geração.
 
+A versão foi publicada no commit `39ddc28`; a Netlify concluiu o deploy de produção desse mesmo commit com estado `ready`.
+

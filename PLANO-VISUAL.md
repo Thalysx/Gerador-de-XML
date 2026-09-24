@@ -40,7 +40,7 @@ Manter roxo/preto no escuro, branco/roxo no claro e navegação vertical. Melhor
 - [x] Busca local de geradores por nome, sem diferença entre maiúsculas e acentos.
 - [x] Contagem de opções encontradas, estado vazio e botão para limpar busca.
 - [x] Organizar os 15 geradores em quatro categorias: Pessoas e documentos, Empresas, Contato e Transporte e exportação. Reduzidos os títulos repetidos e adicionado filtro combinado com a busca.
-  - Estrutura e comportamento verificados nos testes; altura efetiva e apresentação responsiva ainda precisam de revisão no navegador.
+  - Estrutura e comportamento verificados nos testes; altura efetiva e apresentação responsiva aprovadas no Chromium em 360, 768 e 1440 px.
 - [x] Mostrar opções específicas apenas quando pertinentes ao documento ou lote atual: nome para CPF/CNPJ, máscara para formatos aplicáveis e UF/tipo para telefone.
 - [x] Padronizar o resultado individual com ações para gerar novamente, copiar e baixar TXT. O arquivo preserva o valor exibido, inclusive máscara, e inclui nome ou razão social quando visível.
 - [x] Aprimorar lotes, filtros e busca no histórico. A busca ignora acentos, mostra contagem e preserva restauração/cópia; o histórico de documentos filtra pelas quatro categorias. Lotes informam quando a prévia está limitada a 50, mantêm exportação dos registros completos, usam ações explícitas e podem ser limpos com retorno do foco.

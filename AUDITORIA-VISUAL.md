@@ -62,3 +62,9 @@ O servidor isolado da auditoria remove dependências visuais externas para torna
 
 Continua pendente apenas a validação auditiva manual com um leitor de tela real; a exposição estrutural à tecnologia assistiva foi aprovada pela árvore nativa do Chromium. O procedimento, os cenários e o modelo para registrar o resultado estão em `CHECKLIST-LEITOR-TELA.md`. A identidade aplicada recebeu a captura final local e foi publicada no commit `e6856b9`. O HTML, o símbolo SVG e o manifesto retornados por `https://gerador-all.netlify.app` coincidiram por SHA-256 com os arquivos do build local.
 
+### Simplificação visual — 24/09/2026
+
+A nova camada `minimal.css` reduziu o conteúdo simultâneo sem remover funções. Atalhos, categorias de geradores, lote e histórico passaram a usar divulgação progressiva. A tela de Dados cadastrais começa em uma coluna central e passa para duas colunas quando existe resultado.
+
+A repetição da auditoria aprovou as seis telas em zoom simulado de 200%: nenhuma apresentou rolagem horizontal, elemento excedente, controle exposto sem nome, foco invisível ou foco sem contorno. A captura `thegenerator-docs-minimal-dark.png` registra a nova proporção da tela antes da geração.
+

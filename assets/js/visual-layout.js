@@ -40,6 +40,19 @@ document.querySelectorAll('.tab-btn').forEach(tab=>{
 new MutationObserver(atualizarCabecalhoLayout).observe(document.querySelector('.tab-nav'),{subtree:true,attributes:true,attributeFilter:['aria-selected']});
 atualizarCabecalhoLayout();
 
+// Mantém atalhos disponíveis sem ocupar uma faixa inteira do conteúdo.
+const atalhosWorkspace=document.querySelector('.workspace-shortcuts');
+document.querySelector('.header-actions')?.prepend(atalhosWorkspace);
+document.addEventListener('click',event=>{
+  if(atalhosWorkspace.open && !atalhosWorkspace.contains(event.target))atalhosWorkspace.open=false;
+});
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape' && atalhosWorkspace.open) {
+    atalhosWorkspace.open=false;
+    atalhosWorkspace.querySelector('summary')?.focus();
+  }
+});
+
 const lerAtalhos=chave=>{
   const valor=storageGet(chave,[]);
   return Array.isArray(valor)?[...new Set(valor.filter(id=>Object.hasOwn(descricoesLayout,id)))]:[];
@@ -104,8 +117,12 @@ function filtrarGeradores() {
       botao.hidden=!normalizar(botao.textContent).includes(termo)||(categoriaGerador.value!=='todas'&&botao.dataset.category!==categoriaGerador.value);
       if(!botao.hidden)visiveis++;
     });
+    const secao=grupo.closest('.docs-generator-group');
     grupo.hidden=visiveis===0;
-    grupo.previousElementSibling.hidden=visiveis===0;
+    if(secao) {
+      secao.hidden=visiveis===0;
+      if(termo || categoriaGerador.value!=='todas') secao.open=visiveis>0;
+    }
     total+=visiveis;
   });
   document.getElementById('docs-search-status').textContent=total?`${total} opções disponíveis.`:'Nenhum gerador encontrado. Tente outro nome ou limpe a busca.';
@@ -159,3 +176,4 @@ menuFerramentas.addEventListener('click',event=>{
     document.getElementById(tab.getAttribute('aria-controls')).focus();
   }
 });
+

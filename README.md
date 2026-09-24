@@ -40,6 +40,7 @@ A interface usa navegação lateral vertical e temas branco/roxo e preto/roxo. O
 | `assets/js/validacao-xml.js` | Sintaxe e consistência básica de NF-e/CT-e |
 | `assets/css/validacao-xml.css` | Tela de validação XML |
 | `assets/css/usabilidade.css` | Ajustes de foco, toque, responsividade, estados e movimento reduzido |
+| `assets/css/minimal.css` | Simplificação visual, painéis progressivos e equilíbrio das grades |
 | `scripts/ai.cjs` | Orquestração dos provedores, sessões e ferramentas |
 | `scripts/engine.cjs` | Reutilização do gerador e validador no servidor |
 | `assets/js/xml-workflow.js` | Prévia, integração com editor/cadastro, cenários e comparação de XML |

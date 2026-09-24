@@ -346,6 +346,17 @@ async function main() {
     await dormir(100);
     const capturaMarcaEscura = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     writeFileSync(path.join(SAIDA, 'thegenerator-desktop-dark.png'), Buffer.from(capturaMarcaEscura.data, 'base64'));
+    await avaliar(cdp, `(() => {
+      switchTab('docs', document.getElementById('tab-btn-docs'));
+      document.documentElement.scrollTop = 0;
+      return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    })()`);
+    await dormir(150);
+    await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    await dormir(50);
+    const capturaDocsMinimalista = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    writeFileSync(path.join(SAIDA, 'thegenerator-docs-minimal-dark.png'), Buffer.from(capturaDocsMinimalista.data, 'base64'));
+    await avaliar(cdp, `switchTab('xml', document.getElementById('tab-btn-xml'))`);
     await avaliar(cdp, `toggleTheme()`);
     await dormir(500);
     await avaliar(cdp, `new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(resolve))))`);
@@ -402,3 +413,4 @@ main().catch(error => {
   console.error(error.stack || error.message);
   process.exitCode = 1;
 });
+

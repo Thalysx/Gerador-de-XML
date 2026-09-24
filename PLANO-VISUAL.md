@@ -73,6 +73,17 @@ Manter roxo/preto no escuro, branco/roxo no claro e navegação vertical. Melhor
 
 Os itens implementáveis por código estão concluídos e a identidade TheGenerator está publicada. Permanece como verificação manual externa apenas a leitura auditiva com leitor de tela real; a árvore de acessibilidade, os nomes, o foco e o teclado já foram aprovados no Chromium.
 
+## 8. Simplificação antes da próxima evolução — concluída localmente em 24/09/2026
+
+- [x] Remover informações introdutórias repetidas da tela XML fiscal.
+- [x] Transformar Meus atalhos em um menu compacto no cabeçalho, com fechamento por clique externo e Escape.
+- [x] Dar destaque visual à ação principal “Gerar novos dados” e simplificar os demais rótulos.
+- [x] Reunir seleção do documento e cenários em uma grade compacta e responsiva.
+- [x] Organizar os geradores cadastrais em grupos recolhíveis, preservando busca e filtros.
+- [x] Recolher lote e histórico até o usuário solicitá-los.
+- [x] Centralizar a tela de geradores enquanto não houver resultado e abrir a grade de duas colunas após a geração.
+- [x] Validar as seis telas em zoom de 200%, teclado, árvore acessível e movimento reduzido.
+
 ## Triagem de nomes — atualizada em 23/09/2026
 
 Os cinco nomes iniciais apresentam conflitos públicos próximos ao projeto: Syntro é usado por várias plataformas de software e IA; NexoLab por estúdios de software; Datalume por uma plataforma de análise de dados; Prisma Dados por uma consultoria brasileira de dados e IA; e Molda por uma agência brasileira de software. Eles foram retirados da shortlist.

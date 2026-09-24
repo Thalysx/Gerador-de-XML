@@ -1,3 +1,15 @@
+# Interface mais intuitiva e minimalista — 24/09/2026
+
+- Atalhos deixaram de ocupar uma faixa inteira e passaram para um menu compacto no cabeçalho.
+- Os cartões introdutórios repetidos do XML fiscal foram removidos; a ação principal agora é “Gerar novos dados”.
+- Documento e cenários salvos foram reunidos em uma grade compacta antes do formulário.
+- Os 15 geradores foram organizados em categorias recolhíveis, com apenas Pessoas e documentos aberta inicialmente.
+- Geração em lote e histórico ficam recolhidos até serem solicitados.
+- Dados cadastrais usa uma coluna central quando ainda não há resultado e abre a segunda coluna somente após a geração.
+- O painel de atalhos ganhou fechamento por clique externo ou Escape e posicionamento seguro no celular e em zoom de 200%.
+
+A suíte completa continua com **53 testes aprovados**. A auditoria em Chromium aprovou as seis telas sem rolagem horizontal, controles sem nome ou foco invisível.
+
 # Revisão visual e de acessibilidade — 21/09/2026
 
 A interface foi reorganizada sem trocar a identidade roxa aprovada. O tema escuro usa preto e tons de roxo; o claro usa branco e roxo. A navegação vertical continua sendo a base do produto e passa a agrupar as ferramentas por tarefa, com menu responsivo, favoritos e últimas ferramentas usadas.
@@ -188,3 +200,4 @@ Também foram conferidos no Chrome: aparência do XML, chat com pedido misto, ch
 - [Receita Federal — cálculo do dígito verificador do CNPJ alfanumérico](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/publicacoes/documentos-tecnicos/cnpj/manual-dv-cnpj.pdf).
 - [Receita Federal — perguntas e respostas sobre CNPJ alfanumérico](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/publicacoes/perguntas-e-respostas/cnpj/cnpj-alfanumerico.pdf).
 - [Siscomex — perguntas frequentes de exportação, item 3.25](https://www.gov.br/siscomex/pt-br/informacoes/perguntas-frequentes/perguntas-frequentes-exportacao): estrutura e cálculo do dígito da DU-E.
+

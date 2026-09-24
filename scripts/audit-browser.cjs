@@ -348,14 +348,32 @@ async function main() {
     writeFileSync(path.join(SAIDA, 'thegenerator-desktop-dark.png'), Buffer.from(capturaMarcaEscura.data, 'base64'));
     await avaliar(cdp, `(() => {
       switchTab('docs', document.getElementById('tab-btn-docs'));
-      document.documentElement.scrollTop = 0;
       return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     })()`);
     await dormir(150);
+    await avaliar(cdp, `scrollTo(0, 0)`);
     await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     await dormir(50);
     const capturaDocsMinimalista = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     writeFileSync(path.join(SAIDA, 'thegenerator-docs-minimal-dark.png'), Buffer.from(capturaDocsMinimalista.data, 'base64'));
+    const capturasTelas = [
+      ['cadastro', 'thegenerator-cadastro-dark.png'],
+      ['editor', 'thegenerator-editor-dark.png'],
+      ['validacao', 'thegenerator-validacao-dark.png'],
+      ['chat', 'thegenerator-chat-dark.png']
+    ];
+    for (const [painel, arquivo] of capturasTelas) {
+      await avaliar(cdp, `(() => {
+        switchTab(${JSON.stringify(painel)}, document.getElementById('tab-btn-' + ${JSON.stringify(painel)}));
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      })()`);
+      await dormir(100);
+      await avaliar(cdp, `scrollTo(0, 0)`);
+      // A primeira captura aquece a composição da tela no Chrome headless.
+      await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+      const imagemTela = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+      writeFileSync(path.join(SAIDA, arquivo), Buffer.from(imagemTela.data, 'base64'));
+    }
     await avaliar(cdp, `switchTab('xml', document.getElementById('tab-btn-xml'))`);
     await avaliar(cdp, `toggleTheme()`);
     await dormir(500);
@@ -413,4 +431,3 @@ main().catch(error => {
   console.error(error.stack || error.message);
   process.exitCode = 1;
 });
-

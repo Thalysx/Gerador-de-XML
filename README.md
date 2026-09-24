@@ -12,7 +12,7 @@ A identidade, os arquivos de logo, as regras de uso e a triagem pública do nome
 
 ## Organização
 
-A interface usa navegação lateral vertical e temas branco/roxo e preto/roxo. Os tokens compartilhados ficam em `assets/css/base.css`; `assets/css/visual-lab.css`, `assets/css/portus.css` e `assets/css/usabilidade.css` organizam layout, navegação, responsividade e acessibilidade. O cabeçalho contextual e os atalhos ficam em `assets/js/visual-layout.js`.
+A interface usa navegação lateral vertical e temas branco/roxo e preto/roxo. Os tokens compartilhados ficam em `assets/css/base.css`; `assets/css/visual-lab.css`, `assets/css/portus.css` e `assets/css/usabilidade.css` organizam layout, navegação, responsividade e acessibilidade. `assets/css/minimal.css` é a camada final de apresentação e padroniza a hierarquia dos componentes sem alterar as regras de negócio. O cabeçalho contextual e os atalhos ficam em `assets/js/visual-layout.js`.
 
 | Arquivo | Responsabilidade |
 | --- | --- |
@@ -98,4 +98,3 @@ A aba **Validação XML** aceita conteúdo colado, XML atual do gerador ou até 
 Os testes automatizados da IA usam um provedor simulado para manter a suíte determinística e verificam a execução real das ferramentas. A integração pública com Groq também foi exercitada no site implantado.
 
 Os 53 testes abrangem geração, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API e fluxos de XML. A atualização também foi conferida em Chromium nas larguras de 360, 768 e 1440 px, incluindo chat e navegação móvel.
-

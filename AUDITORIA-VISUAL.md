@@ -1,5 +1,22 @@
 # Evidências de acessibilidade e revisão visual
 
+## Revisão corporativa minimalista — 24/09/2026
+
+A camada final `assets/css/minimal.css` foi revisada para unificar botões, campos, cards, tabelas, mensagens e foco, reduzindo superfícies aninhadas e efeitos decorativos. O Cadastro geral passou a uma coluna ampla; conteúdos auxiliares do Editor, do Assistente e dos históricos usam divulgação progressiva.
+
+O comando `npm run audit:browser` mediu os seis painéis em uma janela física de 1280 × 900 com escala 2, equivalente a 640 × 450 px CSS. Todos ficaram sem rolagem horizontal e sem elementos visíveis fora do viewport. O percurso somou 153 paradas de teclado, com zero controles sem nome, invisíveis ou sem contorno de foco. A árvore de acessibilidade nativa não encontrou controles focáveis ou marcos sem nome. A preferência de movimento reduzido também foi aplicada corretamente.
+
+Capturas desta rodada:
+
+- `artifacts/visual-review/thegenerator-desktop-dark.png` e `thegenerator-desktop-light.png`.
+- `artifacts/visual-review/thegenerator-docs-minimal-dark.png`.
+- `artifacts/visual-review/thegenerator-cadastro-dark.png`.
+- `artifacts/visual-review/thegenerator-editor-dark.png`.
+- `artifacts/visual-review/thegenerator-validacao-dark.png`.
+- `artifacts/visual-review/thegenerator-chat-dark.png`.
+
+A verificação auditiva manual com leitor de tela real continua como uma etapa humana separada.
+
 ## Contraste de cores principais
 
 Razões calculadas por luminância relativa sRGB para pares opacos definidos nos estilos locais:
@@ -69,4 +86,3 @@ A nova camada `minimal.css` reduziu o conteúdo simultâneo sem remover funçõe
 A repetição da auditoria aprovou as seis telas em zoom simulado de 200%: nenhuma apresentou rolagem horizontal, elemento excedente, controle exposto sem nome, foco invisível ou foco sem contorno. A captura `thegenerator-docs-minimal-dark.png` registra a nova proporção da tela antes da geração.
 
 A versão foi publicada no commit `39ddc28`; a Netlify concluiu o deploy de produção desse mesmo commit com estado `ready`.
-

@@ -82,7 +82,7 @@
     <div class="toolbar shadow-sm">
       <span class="toolbar-label" id="xml-actions-label">Gerar</span>
       <div class="toolbar-actions" role="group" aria-labelledby="xml-actions-label">
-        <button type="button" class="btn btn-primary" onclick="processarXML(acao.regenerar)"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Gerar novos dados</button>
+        <button type="button" class="btn btn-primary ui-primary" onclick="processarXML(acao.regenerar)"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Gerar novos dados</button>
         <button type="button" onclick="gerarXMLComCampos(true)"><i class="bi bi-pencil-square" aria-hidden="true"></i> Usar campos atuais</button>
         <button type="button" class="lock-badge" id="lock-btn" onclick="toggleLock()" aria-pressed="false" aria-label="Preservar os campos XML ao gerar novamente" data-bs-toggle="tooltip" data-bs-title="Manter os dados editados ao gerar novamente"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg> Preservar campos</button>
       </div>
@@ -181,7 +181,7 @@
     </div>
       <aside class="painel-novo xml-preview" aria-labelledby="xml-preview-title" tabindex="0">
         <div class="painel-cabecalho"><h2 id="xml-preview-title">XMLs gerados</h2><select id="xml-preview-tipo" aria-label="XML para visualizar" onchange="atualizarPreviaXml()"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select></div>
-        <div class="acoes-inline" role="group" aria-label="Ações do XML exibido"><button type="button" onclick="copiarXmlGerado()">Copiar XML</button><button type="button" onclick="baixarXmlGeradoAtual()">Baixar XML</button><button type="button" onclick="validarXmlGeradoAtual()">Validar XML</button><button type="button" class="btn-accent" onclick="abrirXmlGeradoNoEditor()">Abrir cópia no editor</button></div>
+        <div class="acoes-inline" role="group" aria-label="Ações do XML exibido"><button type="button" onclick="copiarXmlGerado()">Copiar XML</button><button type="button" onclick="baixarXmlGeradoAtual()">Baixar XML</button><button type="button" onclick="validarXmlGeradoAtual()">Validar XML</button><button type="button" class="btn-accent ui-primary" onclick="abrirXmlGeradoNoEditor()">Abrir no editor</button></div>
         <pre id="xml-preview-code" tabindex="0" aria-label="Prévia do XML gerado"></pre>
         <p id="xml-preview-status" class="texto-apoio" role="status"></p><ul id="xml-checks" class="xml-checks"></ul>
         <p class="texto-apoio">XML para testes. As verificações básicas não conferem schema, regras fiscais nem assinatura digital.</p>
@@ -227,7 +227,7 @@
           <form class="lote-form" onsubmit="return gerarLoteInterface(event)">
             <div class="campo-novo"><label for="lote-tipo">Tipo de dado</label><select id="lote-tipo"></select></div>
             <div class="campo-novo"><label for="lote-quantidade">Quantidade</label><input id="lote-quantidade" type="number" value="10" min="1" max="500" step="1" required></div>
-            <button type="submit" class="btn-accent">Gerar lote</button>
+            <button type="submit" class="btn-accent ui-primary">Gerar lote</button>
           </form>
           <p id="lote-status" class="texto-apoio" role="status">Escolha o tipo e a quantidade.</p>
           <div id="lote-exportacao" class="acoes-inline" hidden><button type="button" onclick="copiarTexto(ultimoLote.map(textoRegistro).join('\n\n'),'Lote copiado.')">Copiar lote</button><button type="button" onclick="exportarRegistros(ultimoLote, 'json')">Baixar JSON</button><button type="button" onclick="exportarRegistros(ultimoLote, 'csv')">Baixar CSV</button><button type="button" onclick="exportarRegistros(ultimoLote, 'txt')">Baixar TXT</button><button type="button" onclick="limparLoteInterface()">Limpar lote</button></div>
@@ -250,7 +250,7 @@
         <form class="input-row" role="group" aria-labelledby="docs-validar-title" onsubmit="return atualizarValidacaoDocumento()">
           <label class="sr-only" for="validate-input">Documento para conferir</label>
           <input type="text" id="validate-input" placeholder="CPF, CNPJ, placa, contêiner ou IMO..." maxlength="20" inputmode="text" autocomplete="off" spellcheck="false" aria-labelledby="docs-validar-title" aria-describedby="validate-status" aria-invalid="false" oninput="atualizarValidacaoDocumento()" />
-          <button type="submit" class="btn-primary">Validar</button>
+          <button type="submit" class="btn-primary ui-primary">Validar</button>
         </form>
         <div id="validate-status" class="status idle" role="status" aria-live="polite" aria-atomic="true">Aguardando entrada</div>
       </div>
@@ -261,8 +261,8 @@
           <div class="output-label" id="docs-result-label">Resultado</div>
           <div class="output-value placeholder" id="output-val" role="status" aria-live="polite" aria-atomic="true" tabindex="-1">Clique em um botão para gerar</div>
           <div class="copy-row">
-            <button type="button" class="btn-accent" onclick="gerarNovoDocumentoAtual()" id="new-doc-btn" style="display:none;" aria-label="Gerar novamente o documento atual"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Gerar Novamente</button>
-            <button type="button" class="btn-primary" onclick="copyResult()" id="copy-btn" style="display:none;" aria-label="Copiar resultado gerado"><i class="bi bi-clipboard" aria-hidden="true"></i> Copiar</button>
+            <button type="button" class="btn-accent ui-primary" onclick="gerarNovoDocumentoAtual()" id="new-doc-btn" style="display:none;" aria-label="Gerar novamente o documento atual"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Gerar novamente</button>
+            <button type="button" class="btn-primary ui-secondary" onclick="copyResult()" id="copy-btn" style="display:none;" aria-label="Copiar resultado gerado"><i class="bi bi-clipboard" aria-hidden="true"></i> Copiar</button>
             <button type="button" onclick="baixarResultadoDocumento()" id="download-doc-btn" style="display:none;" aria-label="Baixar resultado gerado em arquivo de texto"><i class="bi bi-download" aria-hidden="true"></i> Baixar TXT</button>
             <span class="copied-msg" id="copied-msg" aria-live="polite" aria-atomic="true">Copiado!</span>
           </div>
@@ -333,12 +333,8 @@
   <div class="tab-panel" id="tab-cadastro" role="tabpanel" aria-labelledby="tab-btn-cadastro" tabindex="0" hidden>
     <div class="cadastro-wrapper">
 
-      <div class="cadastro-header">
-        <div>
-          <h2>Cadastro geral</h2>
-          <p>Gere um perfil completo de motorista com todos os dados associados</p>
-        </div>
-        <button type="button" class="btn-accent" onclick="gerarCadastroCompleto()" aria-label="Gerar cadastro completo"><i class="bi bi-magic" aria-hidden="true"></i> Gerar cadastro</button>
+      <div class="cadastro-header cadastro-primary-action">
+        <button type="button" class="btn-accent ui-primary" onclick="gerarCadastroCompleto()" aria-label="Gerar cadastro completo"><i class="bi bi-magic" aria-hidden="true"></i> Gerar cadastro</button>
       </div>
 
       <div class="cadastro-layout">
@@ -433,7 +429,7 @@
 
             <!-- Pessoa jurídica -->
             <div class="cadastro-section" role="group" aria-labelledby="cad-pessoa-juridica-title">
-              <div class="cadastro-section-title" id="cad-pessoa-juridica-title"><span class="section-dot" style="background:var(--accent-2)" aria-hidden="true"></span>Pessoa jurídica associada</div>
+              <div class="cadastro-section-title" id="cad-pessoa-juridica-title"><span class="section-dot" aria-hidden="true"></span>Pessoa jurídica associada</div>
               <div class="cadastro-grid-2">
                 <div class="cad-field">
                   <label class="cad-label" for="cad_empresa">Razão social</label>
@@ -474,7 +470,7 @@
 
             <!-- Veículo e carga -->
             <div class="cadastro-section" role="group" aria-labelledby="cad-veiculo-carga-title">
-              <div class="cadastro-section-title" id="cad-veiculo-carga-title"><span class="section-dot" style="background:#2da87a" aria-hidden="true"></span>Veículo e carga</div>
+              <div class="cadastro-section-title" id="cad-veiculo-carga-title"><span class="section-dot" aria-hidden="true"></span>Veículo e carga</div>
               <div class="cadastro-grid-3">
                 <div class="cad-field">
                   <label class="cad-label" for="cad_placa">Placa (Mercosul)</label>
@@ -506,10 +502,9 @@
             <section class="painel-novo"><h3>Usar a empresa na NF-e</h3><p class="texto-apoio">Aplica razão social e CNPJ numérico do cadastro ao papel escolhido.</p><div class="acoes-inline"><div class="campo-novo"><label for="cad-xml-papel">Papel da empresa</label><select id="cad-xml-papel"><option value="emitente">Emitente</option><option value="destinatario">Destinatário</option><option value="transportadora">Transportadora</option></select></div><button type="button" onclick="usarCadastroNoXml()">Aplicar ao XML</button></div></section>
             <!-- Ações -->
             <div class="cadastro-actions" role="group" aria-label="Ações do cadastro geral">
-              <button type="button" class="btn-accent" onclick="gerarCadastroCompleto()" aria-label="Gerar cadastro completo automaticamente"><i class="bi bi-magic" aria-hidden="true"></i> Gerar cadastro completo</button>
-              <button type="button" class="btn-primary" onclick="copiarCadastroTexto()" id="cad-copy-text-btn" aria-label="Copiar cadastro em texto"><i class="bi bi-clipboard" aria-hidden="true"></i> Copiar cadastro</button>
+              <button type="button" class="btn-primary ui-secondary" onclick="copiarCadastroTexto()" id="cad-copy-text-btn" aria-label="Copiar cadastro em texto"><i class="bi bi-clipboard" aria-hidden="true"></i> Copiar cadastro</button>
               <button type="button" onclick="copiarCadastroJSON()" id="cad-copy-json-btn" aria-label="Copiar cadastro em JSON"><i class="bi bi-filetype-json" aria-hidden="true"></i> Copiar JSON</button>
-              <button type="button" onclick="limparCadastro()" aria-label="Limpar cadastro geral"><i class="bi bi-trash3" aria-hidden="true"></i> Limpar</button>
+              <button type="button" class="ui-danger" onclick="limparCadastro()" aria-label="Limpar cadastro geral"><i class="bi bi-trash3" aria-hidden="true"></i> Limpar</button>
               <span class="copied-msg" id="cad-copied-msg" style="opacity:0" aria-live="polite" aria-atomic="true">Copiado!</span>
             </div>
           </div>
@@ -524,13 +519,13 @@
             <div class="sr-only" id="cadastro-result-title">Resultado do cadastro geral</div>
             <div class="result-header">
               <div class="result-header-left">
-                <div class="doc-badge" style="background:rgba(255,255,255,0.14);">Perfil</div>
+                <div class="doc-badge result-profile-badge">Perfil</div>
                 <div>
                   <div class="result-title" id="res-nome-title">—</div>
                   <div class="result-subtitle" id="res-empresa-sub">—</div>
                 </div>
               </div>
-              <button type="button" class="btn-sm" onclick="gerarCadastroCompleto()" aria-label="Gerar novo cadastro completo" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:var(--card-header-text);">Novo cadastro</button>
+              <button type="button" class="btn-sm result-new-button" onclick="gerarCadastroCompleto()" aria-label="Gerar novo cadastro completo">Novo cadastro</button>
             </div>
             <div class="result-name-row">
               <div>
@@ -547,21 +542,22 @@
           </div>
 
           <!-- Histórico -->
-          <section class="historico-wrapper" style="margin-top:0;" aria-labelledby="historico-title">
-            <div class="historico-header">
+          <details class="historico-wrapper cadastro-history" aria-labelledby="historico-title">
+            <summary class="historico-header">
               <div class="historico-title" id="historico-title">
                 Histórico do cadastro geral
                 <span class="historico-count" id="historico-count">0 registros</span>
               </div>
-              <button type="button" class="btn-sm" onclick="limparHistorico()" id="historico-limpar-btn" style="display:none;" aria-label="Limpar histórico do cadastro geral">Limpar</button>
-            </div>
+              <span class="summary-hint">Mostrar</span>
+            </summary>
+            <div class="historico-toolbar"><button type="button" class="btn-sm ui-danger" onclick="limparHistorico()" id="historico-limpar-btn" style="display:none;" aria-label="Limpar histórico do cadastro geral">Limpar</button></div>
             <div class="sr-only" id="historico-status" role="status" aria-live="polite" aria-atomic="true">Histórico do cadastro geral vazio.</div>
             <div class="historico-search campo-novo"><label for="historico-busca">Buscar no histórico de cadastros</label><input type="search" id="historico-busca" placeholder="Nome, empresa ou documento" aria-controls="historico-items"><p id="historico-busca-status" class="texto-apoio" role="status" aria-live="polite"></p></div>
             <div id="historico-lista">
               <div class="historico-empty" id="historico-empty"><p>Nenhum cadastro no histórico. Crie um perfil completo para começar.</p><button type="button" onclick="gerarCadastroCompleto()">Gerar primeiro cadastro</button></div>
               <div class="historico-list" id="historico-items"></div>
             </div>
-          </section>
+          </details>
 
         </div>
       </div><!-- /.cadastro-layout -->
@@ -576,18 +572,18 @@
     <div class="editor-dropzone" id="editor-dropzone">
       <input type="file" id="editor-file-input" accept=".xml" multiple style="display:none" aria-label="Selecionar arquivos XML para o editor">
       <div class="editor-dropzone-inner" onclick="document.getElementById('editor-file-input').click()" role="button" tabindex="0" aria-label="Clique para selecionar arquivos XML">
-        <i class="bi bi-file-earmark-arrow-up" style="font-size:2.5rem;color:var(--accent)" aria-hidden="true"></i>
-        <p>Arraste NFes em XML aqui para adicionar</p>
-        <span>ou clique para selecionar do seu computador</span>
-        <div class="editor-dropzone-recursos">
-          <strong>RECURSOS</strong>
+        <i class="bi bi-file-earmark-arrow-up editor-dropzone-icon" aria-hidden="true"></i>
+        <p>Adicione seus arquivos XML</p>
+        <span>Arraste aqui ou selecione no computador</span>
+        <details class="editor-dropzone-recursos">
+          <summary>O que pode ser editado</summary>
           <ul>
             <li>Altere qualquer valor numérico ou de texto</li>
             <li>Edite múltiplos XMLs simultaneamente</li>
             <li>Remova nós e elementos indesejados</li>
             <li>Exporte de volta mantendo a estrutura</li>
           </ul>
-        </div>
+        </details>
       </div>
     </div>
 
@@ -605,8 +601,8 @@
           <button type="button" class="nfe-btn" onclick="editorMostrarAjuda()"><i class="bi bi-question-circle" aria-hidden="true"></i> Ajuda</button>
           <button type="button" class="nfe-btn" onclick="document.getElementById('editor-file-input-add').click()"><i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar NFes</button>
           <input type="file" id="editor-file-input-add" accept=".xml" multiple style="display:none" aria-label="Adicionar arquivos XML ao editor">
-          <button type="button" class="nfe-btn" onclick="editorLimparGrupo()"><i class="bi bi-trash" aria-hidden="true"></i> Limpar Grupo</button>
-          <button type="button" class="nfe-btn nfe-btn-primary" onclick="editorExportarFinal()"><i class="bi bi-download" aria-hidden="true"></i> Exportar XML Final</button>
+          <button type="button" class="nfe-btn ui-danger" onclick="editorLimparGrupo()"><i class="bi bi-trash" aria-hidden="true"></i> Limpar grupo</button>
+          <button type="button" class="nfe-btn nfe-btn-primary ui-primary" onclick="editorExportarFinal()"><i class="bi bi-download" aria-hidden="true"></i> Exportar XML</button>
         </div>
       </div>
 
@@ -633,24 +629,24 @@
 
   <div class="tab-panel" id="tab-chat" role="tabpanel" aria-labelledby="tab-btn-chat" tabindex="0" hidden>
     <section class="painel-novo chat-painel" aria-labelledby="chat-title">
-      <div class="painel-cabecalho"><h2 id="chat-title">Assistente de geração</h2><div class="acoes-inline"><label><input type="checkbox" id="chat-mascara" checked> Máscara</label><button type="button" onclick="limparChat()">Nova conversa</button></div></div>
-      <div class="acoes-inline"><label for="chat-modo">Modo</label><select id="chat-modo" onchange="atualizarModoChat()"><option value="ia">Assistente IA</option><option value="local">Comandos locais (sem IA)</option></select></div>
+      <h2 id="chat-title" class="sr-only">Assistente de geração</h2>
+      <div class="chat-controls"><div class="chat-mode"><label for="chat-modo">Modo</label><select id="chat-modo" onchange="atualizarModoChat()"><option value="ia">Assistente IA</option><option value="local">Comandos locais</option></select></div><label class="chat-mask"><input type="checkbox" id="chat-mascara" checked> Aplicar máscara</label><button type="button" class="ui-secondary" onclick="limparChat()">Nova conversa</button></div>
       <div id="chat-vazio" class="chat-vazio"><i class="bi bi-chat-square-text" aria-hidden="true"></i><h3>Como posso ajudar?</h3><p class="texto-apoio">Peça dados de teste, gere XMLs ou converse sobre seus campos e validações.</p></div>
-      <p id="chat-privacidade" class="texto-apoio">No modo IA, mensagens e anexos são enviados ao provedor configurado (Groq ou OpenAI). A conversa fica no servidor por até 30 minutos de inatividade. Nova conversa apaga os dados da conversa anterior no servidor da aplicação.</p>
+      <details class="chat-privacy"><summary>Privacidade e retenção</summary><p id="chat-privacidade" class="texto-apoio">No modo IA, mensagens e anexos são enviados ao provedor configurado (Groq ou OpenAI). A conversa fica no servidor por até 30 minutos de inatividade. Nova conversa apaga os dados da conversa anterior no servidor da aplicação.</p></details>
       <div id="chat-mensagens" class="chat-mensagens" aria-label="Pedidos e resultados locais" hidden></div>
       <div id="chat-ia-mensagens" class="chat-mensagens" aria-label="Conversa com IA" aria-live="polite"></div>
       <details id="chat-anexo-area"><summary>Anexar XML à próxima mensagem (opcional)</summary><p class="texto-apoio">Cole, selecione um arquivo ou carregue o documento atual. O conteúdo será enviado à IA somente com a próxima mensagem. Até 100 KB.</p><div class="acoes-inline"><select id="chat-anexo-tipo" aria-label="Tipo de XML para anexar"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select><button type="button" onclick="anexarXmlAtualIa()">Carregar XML atual</button><label class="btn" for="chat-anexo-arquivo">Selecionar arquivo XML</label><input class="sr-only" type="file" id="chat-anexo-arquivo" accept=".xml,text/xml,application/xml"><button type="button" id="chat-anexo-limpar" onclick="limparAnexoIa()" hidden>Remover anexo</button></div><label for="chat-anexo">Conteúdo do anexo</label><textarea id="chat-anexo" spellcheck="false" placeholder="Cole o XML que deseja discutir" aria-describedby="chat-anexo-status"></textarea><p id="chat-anexo-status" class="texto-apoio" role="status">Nenhum XML anexado.</p></details>
       <div class="chat-sugestoes acoes-inline" aria-label="Sugestões de pedido"><button type="button" onclick="sugerirChat('5 contêineres')">5 contêineres</button><button type="button" onclick="sugerirChat('3 CPFs e 2 CNPJs')">3 CPFs e 2 CNPJs</button><button type="button" onclick="sugerirChat('dados para um motorista')">Dados de motorista</button><button type="button" onclick="sugerirChat('2 cadastros')">2 cadastros</button><button type="button" onclick="sugerirChat('4 bookings sem máscara')">4 bookings sem máscara</button></div>
-      <form class="chat-form" onsubmit="return enviarChat(event)"><label class="sr-only" for="chat-pedido">Mensagem</label><input id="chat-pedido" maxlength="6000" autocomplete="off" placeholder="Ex.: Gere uma NF-e com 3 produtos e confira os totais" required><button id="chat-enviar" type="submit" class="btn-accent">Enviar</button></form>
+      <form class="chat-form" onsubmit="return enviarChat(event)"><label class="sr-only" for="chat-pedido">Mensagem</label><input id="chat-pedido" maxlength="6000" autocomplete="off" placeholder="Ex.: Gere uma NF-e com 3 produtos e confira os totais" required><button id="chat-enviar" type="submit" class="btn-accent ui-primary">Enviar</button></form>
       <div class="texto-apoio" id="chat-status" role="status" aria-live="polite">A disponibilidade da IA será conferida ao enviar. Comandos locais funcionam sem chave.</div>
     </section>
   </div>
   <div class="tab-panel" id="tab-validacao" role="tabpanel" aria-labelledby="tab-btn-validacao" tabindex="0" hidden>
-    <div class="painel-cabecalho"><div><h2>Validação de XML</h2><p class="texto-apoio">Analise sintaxe e consistência básica de NF-e e CT-e, localmente.</p></div><div class="acoes-inline"><button type="button" id="validacao-exportar" onclick="exportarRelatorioXml()" disabled>Exportar relatório JSON</button><button type="button" onclick="limparValidacaoXml()">Limpar análise</button></div></div>
+    <div class="screen-toolbar"><p class="texto-apoio">A análise acontece localmente no navegador.</p><div class="acoes-inline"><button type="button" id="validacao-exportar" onclick="exportarRelatorioXml()" disabled>Exportar relatório</button><button type="button" class="ui-danger" onclick="limparValidacaoXml()">Limpar análise</button></div></div>
     <div class="validacao-layout">
       <section class="painel-novo validacao-entrada" aria-labelledby="validacao-entrada-title"><h3 id="validacao-entrada-title">Escolha o XML</h3>
         <div class="validacao-dropzone" id="validacao-dropzone"><label for="validacao-arquivos">Arraste arquivos aqui ou selecione abaixo</label><input type="file" id="validacao-arquivos" accept=".xml,application/xml,text/xml" multiple><p class="texto-apoio">Até 10 arquivos UTF-8 por análise, com no máximo 5 MB cada.</p></div>
-        <form onsubmit="return validarXmlColado(event)"><label for="validacao-texto">Ou cole o conteúdo XML</label><textarea id="validacao-texto" spellcheck="false" placeholder="Cole aqui o conteúdo de um arquivo XML"></textarea><button type="submit" class="btn-accent">Validar conteúdo</button></form>
+        <form onsubmit="return validarXmlColado(event)"><label for="validacao-texto">Ou cole o conteúdo XML</label><textarea id="validacao-texto" spellcheck="false" placeholder="Cole aqui o conteúdo de um arquivo XML"></textarea><button type="submit" class="btn-accent ui-primary">Validar conteúdo</button></form>
         <hr class="divider"><div class="campo-novo"><label for="validacao-gerado-tipo">Documento atual do gerador</label><select id="validacao-gerado-tipo"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select></div><button type="button" onclick="validarXmlDoGerador()">Validar XML do gerador</button>
         <p class="texto-apoio">Esta análise não valida XSD, assinatura digital ou todas as regras fiscais, nem consulta autorização na SEFAZ. Nenhum arquivo é enviado a um servidor.</p>
       </section>
@@ -686,4 +682,3 @@
 <script src="assets/js/visual-layout.js"></script>
 </body>
 </html>
-

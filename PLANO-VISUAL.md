@@ -4,6 +4,17 @@
 
 Manter roxo/preto no escuro, branco/roxo no claro e navegação vertical. Melhorar organização, legibilidade e uso no celular. Implementações começam localmente e precisam de revisão visual antes da publicação.
 
+## Marco atual — simplificação do TheGenerator
+
+- [x] Unificar hierarquia de ações, campos, cards, tabelas e mensagens.
+- [x] Reduzir bordas, sombras, superfícies aninhadas e elementos decorativos.
+- [x] Recolher opções secundárias e manter tarefas principais visíveis.
+- [x] Corrigir a densidade do Cadastro geral com formulário e histórico em uma coluna ampla.
+- [x] Conferir as seis telas em Chromium, com teclado, árvore de acessibilidade, movimento reduzido e escala de 200%.
+- [x] Preservar os fluxos existentes, comprovados pelos 53 testes automatizados.
+
+Este marco trata somente da interface atual. Funcionalidades do FUTURE G não fazem parte desta fase.
+
 ## 1. Identidade — concluída no produto
 
 - [x] Escolher o nome definitivo: **TheGenerator**, aprovado pelo usuário em 23/09/2026.
@@ -105,4 +116,3 @@ Os serviços RDAP oficiais da Verisign (`.com`) e do Registro.br (`.com.br`) res
 | FictaBase | Sem registro RDAP encontrado | Sem registro RDAP encontrado | Tem a mesma ideia de BaseFicta, porém com ordem menos natural em português. |
 
 Uma resposta RDAP 404 não reserva o domínio e pode mudar a qualquer momento. Essa shortlist foi encerrada quando o usuário escolheu **TheGenerator**. A pesquisa específica e as limitações do nome final estão registradas em `IDENTIDADE.md`.
-

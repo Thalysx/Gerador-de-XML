@@ -1,5 +1,8 @@
 # Interface mais intuitiva e minimalista — 24/09/2026
 
+- Botões, campos, cards, tabelas e mensagens agora usam uma hierarquia visual única em todas as telas.
+- Somente a ação principal de cada tarefa recebe preenchimento roxo; ações secundárias e destrutivas ficaram mais discretas.
+- Bordas, sombras e superfícies internas foram reduzidas para melhorar leitura e espaço visual.
 - Atalhos deixaram de ocupar uma faixa inteira e passaram para um menu compacto no cabeçalho.
 - Os cartões introdutórios repetidos do XML fiscal foram removidos; a ação principal agora é “Gerar novos dados”.
 - Documento e cenários salvos foram reunidos em uma grade compacta antes do formulário.
@@ -7,8 +10,11 @@
 - Geração em lote e histórico ficam recolhidos até serem solicitados.
 - Dados cadastrais usa uma coluna central quando ainda não há resultado e abre a segunda coluna somente após a geração.
 - O painel de atalhos ganhou fechamento por clique externo ou Escape e posicionamento seguro no celular e em zoom de 200%.
+- Cadastro geral passou para uma coluna ampla e moveu o histórico recolhido para baixo do formulário.
+- Editor, Validação e Assistente tiveram controles secundários agrupados ou recolhidos para destacar a tarefa principal.
+- O escopo ficou restrito ao produto atual; nenhuma funcionalidade do FUTURE G foi adicionada.
 
-A suíte completa continua com **53 testes aprovados**. A auditoria em Chromium aprovou as seis telas sem rolagem horizontal, controles sem nome ou foco invisível.
+A suíte completa continua com **53 testes aprovados**. A auditoria em Chromium aprovou as seis telas sem rolagem horizontal, controles sem nome, foco invisível ou foco sem contorno em 153 paradas de teclado.
 
 # Revisão visual e de acessibilidade — 21/09/2026
 
@@ -200,4 +206,3 @@ Também foram conferidos no Chrome: aparência do XML, chat com pedido misto, ch
 - [Receita Federal — cálculo do dígito verificador do CNPJ alfanumérico](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/publicacoes/documentos-tecnicos/cnpj/manual-dv-cnpj.pdf).
 - [Receita Federal — perguntas e respostas sobre CNPJ alfanumérico](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/publicacoes/perguntas-e-respostas/cnpj/cnpj-alfanumerico.pdf).
 - [Siscomex — perguntas frequentes de exportação, item 3.25](https://www.gov.br/siscomex/pt-br/informacoes/perguntas-frequentes/perguntas-frequentes-exportacao): estrutura e cálculo do dígito da DU-E.
-

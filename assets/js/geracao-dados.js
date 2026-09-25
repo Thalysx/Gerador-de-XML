@@ -32,13 +32,6 @@ function gerarDUEExemplo() {
   });
 }
 
-const TIPOS_DADOS = {
-  cpf: 'CPF', cnpj: 'CNPJ', 'cnpj-alfa': 'CNPJ alfanumérico', nome: 'Nome', empresa: 'Razão social',
-  cnh: 'CNH', rg: 'RG', telefone: 'Telefone', email: 'E-mail', placa: 'Placa',
-  conteiner: 'Contêiner', 'conteiner-lacre': 'Contêiner e lacre', lacre: 'Lacre', imo: 'IMO',
-  booking: 'Booking', due: 'DU-E (exemplo)', cadastro: 'Cadastro completo', motorista: 'Motorista'
-};
-
 function gerarRegistro(tipo, opcoes = {}) {
   if (!Object.hasOwn(TIPOS_DADOS, tipo)) throw new Error('Tipo de dado não reconhecido.');
   const mascara = opcoes.mascara !== false;
@@ -102,6 +95,7 @@ function gerarLoteDados(pedidos, opcoes = {}) {
       resultado.push(registro);
     }
   }
+  [...new Set(resultado.map(r=>r.tipo))].forEach(registerGeneratorUse);
   return resultado;
 }
 

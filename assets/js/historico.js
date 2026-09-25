@@ -13,6 +13,7 @@ function getNomeDocsAtual() {
 
 function registrarHistoricoDocs(tipo, valor, extras = {}) {
   if (!valor) return;
+  registerGeneratorUse(currentType==='placa'&&placaTipoAtual==='antiga'?'placa-antiga':currentType);
   adicionarHistoricoDocs({
     tipo,
     valor,
@@ -103,10 +104,7 @@ function restaurarHistoricoDocs(idx) {
   nomeAtualDoc = '';
 
   if (d.tipo === 'Contêiner e lacre') {
-    const box = document.getElementById('docs-output-box');
-    if (box) box.style.display = 'none';
-    document.getElementById('new-doc-btn').style.display = 'none';
-    document.getElementById('copy-btn').style.display = 'none';
+    setOutput(d.valor);
     document.getElementById('container-num-val').textContent = d.conteiner || '';
     document.getElementById('lacre-val').textContent = d.lacre || '';
     document.getElementById('container-num-card').style.display = '';
@@ -130,6 +128,8 @@ function restaurarHistoricoDocs(idx) {
   }
 
   if (d.nome) mostrarNome(d.nome, d.currentType === 'cpf' ? 'cpf' : 'cnpj');
+  const id=currentType==='placa'&&placaTipoAtual==='antiga'?'placa-antiga':currentType;
+  if(generatorById(id))openGenerator(id);
   rolarParaElemento(document.getElementById('output-val'));
   mostrarStatus(`${d.tipo || 'Registro'} restaurado.`);
 }

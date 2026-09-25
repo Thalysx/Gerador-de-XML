@@ -117,7 +117,7 @@ function limparLoteInterface() {
 function inicializarGeracao() {
   document.getElementById('gerador-uf').innerHTML = '<option value="">Todas as UFs</option>' + Object.keys(DDD_POR_UF).sort().map(uf => `<option>${uf}</option>`).join('');
   document.getElementById('lote-tipo').innerHTML = Object.entries(TIPOS_DADOS).map(([tipo, rotulo]) => `<option value="${tipo}">${rotulo}</option>`).join('');
-  document.getElementById('lote-tipo').addEventListener('change',()=>atualizarOpcoesDocumento(currentType,document.getElementById('lote-tipo').value));
+  document.getElementById('lote-tipo').addEventListener('change',()=>atualizarOpcoesDocumento(selectedGeneratorId || currentType,document.getElementById('lote-tipo').value));
   atualizarOpcoesDocumento(currentType,document.getElementById('lote-tipo').value);
   renderChat();
 }

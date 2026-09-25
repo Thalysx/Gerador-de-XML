@@ -4,10 +4,16 @@ let requisicaoIa = null;
 let versaoIa = 0;
 let limpandoIa = false;
 let provedorIa = 'provedor configurado no servidor';
+function mensagemFalhaIa(error) {
+  if(error.name==='AbortError')return 'A resposta demorou mais que o esperado. Recupere a mensagem e tente novamente.';
+  if(error.status===429)return 'Limite de mensagens atingido. Aguarde um pouco e tente novamente.';
+  if(error.status===410)return 'Sua sessão expirou. Recupere a mensagem para iniciar uma nova conversa.';
+  return 'O Assistente está indisponível no momento. Tente novamente ou escolha o modo local para gerar dados.';
+}
 async function consultarStatusIa(signal) {
   const response=await fetch('/api/status',{credentials:'same-origin',signal});
   const status=await response.json();
-  if(!response.ok||!status.configured)throw new Error(status.error || 'A IA ainda não está configurada. Use os comandos locais.');
+  if(!response.ok||!status.configured)throw Object.assign(new Error('unavailable'),{status:response.status});
   provedorIa=status.provider==='groq'?'Groq':status.provider==='openai'?'OpenAI':'provedor configurado no servidor';
   const aviso=document.getElementById('chat-privacidade');
   if(aviso)aviso.textContent=`Mensagens e anexos são enviados à ${provedorIa}. A conversa fica no servidor por até 30 minutos de inatividade.`;
@@ -47,6 +53,15 @@ function renderChatIa() {
       recuperar.type='button';recuperar.textContent='Recuperar mensagem';
       recuperar.addEventListener('click',()=>recuperarPedidoIa(i));
       resposta.append(recuperar);
+      const local=document.createElement('button');
+      local.type='button';local.textContent='Usar modo local';
+      local.addEventListener('click',()=>{
+        if(requisicaoIa)return;
+        recuperarPedidoIa(i);
+        document.getElementById('chat-modo').value='local';atualizarModoChat();
+        document.getElementById('chat-pedido').focus();
+      });
+      resposta.append(local);
     }
   });
 }
@@ -90,7 +105,7 @@ async function enviarChatIa() {
   document.getElementById('chat-status').textContent = 'Conectando ao provedor de IA…';
   const timeout = setTimeout(() => controller.abort(),100000);
   try {
-    if (location.protocol === 'file:') throw new Error('Abra o projeto com npm run dev para usar a IA.');
+    if (location.protocol === 'file:') throw new Error('unavailable');
     await consultarStatusIa(controller.signal);
     if(versao!==versaoIa)return;
     mensagem.fase='analisando';
@@ -102,7 +117,7 @@ async function enviarChatIa() {
     if (!response.ok) {
       mensagem.limite=response.status===429;
       if(response.status===410)sessaoIa=null;
-      throw new Error(result.error || 'Não foi possível conversar com a IA.');
+      throw Object.assign(new Error('request_failed'),{status:response.status});
     }
     if (versao !== versaoIa) return;
     sessaoIa = result.sessionId;
@@ -114,7 +129,7 @@ async function enviarChatIa() {
   } catch(e) {
     if (versao !== versaoIa) return;
     mensagem.fase='erro';
-    mensagem.erro = e.name === 'AbortError' ? 'Pedido interrompido ou tempo limite atingido.' : e.message;
+    mensagem.erro = mensagemFalhaIa(e);
     document.getElementById('chat-status').textContent = mensagem.erro;
   } finally {
     clearTimeout(timeout);
@@ -137,7 +152,7 @@ async function limparChat() {
     try {
       const response=await fetch('/api/chat',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sessaoIa}),signal:AbortSignal.timeout(10000)});
       if(!response.ok){const result=await response.json();throw new Error(result.error||'Não foi possível apagar a conversa.');}
-    } catch(e) { document.getElementById('chat-status').textContent=e.message;return; }
+    } catch(e) { document.getElementById('chat-status').textContent='Não foi possível apagar a conversa. Tente novamente em instantes.';return; }
     finally { limpandoIa=false; }
   }
   versaoIa++; requisicaoIa?.abort(); requisicaoIa=null; sessaoIa=null; mensagensIa=[];

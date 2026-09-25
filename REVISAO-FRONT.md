@@ -1,3 +1,65 @@
+# Evolução da experiência inicial — 24/09/2026
+
+## Decisão aplicada
+
+A simplificação anterior reduziu ruído nas ferramentas especializadas. Esta etapa adiciona uma entrada compacta para descoberta e uso rápido, mantendo o nível de informação necessário para QA e desenvolvimento. A nova home não substitui as telas existentes: ela chama as mesmas funções de geração e permite abrir cada ferramenta completa quando o usuário precisa de opções específicas.
+
+## Mudanças
+
+- Cabeçalho compacto com marca, ambiente, contexto, tema e configurações.
+- Sidebar retrátil com persistência local e comportamento responsivo preservado.
+- Busca por nome, descrição ou categoria; filtros por Pessoa, Empresa, Contato, Veículo, Logística e XML.
+- Oito acessos principais na entrada e catálogo completo sob busca ou filtro.
+- Favoritos e recentes na home, persistindo somente IDs de ferramentas.
+- Resultado unificado com skeleton, estado vazio, tags, cópia, regeneração, expansão, limpeza e acesso à tela completa.
+- Atalhos `/` e `Ctrl + Enter`, tooltips, toasts e feedback “Copiado ✓”.
+- Indicador antecipado da quantidade em lotes.
+- Transições de 180 ms e suporte existente a movimento reduzido.
+
+## Evidências
+
+- 58 testes automatizados aprovados.
+- Build de produção concluído.
+- Sete telas auditadas em Chromium a 200%, sem overflow horizontal.
+- 190 paradas de teclado sem foco invisível, controle sem nome ou foco sem contorno.
+- Home e resultado gerado revisados nos temas escuro e claro.
+- Alterações mantidas somente no projeto local.
+
+---
+
+# Revisão de clareza e consistência — 24/09/2026
+
+## Diagnóstico antes da alteração
+
+A interface já possuía uma identidade coerente, navegação vertical e todos os fluxos necessários. O principal problema estava na apresentação: botões equivalentes usavam pesos diferentes, painéis internos repetiam bordas e fundos, algumas telas exibiam informações secundárias antes da tarefa principal e o Cadastro geral apertava formulário, resultado e histórico na mesma linha. A cascata de dez folhas de estilo também permitia que componentes iguais terminassem com aparências diferentes.
+
+## Mudanças aplicadas
+
+- `minimal.css` passou a ser a camada final de apresentação, com espaçamentos, raios, altura de controles, bordas e hierarquia de ações compartilhados.
+- Somente a ação principal de cada contexto recebe preenchimento roxo; ações secundárias ficaram neutras e ações destrutivas usam tratamento discreto em vermelho.
+- Campos, seletores, tabelas, estados vazios, mensagens e painéis passaram a seguir o mesmo acabamento nos temas claro e escuro.
+- Cadastro geral usa uma coluna ampla. O histórico fica recolhido abaixo do formulário e o resultado aparece no mesmo fluxo quando for gerado.
+- Editor XML mostra primeiro a importação; a lista do que pode ser editado ficou sob demanda.
+- Assistente reúne modo, máscara e nova conversa em uma barra compacta; privacidade e retenção ficam em uma seção expansível.
+- Validação XML apresenta entrada e ações em uma hierarquia mais direta, sem repetir o título da tela.
+- O foco de teclado nos campos usa contorno roxo explícito e consistente.
+- A gaveta de atalhos foi removida do cabeçalho.
+- Editor e Validação usam seletores de XML personalizados; o Editor ficou menor e sem a lista explicativa.
+- Cenários salvos e campos da NF-e aparecem diretamente, sem gavetas ou textos auxiliares intermediários.
+
+Nenhuma regra de geração, validação, XML, persistência ou IA foi alterada. Recursos planejados para o **FUTURE G** ficaram fora desta etapa.
+
+## Evidências
+
+- 54 testes automatizados aprovados.
+- Build de produção concluído.
+- Seis telas auditadas no Chromium em escala de 200%, sem rolagem horizontal ou elementos fora do viewport.
+- 155 paradas de teclado, sem foco invisível, sem controle sem nome e sem foco sem contorno.
+- Movimento reduzido e identidade nos temas claro e escuro conferidos.
+- Capturas individuais de XML fiscal, Dados cadastrais, Cadastro geral, Editor XML, Validação XML e Assistente salvas em `artifacts/visual-review`.
+
+---
+
 # Revisão do front — 20/09/2026
 
 Primeira etapa local da revisão de design e acessibilidade, mantendo menu vertical e temas branco/roxo e preto/roxo.

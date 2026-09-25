@@ -28,7 +28,7 @@ test('menu agrupado mantém ordem visual e navegação por teclado', async () =>
   const {dom,w}=await abrir();
   try {
     const tabs=[...w.document.querySelectorAll('.tab-nav [role="tab"]')];
-    assert.deepEqual(tabs.map(t=>t.id),['xml','docs','cadastro','editor','validacao','chat'].map(t=>'tab-btn-'+t));
+    assert.deepEqual(tabs.map(t=>t.id),['home','xml','docs','cadastro','editor','validacao','chat'].map(t=>'tab-btn-'+t));
     assert.equal(w.document.getElementById('tab-btn-xml').getAttribute('aria-label'),'XML fiscal');
     assert.equal(w.document.getElementById('tab-btn-chat').getAttribute('aria-label'),'Assistente de geração');
     const editor=w.document.getElementById('tab-btn-editor');
@@ -38,7 +38,7 @@ test('menu agrupado mantém ordem visual e navegação por teclado', async () =>
     assert.equal(w.document.activeElement.id,'tab-btn-chat');
     assert.equal(w.document.getElementById('tab-chat').hidden,false);
     w.document.activeElement.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Home',bubbles:true}));
-    assert.equal(w.document.activeElement.id,'tab-btn-xml');
+    assert.equal(w.document.activeElement.id,'tab-btn-home');
   } finally {dom.window.close();}
 });
 
@@ -113,14 +113,14 @@ test('alternar formulário XML preserva edições e acompanha a prévia', async 
   } finally {dom.window.close();}
 });
 
-test('campos XML avançados ficam recolhidos sem sair da geração', async () => {
+test('campos completos da NF-e e cenários ficam visíveis sem gavetas', async () => {
   const {dom,w,run}=await abrir();
   try {
     const recinto=w.document.getElementById('nfe_recinto');
     const transportador=w.document.getElementById('nfe_nomeTransp');
-    const details=[...w.document.querySelectorAll('#tab-xml details.xml-avancado')];
-    assert.ok(details.length>=4);
-    assert.ok(details.every(item=>item.open===false));
+    assert.equal(w.document.querySelector('#xml-form-nfe details.xml-avancado'),null);
+    assert.equal(w.document.querySelector('.xml-scenarios').tagName,'SECTION');
+    assert.ok(w.document.querySelector('#xml-form-nfe .produto-detalhes'));
     recinto.value='0121300';transportador.value='Transportadora Teste';
     w.gerarXMLComCampos();
     assert.equal(run("xmlsGerados.nfe.querySelector('infAdic > infCpl').textContent"),'Código RA 0121300');
@@ -129,23 +129,113 @@ test('campos XML avançados ficam recolhidos sem sair da geração', async () =>
   } finally {dom.window.close();}
 });
 
-test('atalhos salvam favoritos e recentes sem duplicar e navegam com foco', async () => {
+test('editor e validação usam seletores de XML personalizados e diretos', async () => {
   const {dom,w}=await abrir();
   try {
-    const tick=()=>new Promise(resolve=>setImmediate(resolve));
-    w.switchTab('docs');await tick();
-    const favorite=w.document.getElementById('favorite-tool');favorite.click();
-    assert.equal(favorite.getAttribute('aria-pressed'),'true');
-    assert.deepEqual(JSON.parse(w.localStorage.getItem('gerador:favoritos')),['docs']);
-    for(const tab of ['editor','chat','docs']) {w.switchTab(tab);await tick();}
-    assert.deepEqual(JSON.parse(w.localStorage.getItem('gerador:recentes')),['docs','chat','editor']);
-    w.switchTab('xml');await tick();
-    w.document.querySelector('#favorite-tools button').click();await tick();
+    const editorInput=w.document.getElementById('editor-file-input');
+    const validacaoInput=w.document.getElementById('validacao-arquivos');
+    assert.equal(editorInput.style.display,'none');
+    assert.equal(validacaoInput.hidden,true);
+    assert.equal(w.document.querySelector('.editor-dropzone-inner').tagName,'BUTTON');
+    assert.equal(w.document.querySelector('.validacao-dropzone-inner').tagName,'BUTTON');
+    assert.equal(w.document.querySelector('.editor-dropzone-recursos'),null);
+  } finally {dom.window.close();}
+});
+
+test('cabeçalho permanece direto sem gaveta de atalhos', async () => {
+  const {dom,w}=await abrir();
+  try {
+    assert.equal(w.document.querySelector('.workspace-shortcuts'),null);
+    assert.equal(w.document.querySelector('.header-actions')?.children.length,2);
+    assert.equal(w.document.querySelector('.header-actions')?.firstElementChild?.id,'theme-btn');
+    assert.ok(w.document.querySelector('.app-settings'));
+    assert.match(w.document.querySelector('.sidebar-brand')?.textContent,/FUTURE G/);
+  } finally {dom.window.close();}
+});
+
+test('shell FUTURE G alterna ambiente sem reload e persiste a escolha', async () => {
+  const {dom,w}=await abrir({'futureg:environment':'port'});
+  try {
+    const documentBefore=w.document;
+    const general=w.document.querySelector('.environment-option[data-environment="general"]');
+    const port=w.document.querySelector('.environment-option[data-environment="port"]');
+    assert.equal(w.document.body.dataset.environment,'port');
+    assert.equal(port.getAttribute('aria-pressed'),'true');
+    assert.equal(w.document.getElementById('active-environment-label').textContent,'QA Portuário');
+    general.click();
+    assert.equal(w.document,documentBefore);
+    assert.equal(w.document.body.dataset.environment,'general');
+    assert.equal(general.getAttribute('aria-pressed'),'true');
+    assert.equal(port.getAttribute('aria-pressed'),'false');
+    assert.equal(JSON.parse(w.localStorage.getItem('futureg:environment')),'general');
+    assert.match(w.document.getElementById('app-status-live').textContent,/Geradores Gerais/);
+  } finally {dom.window.close();}
+});
+
+test('home filtra geradores, fixa favoritos e salva somente identificadores', async () => {
+  const {dom,w}=await abrir();
+  try {
+    const cards=()=>[...w.document.querySelectorAll('[data-home-card]')];
+    assert.equal(cards().length,8);
+    const search=w.document.getElementById('home-generator-search');
+    search.value='conteiner';search.dispatchEvent(new w.Event('input',{bubbles:true}));
+    assert.equal(cards().length,2);
+    assert.equal(cards()[0].dataset.homeCard,'conteiner');
+    cards()[0].querySelector('[data-home-favorite]').click();
+    const saved=JSON.parse(w.localStorage.getItem('thegenerator:favorite-generators'));
+    assert.deepEqual(saved,['conteiner']);
+    assert.equal(saved.some(value=>/MSCU|\d{11}/.test(value)),false);
+    assert.match(w.document.getElementById('home-favorites').textContent,/Contêiner/);
+  } finally {dom.window.close();}
+});
+
+test('Home abre workspace que gera, registra histórico uma vez e oferece detalhes', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.document.querySelector('[data-home-select="cpf"]').click();
     assert.equal(w.document.getElementById('tab-docs').hidden,false);
-    assert.equal(w.document.activeElement.id,'tab-docs');
-    favorite.click();
-    assert.deepEqual(JSON.parse(w.localStorage.getItem('gerador:favoritos')),[]);
-    assert.match(w.document.getElementById('favorite-tools').textContent,/Favorite uma ferramenta/);
+    assert.equal(run('currentValue'),'');
+    assert.equal(w.document.getElementById('home-result'),null);
+    w.document.getElementById('docs-generate-btn').click();
+    const value=w.document.getElementById('output-val').textContent;
+    assert.equal(w.validarCPF(value.replace(/\D/g,'')),true);
+    assert.equal(run('historicoDocsList.length'),1);
+    assert.deepEqual(JSON.parse(w.localStorage.getItem('thegenerator:recent-generators')),['cpf']);
+    w.document.getElementById('docs-expand-btn').click();
+    assert.equal(w.document.getElementById('docs-result-details').hidden,false);
+    assert.ok(w.document.getElementById('docs-result-details').textContent.includes(value));
+    w.document.getElementById('docs-clear-btn').click();
+    assert.equal(run('currentValue'),'');
+    assert.equal(w.document.getElementById('copy-btn').disabled,true);
+  } finally {dom.window.close();}
+});
+
+test('atalhos da home e sidebar retrátil mantêm foco e preferência', async () => {
+  const {dom,w}=await abrir();
+  try {
+    w.document.body.focus();
+    w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'/',bubbles:true}));
+    assert.equal(w.document.activeElement.id,'home-generator-search');
+    const collapse=w.document.getElementById('sidebar-collapse-btn');
+    collapse.click();
+    assert.equal(w.document.body.classList.contains('sidebar-collapsed'),true);
+    assert.equal(w.document.getElementById('setting-sidebar-collapsed'),null);
+    assert.equal(collapse.getAttribute('aria-expanded'),'false');
+    assert.equal(collapse.textContent.trim(),'');
+    assert.equal(JSON.parse(w.localStorage.getItem('thegenerator:sidebar-collapsed')),true);
+    w.document.querySelector('[data-home-select="nome"]').click();
+    w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',ctrlKey:true,bubbles:true}));
+    await new Promise(resolve=>w.setTimeout(resolve,230));
+    assert.ok(w.document.getElementById('output-val').textContent.trim().split(/\s+/).length>=2);
+  } finally {dom.window.close();}
+});
+
+test('quantidade de lote antecipa quantos registros serão gerados', async () => {
+  const {dom,w}=await abrir();
+  try {
+    const quantity=w.document.getElementById('lote-quantidade');
+    quantity.value='25';quantity.dispatchEvent(new w.Event('input',{bubbles:true}));
+    assert.match(w.document.getElementById('lote-status').textContent,/25 registros serão gerados/);
   } finally {dom.window.close();}
 });
 
@@ -155,22 +245,22 @@ test('busca de geradores ignora acentos e limpar restaura opções', async () =>
     const input=w.document.getElementById('docs-search');
     const buttons=()=>[...w.document.querySelectorAll('#docs-generator-list button')].filter(b=>!b.hidden);
     const total=buttons().length;
-    assert.equal(total,15);
+    assert.equal(total,18);
     const groups=[...w.document.querySelectorAll('#docs-generator-list [role="group"]')];
-    assert.equal(groups.length,4);
+    assert.equal(groups.length,5);
     for(const group of groups) {
-      assert.ok(w.document.getElementById(group.getAttribute('aria-labelledby')));
+      assert.ok(group.getAttribute('aria-label'));
       assert.equal(new Set([...group.querySelectorAll('button')].map(b=>b.dataset.category)).size,1);
     }
     const category=w.document.getElementById('docs-category');
-    category.value='empresas';category.dispatchEvent(new w.Event('change'));
+    category.value='empresa';category.dispatchEvent(new w.Event('change'));
     assert.equal(buttons().length,3);
     input.value='cnpj';input.dispatchEvent(new w.Event('input'));
     assert.equal(buttons().length,2);
     w.document.getElementById('docs-search-clear').click();
     assert.equal(category.value,'todas');
     input.value='CONTEINER';input.dispatchEvent(new w.Event('input'));
-    assert.equal(buttons().length,1);
+    assert.equal(buttons().length,2);
     assert.match(buttons()[0].textContent,/Contêiner/);
     input.value='inexistente';input.dispatchEvent(new w.Event('input'));
     assert.equal(buttons().length,0);
@@ -205,23 +295,19 @@ test('opções de documentos aparecem somente no contexto pertinente', async () 
   } finally {dom.window.close();}
 });
 
-test('menu expansível: seleção move o foco e Escape retorna ao botão', async () => {
+test('sidebar única: Escape retorna foco e navegação mobile fecha sem perder contexto', async () => {
   const {dom,w}=await abrir();
   try {
-    const button=w.document.getElementById('workspace-menu-toggle');
-    const navigation=w.document.getElementById('workspace-navigation');
-    button.click();
-    assert.equal(button.getAttribute('aria-expanded'),'true');
-    // JSDOM outside-only does not execute HTML onclick attributes.
-    w.switchTab('docs');
-    w.document.getElementById('tab-btn-docs').click();
-    assert.equal(button.getAttribute('aria-expanded'),'false');
-    assert.equal(w.document.activeElement.id,'tab-docs');
-    assert.equal(w.document.getElementById('tab-docs').hidden,false);
-    button.click();
+    const button=w.document.getElementById('sidebar-collapse-btn');
+    w.definirSidebar(false);
     w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
     assert.equal(w.document.activeElement,button);
-    assert.equal(navigation.classList.contains('is-open'),false);
+    assert.equal(button.getAttribute('aria-expanded'),'false');
+    assert.equal(w.document.getElementById('workspace-menu-toggle'),null);
+    w.matchMedia=()=>({matches:true});w.definirSidebar(false);w.switchTab('docs');
+    assert.equal(button.getAttribute('aria-expanded'),'false');
+    assert.equal(w.document.activeElement.id,'tab-docs');
+    assert.equal(w.document.getElementById('app-title').textContent,'Dados cadastrais');
   } finally {dom.window.close();}
 });
 
@@ -325,11 +411,111 @@ test('cartões do chat identificam arquivos e recolhem registros sem perder aç�
 });
 
 test('movimento reduzido desativa animações, transições e rolagem suave', () => {
-  const css=fs.readFileSync(path.join(root,'assets/css/usabilidade.css'),'utf8');
-  const regra=css.match(/@media\(prefers-reduced-motion:reduce\)\s*\{([\s\S]*?)\n\}/)?.[1] || '';
-  assert.match(regra,/animation:none !important/);
-  assert.match(regra,/transition:none !important/);
-  assert.match(regra,/scroll-behavior:auto !important/);
+  const css=fs.readFileSync(path.join(root,'assets/css/base.css'),'utf8');
+  const regra=[...css.matchAll(/@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*?)\n\}/g)].map(match=>match[1]).join('\n');
+  assert.match(regra,/animation:\s*none !important/);
+  assert.match(regra,/transition:\s*none !important/);
+  assert.match(regra,/scroll-behavior:\s*auto !important/);
+});
+
+test('registry abre todos os IDs sem usar busca e mantém variantes e configurações', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    const ids=run('GENERATORS.map(g=>g.id)');
+    assert.equal(new Set(ids).size,ids.length);
+    const search=w.document.getElementById('docs-search');search.value='empresa';
+    w.document.getElementById('docs-category').value='empresa';w.filtrarGeradores();
+    for(const id of ids) {
+      assert.equal(w.openGenerator(id),true,id);
+      const item=w.generatorById(id);
+      assert.equal(w.document.getElementById('tab-'+item.tool).hidden,false,id);
+      if(item.tool==='docs')assert.equal(run('selectedGeneratorId'),id);
+      if(item.tool==='xml')assert.equal(w.document.getElementById('xml-form-tipo').value,id);
+      assert.equal(search.value,'empresa','navigation must not write search');
+    }
+    w.openGenerator('telefone');assert.equal(w.document.getElementById('docs-phone-options').hidden,false);
+    w.document.getElementById('gerador-uf').value='AC';w.document.getElementById('gerador-telefone-tipo').value='fixo';w.generateSelectedDocument();
+    assert.match(run('currentValue'),/^68[2-5]\d{7}$/);
+    w.openGenerator('placa-antiga');w.generateSelectedDocument();assert.match(run('currentValue'),/^[A-Z]{3}-\d{4}$/);
+    w.openGenerator('placa');w.generateSelectedDocument();assert.match(run('currentValue'),/^[A-Z]{3}\d[A-Z]\d{2}$/);
+    const before=run('currentValue');assert.equal(w.openGenerator('unknown'),false);assert.equal(run('currentValue'),before);
+  } finally {dom.window.close();}
+});
+
+test('migração preserva significado de favoritos, limites, histórico e recarga', async () => {
+  const state={'thegenerator:favorite-generators':['conteiner','cpf','inexistente'],'thegenerator:recent-generators':['conteiner'],'gerador:historico_docs':[]};
+  const {dom,w}=await abrir(state);
+  let saved;
+  try {
+    assert.deepEqual(JSON.parse(w.localStorage.getItem('thegenerator:favorite-generators')),['conteiner-lacre','cpf']);
+    assert.deepEqual(JSON.parse(w.localStorage.getItem('thegenerator:recent-generators')),['conteiner-lacre']);
+    for(const id of ['cpf','cnpj','telefone','placa','nome','cpf'])w.registerGeneratorUse(id);
+    const recent=JSON.parse(w.localStorage.getItem('thegenerator:recent-generators'));
+    assert.equal(recent.length,5);assert.equal(recent[0],'cpf');
+    w.storageSet('thegenerator:favorite-generators',['conteiner']);
+    saved=Object.fromEntries(Object.keys(w.localStorage).map(key=>[key,JSON.parse(w.localStorage.getItem(key))]));
+  } finally {dom.window.close();}
+  const next=await abrir(saved);
+  try {assert.deepEqual(JSON.parse(next.w.localStorage.getItem('thegenerator:favorite-generators')),['conteiner']);}
+  finally {next.dom.window.close();}
+});
+
+test('cada adaptador individual preserva ações, tipo e histórico único', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    for(const id of run('GENERATORS.filter(g=>g.run).map(g=>g.id)')) {
+      const count=run('historicoDocsList.length');
+      w.openGenerator(id);w.generateSelectedDocument();
+      assert.equal(run('currentType'),w.generatorById(id).domainType,id);
+      assert.ok(run('currentValue'),id);
+      assert.equal(run('historicoDocsList.length'),Math.min(count+1,20),id);
+      for(const action of ['new-doc-btn','copy-btn','download-doc-btn','docs-expand-btn','docs-clear-btn'])assert.equal(w.document.getElementById(action).disabled,false,id+' '+action);
+    }
+    assert.equal(w.document.getElementById('docs-output-box').style.display,'');
+    assert.equal(run('typeof homeGenerateSelected'),'undefined');
+    assert.equal(run('typeof HOME_GENERATORS'),'undefined');
+  } finally {dom.window.close();}
+});
+
+test('restaurar contêiner com lacre mantém resultado, seleção e ações sem novo histórico', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.gerarConteinerComLacre();const value=run('currentValue');
+    w.gerarCPFComToggle();w.restaurarHistoricoDocs(1);
+    assert.equal(run('selectedGeneratorId'),'conteiner-lacre');
+    assert.equal(w.document.getElementById('output-val').textContent,value);
+    assert.equal(w.document.getElementById('docs-output-box').style.display,'');
+    assert.equal(w.document.getElementById('new-doc-btn').disabled,false);
+    assert.equal(run('historicoDocsList.length'),2);
+  } finally {dom.window.close();}
+});
+
+test('distribuição inclui somente CSS proprietário e nenhum catálogo da Home', () => {
+  const files=[...html.matchAll(/href="assets\/css\/([^"]+)"/g)].map(m=>m[1]);
+  assert.deepEqual(files,['base.css','documentos.css','cadastro.css','editor-xml.css','evolucao.css','validacao-xml.css']);
+  for(const name of ['visual-lab.css','portus.css','usabilidade.css','minimal.css','experience.css'])assert.equal(fs.existsSync(path.join(root,'assets/css',name)),false);
+  assert.doesNotMatch(fs.readFileSync(path.join(root,'assets/js/home-dashboard.js'),'utf8'),/HOME_GENERATORS|homeGenerate|homeState\.result/);
+});
+
+test('Assistente trata falhas sem expor detalhes e preserva rascunho e anexo', async () => {
+  const {dom,w}=await abrir();
+  try {
+    for(const status of [503,429,410]) {
+      w.fetch=async url=>url==='/api/status'?{ok:true,json:async()=>({configured:true})}:{ok:false,status,json:async()=>({error:'npm run dev INTERNAL_SECRET'})};
+      w.document.getElementById('chat-pedido').value='Gere CPF';
+      w.document.getElementById('chat-anexo').value='<teste />';
+      await w.enviarChatIa();
+      assert.doesNotMatch(w.document.getElementById('chat-status').textContent,/npm|INTERNAL_SECRET/);
+      assert.equal(w.document.getElementById('chat-anexo').value,'<teste />');
+      assert.equal(w.document.getElementById('chat-modo').value,'ia');
+      w.document.getElementById('chat-pedido').value='novo rascunho';w.recuperarPedidoIa(0);
+      assert.equal(w.document.getElementById('chat-pedido').value,'novo rascunho');
+    }
+    assert.match(w.mensagemFalhaIa({name:'AbortError'}),/demorou/);
+    w.fetch=async()=>{throw new TypeError('network stack');};
+    await w.enviarChatIa();
+    assert.match(w.document.getElementById('chat-status').textContent,/indisponível/);
+  } finally {dom.window.close();}
 });
 
 test('paleta visual possui uma única fonte de tokens', () => {
@@ -337,9 +523,9 @@ test('paleta visual possui uma única fonte de tokens', () => {
   const declarantes=arquivos.filter(nome=>/--bg\s*:/.test(fs.readFileSync(path.join(root,'assets/css',nome),'utf8')));
   assert.deepEqual(declarantes,['base.css']);
   const base=fs.readFileSync(path.join(root,'assets/css/base.css'),'utf8');
-  assert.match(base,/--accent:\s*#7c3aed/);
-  assert.match(base,/body\.dark[\s\S]*--bg:\s*#09080c/);
-  assert.match(base,/body\.dark[\s\S]*--accent:\s*#a78bfa/);
+  assert.match(base,/--accent:\s*#2563eb/);
+  assert.match(base,/body\.dark[\s\S]*--bg:\s*#07111f/);
+  assert.match(base,/body\.dark[\s\S]*--accent:\s*#60a5fa/);
 });
 
 test('pares principais de texto mantêm contraste mínimo de 4,5 para 1', () => {
@@ -348,7 +534,7 @@ test('pares principais de texto mantêm contraste mínimo de 4,5 para 1', () => 
     return .2126*canais[0]+.7152*canais[1]+.0722*canais[2];
   };
   const contraste=(a,b)=>{const x=luminancia(a),y=luminancia(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};
-  const pares=[['241b33','ffffff'],['655672','f5f1fb'],['ffffff','7c3aed'],['7c3aed','f0e8fc'],['1d7a4a','eaf5ef'],['b52f2f','ffffff'],['7030ce','ffffff'],['f5effc','131017'],['c1b3ce','1c1624'],['a78bfa','131017'],['3bd68c','0f2318'],['ef5b68','131017'],['c5adff','131017']];
+  const pares=[['132238','ffffff'],['52647b','f4f7fb'],['ffffff','1d4ed8'],['1d4ed8','e6f0ff'],['1d7a4a','eaf5ef'],['b52f2f','ffffff'],['1d4ed8','ffffff'],['eff6ff','07111f'],['a8b8cc','0b1728'],['60a5fa','07111f'],['3bd68c','0f2318'],['ef5b68','07111f'],['93c5fd','07111f']];
   for(const [texto,fundo] of pares)assert.ok(contraste(texto,fundo)>=4.5,`${texto} sobre ${fundo}`);
 });
 
@@ -571,6 +757,7 @@ test('novos documentos individuais: máscaras e regeneração de placa antiga', 
     assert.match(w.document.getElementById('output-val').textContent, /^\d{2}BR\d{9}-\d$/);
     w.gerarPlaca('antiga'); w.gerarNovoDocumentoAtual();
     assert.match(w.document.getElementById('output-val').textContent, /^[A-Z]{3}-\d{4}$/);
+    assert.equal(w.document.getElementById('docs-result-label').textContent, 'Resultado · Placa antiga');
     const conteiner = run('gerarNumeroConteiner()');
     assert.equal(w.conferirDocumento(conteiner).ok, true);
     assert.equal(w.conferirDocumento(conteiner.slice(0,-1) + ((Number(conteiner.at(-1))+1)%10)).ok, false);

@@ -182,6 +182,7 @@ function gerarCadastroCompleto() {
 
   atualizarStatusResultadoCadastro(`Cadastro completo gerado para ${nome}.`);
   adicionarAoHistorico(getCadastroDados());
+  registerGeneratorUse('cadastro');
 }
 
 function getCadastroDados() {

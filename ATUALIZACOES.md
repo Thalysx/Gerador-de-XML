@@ -1,9 +1,55 @@
+# FUTURE G 3.0.0-alpha.1 — 25/09/2026
+
+- A fonte ativa foi consolidada em um único repositório; cópias antigas passaram a ser preservadas por tags e Releases.
+- O OpenSpec foi movido para a raiz versionada do projeto.
+- Produto, pacote, manifesto, documentação e arquivos de marca passaram a usar a nomenclatura FUTURE G / `future-g`.
+- O shell recebeu a fundação azul-marinho/azul e o seletor persistente Geradores Gerais / QA Portuário.
+- Chaves locais `thegenerator:*` foram mantidas para compatibilidade com preferências existentes.
+- A versão foi validada com testes, build e auditoria responsiva antes da publicação.
+
+# Nova experiência inicial compacta — 24/09/2026
+
+- A aplicação agora abre em uma tela **Início** com busca, filtros e oito geradores principais. O catálogo completo aparece ao buscar ou escolher uma categoria.
+- O cabeçalho ficou compacto e reúne marca, ambiente, contexto da ferramenta, tema e configurações.
+- A sidebar pode ser recolhida no desktop; a preferência é mantida no navegador. Em telas menores, continua usando o menu responsivo com nomes completos.
+- Cards da página inicial executam os geradores reais de CPF, nome, CNPJ, empresa, placa, telefone, NF-e e cadastro completo. Os demais tipos ficam disponíveis pela busca e pelos filtros.
+- Favoritos e recentes passaram para a página inicial. O armazenamento local guarda somente identificadores dos tipos, nunca os valores gerados.
+- O resultado ganhou painel próprio com gerar, copiar, regenerar, expandir, limpar e abrir a ferramenta completa.
+- Foram adicionados feedback temporário de cópia, skeleton durante a geração, toasts, estados vazios, tags de configuração, tooltips e transições discretas.
+- Os atalhos `/` para busca e `Ctrl + Enter` para geração funcionam na página inicial.
+- A geração em lote informa antecipadamente quantos registros serão criados.
+- A experiência usa os mesmos temas roxo/preto e branco/roxo e preserva todos os fluxos especializados existentes.
+- Nenhum recurso do FUTURE G foi implementado nesta etapa.
+
+A suíte completa passou com **58 testes aprovados**. A auditoria em Chromium aprovou as sete telas em escala de 200%, com 190 paradas de teclado, sem rolagem horizontal, controles sem nome, foco invisível ou foco sem contorno. Esta revisão permanece somente local, sem deploy e sem envio ao GitHub.
+
+# Interface mais intuitiva e minimalista — 24/09/2026
+
+- A gaveta de atalhos, favoritos e recentes foi removida do cabeçalho para deixar somente a navegação principal e o tema.
+- A seleção de arquivos da Validação XML agora usa uma área clicável igual à do Editor, sem exibir o botão nativo do navegador.
+- A área inicial do Editor XML ficou menor e perdeu a gaveta explicativa.
+- Cenários salvos e todos os campos da NF-e ficam visíveis diretamente; textos explicativos e gavetas desses formulários foram retirados.
+- Botões, campos, cards, tabelas e mensagens agora usam uma hierarquia visual única em todas as telas.
+- Somente a ação principal de cada tarefa recebe preenchimento roxo; ações secundárias e destrutivas ficaram mais discretas.
+- Bordas, sombras e superfícies internas foram reduzidas para melhorar leitura e espaço visual.
+- Os cartões introdutórios repetidos do XML fiscal foram removidos; a ação principal agora é “Gerar novos dados”.
+- Documento e cenários salvos foram reunidos em uma grade compacta antes do formulário.
+- Os 15 geradores foram organizados em categorias recolhíveis, com apenas Pessoas e documentos aberta inicialmente.
+- Geração em lote e histórico ficam recolhidos até serem solicitados.
+- Dados cadastrais usa uma coluna central quando ainda não há resultado e abre a segunda coluna somente após a geração.
+- Cadastro geral passou para uma coluna ampla e moveu o histórico recolhido para baixo do formulário.
+- Editor, Validação e Assistente tiveram controles secundários agrupados ou recolhidos para destacar a tarefa principal.
+- O escopo ficou restrito ao produto atual; nenhuma funcionalidade do FUTURE G foi adicionada.
+
+A suíte completa passou com **54 testes aprovados**. A auditoria em Chromium aprovou as seis telas sem rolagem horizontal, controles sem nome, foco invisível ou foco sem contorno em 155 paradas de teclado. Esta revisão permanece somente local.
+
 # Revisão visual e de acessibilidade — 21/09/2026
 
 A interface foi reorganizada sem trocar a identidade roxa aprovada. O tema escuro usa preto e tons de roxo; o claro usa branco e roxo. A navegação vertical continua sendo a base do produto e passa a agrupar as ferramentas por tarefa, com menu responsivo, favoritos e últimas ferramentas usadas.
 
 ## Principais mudanças
 
+- **Identidade:** o produto passou a se chamar **TheGenerator**, com símbolo “G” geométrico, assinatura “Dados de teste. Do seu jeito.”, versões para fundos claro e escuro, monocromáticas, favicon e manifesto da aplicação.
 - **Dados cadastrais:** busca sem diferença de acentos, quatro categorias, opções contextuais, ações padronizadas, lotes de até 500 registros e histórico filtrável.
 - **XML fiscal:** seleção entre NF-e, CT-e ou ambos sem perder campos; detalhes avançados recolhidos; prévia fixa durante a rolagem; copiar, baixar, validar e abrir no editor.
 - **Validação XML:** contadores e filtros por gravidade, localização por linha/coluna ou caminho do campo, relatório completo para exportação e encaminhamento ao editor.
@@ -14,11 +60,11 @@ A interface foi reorganizada sem trocar a identidade roxa aprovada. O tema escur
 
 ## Verificação
 
-A suíte completa passou com **53 testes** e o build de produção foi aprovado. A revisão em Chromium confirmou alternância dos seis painéis, persistência do tema, menu por teclado, rolagem dos resultados e ausência de erros no console. As evidências e limites estão em [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md).
+A suíte completa passou com **53 testes** e o build de produção foi aprovado. A revisão em Chromium confirmou alternância dos seis painéis, persistência do tema, menu por teclado, rolagem dos resultados e ausência de erros no console. Uma auditoria adicional em 200% percorreu 165 paradas de foco nas seis telas, sem foco invisível, sem nome, sem contorno ou rolagem horizontal. A árvore de acessibilidade do Chromium também expôs todos os controles focáveis com função e nome após a correção da região de resultados da validação XML. As evidências e limites estão em [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md).
 
 ## Itens ainda em decisão
 
-O nome atual continua provisório. Syntro é apenas uma proposta e já apresenta usos públicos por outros produtos. A aplicação não receberá nome ou logo definitivos antes da escolha do usuário e de nova triagem de disponibilidade. A revisão intermediária foi publicada no GitHub e na Netlify em 23/09/2026; permanecem pendentes a validação com leitor de tela real, zoom real de 200% e a identidade final.
+A identidade TheGenerator foi aprovada depois de uma nova triagem pública. Não houve coincidência exata no INPI, mas existem marcas compostas com “Generator” na classe 42, o domínio `.com` já está registrado e há um software estrangeiro com o mesmo nome separado; esses limites estão documentados em `IDENTIDADE.md`. A versão final foi publicada no GitHub e na Netlify em 23/09/2026 no commit `e6856b9`; HTML, símbolo e manifesto públicos coincidiram por SHA-256 com o build local. Permanece pendente apenas a validação auditiva manual com leitor de tela real.
 
 # Preparação da IA pública — 19/09/2026
 

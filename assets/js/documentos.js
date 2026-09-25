@@ -284,10 +284,7 @@ function gerarConteinerComLacre() {
   const lacre = gerarLacreArmador();
   currentType = 'conteiner-lacre'; currentValue = `${num} / ${lacre}`;
   esconderPlaca();
-  const box = document.getElementById('docs-output-box');
-  if (box) box.style.display = 'none';
-  document.getElementById('new-doc-btn').style.display = 'none';
-  document.getElementById('copy-btn').style.display = 'none';
+  setOutput(currentValue);
   document.getElementById('nome-box').classList.remove('visible'); nomeAtualDoc = '';
   document.getElementById('container-num-val').textContent  = num;
   document.getElementById('lacre-val').textContent          = lacre;
@@ -403,22 +400,10 @@ function gerarEmailDocs() {
 }
 
 function gerarNovoDocumentoAtual() {
-  const mask = document.getElementById('toggle-mascara').checked;
-  switch (currentType) {
-    case 'rg': case 'booking': case 'due': case 'nome': case 'empresa': gerarDocumentoExtra(currentType); break;
-    case 'cpf': gerarCPF(mask); break;
-    case 'cnpj': gerarCNPJ(mask); break;
-    case 'cnpj-alfa': gerarCNPJAlfanumerico(mask); break;
-    case 'cnh': gerarCNH(); break;
-    case 'telefone': gerarTelefone(); break;
-    case 'email': gerarEmail(); break;
-    case 'placa': gerarPlaca(placaTipoAtual); break;
-    case 'conteiner': gerarConteiner(); break;
-    case 'conteiner-lacre': gerarConteinerComLacre(); break;
-    case 'lacre': gerarLacreSomente(); break;
-    case 'imo': gerarIMO(); break;
-    default: mostrarStatus('Gere um documento primeiro.', 'error');
-  }
+  const id=currentType==='placa'&&placaTipoAtual==='antiga'?'placa-antiga':currentType;
+  const item=generatorById(id);
+  if(item?.run)item.run();
+  else mostrarStatus('Gere um documento primeiro.', 'error');
 }
 
 // ── Máscara ───────────────────────────────────────────────────
@@ -456,15 +441,21 @@ function setOutput(val) {
   const el = document.getElementById('output-val');
   el.textContent = val;
   el.classList.remove('placeholder');
+  const generatorId=currentType==='placa'&&placaTipoAtual==='antiga'?'placa-antiga':currentType;
+  document.getElementById('docs-result-label').textContent='Resultado · '+(generatorById(generatorId)?.label || 'Documento');
   document.getElementById('new-doc-btn').style.display = 'inline-block';
   document.getElementById('copy-btn').style.display = 'inline-block';
   document.getElementById('download-doc-btn').style.display = 'inline-block';
   atualizarOpcoesDocumento(currentType);
+  for (const id of ['new-doc-btn','copy-btn','download-doc-btn','docs-expand-btn','docs-clear-btn']) document.getElementById(id).disabled=false;
+  document.getElementById('docs-result-details').hidden=true;
+  document.getElementById('docs-expand-btn').setAttribute('aria-expanded','false');
+  document.getElementById('docs-expand-btn').textContent='Ver detalhes';
 }
 
 function atualizarOpcoesDocumento(tipoAtual = currentType, tipoLote = document.getElementById('lote-tipo')?.value || '') {
-  const comNome=['cpf','cnpj','cnpj-alfa'].includes(tipoAtual);
-  const comMascara=['cpf','cnpj','cnpj-alfa','rg','telefone','due'].includes(tipoAtual) || ['cpf','cnpj','cnpj-alfa','rg','telefone','due'].includes(tipoLote);
+  const comNome=!!generatorById(tipoAtual)?.name;
+  const comMascara=!!generatorById(tipoAtual)?.mask || !!generatorById(tipoLote)?.mask;
   const comTelefone=tipoAtual==='telefone' || tipoLote==='telefone';
   document.getElementById('docs-option-name').hidden=!comNome;
   document.getElementById('docs-option-mask').hidden=!comMascara;
@@ -485,7 +476,7 @@ function copyResult() {
 function baixarResultadoDocumento() {
   const valorExibido = document.getElementById('output-val').textContent;
   if (!currentType || !valorExibido) { mostrarStatus('Gere um documento antes de baixar.', 'error'); return; }
-  const rotulos = {cpf:'CPF',cnpj:'CNPJ','cnpj-alfa':'CNPJ alfanumérico',cnh:'CNH',rg:'RG',telefone:'Telefone',email:'E-mail',placa:'Placa',conteiner:'Contêiner','conteiner-lacre':'Contêiner e lacre',lacre:'Lacre',imo:'IMO',booking:'Booking',due:'DU-E',nome:'Nome',empresa:'Empresa'};
+  const rotulos = Object.fromEntries(GENERATORS.map(g=>[g.id,g.label]));
   const linhas = [];
   if (nomeAtualDoc && document.getElementById('nome-box').classList.contains('visible')) linhas.push(`${currentType === 'cpf' ? 'Nome' : 'Razão social'}: ${nomeAtualDoc}`);
   linhas.push(`${rotulos[currentType] || 'Resultado'}: ${valorExibido}`);

@@ -1,5 +1,39 @@
 # Evidências de acessibilidade e revisão visual
 
+## Home compacta e sidebar retrátil — 24/09/2026
+
+A camada `assets/css/experience.css` e o controlador `assets/js/home-dashboard.js` adicionaram a sétima tela da aplicação. A home foi inspecionada vazia e com um CPF gerado, nos temas escuro e claro. A geração usa as mesmas funções dos painéis especializados; favoritos e recentes persistem somente IDs de ferramentas.
+
+O comando `npm run audit:browser` mediu **sete painéis** em uma janela física de 1280 × 900 com escala 2, equivalente a 640 × 450 px CSS. Todos ficaram sem rolagem horizontal e sem elementos visíveis fora do viewport. O percurso somou **190 paradas de teclado**, sem controles sem nome, invisíveis ou sem contorno de foco. A árvore de acessibilidade não encontrou controles focáveis ou marcos sem nome. O movimento reduzido foi aplicado corretamente.
+
+Capturas desta rodada:
+
+- `artifacts/visual-review/thegenerator-home-dark.png`.
+- `artifacts/visual-review/thegenerator-home-result-dark.png`.
+- `artifacts/visual-review/thegenerator-desktop-light.png`.
+- Capturas atualizadas de XML fiscal, Dados cadastrais, Cadastro geral, Editor XML, Validação XML e Assistente.
+
+A primeira tentativa da auditoria encontrou apenas uma condição de corrida ao ler a porta temporária do Chrome; a repetição completou normalmente. Esta rodada é local e não altera a implantação pública.
+
+---
+
+## Revisão corporativa minimalista — 24/09/2026
+
+A camada final `assets/css/minimal.css` foi revisada para unificar botões, campos, cards, tabelas, mensagens e foco, reduzindo superfícies aninhadas e efeitos decorativos. O Cadastro geral passou a uma coluna ampla; conteúdos auxiliares do Editor, do Assistente e dos históricos usam divulgação progressiva.
+
+O comando `npm run audit:browser` mediu os seis painéis em uma janela física de 1280 × 900 com escala 2, equivalente a 640 × 450 px CSS. Todos ficaram sem rolagem horizontal e sem elementos visíveis fora do viewport. O percurso somou 153 paradas de teclado, com zero controles sem nome, invisíveis ou sem contorno de foco. A árvore de acessibilidade nativa não encontrou controles focáveis ou marcos sem nome. A preferência de movimento reduzido também foi aplicada corretamente.
+
+Capturas desta rodada:
+
+- `artifacts/visual-review/thegenerator-desktop-dark.png` e `thegenerator-desktop-light.png`.
+- `artifacts/visual-review/thegenerator-docs-minimal-dark.png`.
+- `artifacts/visual-review/thegenerator-cadastro-dark.png`.
+- `artifacts/visual-review/thegenerator-editor-dark.png`.
+- `artifacts/visual-review/thegenerator-validacao-dark.png`.
+- `artifacts/visual-review/thegenerator-chat-dark.png`.
+
+A verificação auditiva manual com leitor de tela real continua como uma etapa humana separada.
+
 ## Contraste de cores principais
 
 Razões calculadas por luminância relativa sRGB para pares opacos definidos nos estilos locais:
@@ -31,7 +65,7 @@ Todos os pares medidos superam 4,5:1. Um teste automatizado protege esses valore
 - Alternância de formulário NF-e/CT-e sem perder edições.
 - Respostas da IA com tabelas, listas e código, mantendo HTML não confiável como texto.
 
-## Validação visual pendente
+## Validação visual em navegador
 
 Em 21/09/2026, a revisão foi concluída com um navegador Chromium local após a ferramenta integrada falhar. As seis telas foram alternadas em 360, 768 e 1440 px. Em todas, `documentElement.scrollWidth` permaneceu igual à largura da janela e nenhum elemento visível do painel ativo ultrapassou seus limites.
 
@@ -48,4 +82,24 @@ O painel XML permaneceu a 16–18 px do topo ao rolar para baixo e para cima e v
 
 Em 23/09/2026, a revisão intermediária foi publicada no commit `85bd6ab`. O arquivo público do chat contém os estados novos e o ajuste de espaçamento. A API pública respondeu com Groq configurada e uma chamada real gerou texto, executou `gerar_dados` e devolveu um artefato de registros. A recaptura visual posterior ao último ajuste não pôde ser feita porque a cota do navegador automatizado foi atingida.
 
-Continuam pendentes um leitor de tela real, zoom real de 200%, teste manual de todos os controles por teclado e uma nova captura visual do espaçamento final do chat.
+### Zoom de 200%, teclado e movimento reduzido — 23/09/2026
+
+O comando `npm run audit:browser` iniciou uma instância isolada do Chrome e aplicou escala 2 a uma janela física de 1280 × 900, oferecendo um viewport de 640 × 450 px CSS. As seis telas mantiveram a largura do documento dentro do viewport, sem rolagem horizontal nem elementos visíveis cortados nas laterais.
+
+O mesmo navegador percorreu 165 paradas de foco reais: 36 no XML fiscal, 33 em Dados cadastrais, 63 em Cadastro geral, 6 no Editor XML, 11 em Validação XML e 16 no Assistente. Nenhuma parada interativa ficou invisível, sem nome ou sem contorno de foco. A preferência `prefers-reduced-motion: reduce` também foi emulada e removeu a animação relevante dos componentes amostrados. O resultado estruturado fica em `artifacts/visual-review/auditoria-200.json` e a captura inspecionada em `artifacts/visual-review/200-percent.png`; ambos são artefatos locais ignorados pelo Git.
+
+A auditoria também leu a árvore de acessibilidade nativa do Chromium em cada uma das seis telas. Todos os controles focáveis expostos tinham função e nome acessível, e os marcos de navegação e lista de ferramentas estavam nomeados. A primeira execução encontrou a região focável dos resultados da validação XML sem nome; `aria-label="Resultados detalhados da validação XML"` foi adicionado e a repetição passou sem ocorrências.
+
+A identidade TheGenerator foi carregada no navegador com nome, assinatura, símbolo e favicon corretos. As capturas `thegenerator-desktop-dark.png` e `thegenerator-desktop-light.png` confirmam a aplicação nos dois temas, e o build contém os SVGs, PNGs e o manifesto da aplicação.
+
+O servidor isolado da auditoria remove dependências visuais externas para tornar o teste determinístico e usa os mesmos HTML, CSS e JavaScript locais. Por isso, essa execução comprova o reflow e o foco da aplicação, mas não a disponibilidade das fontes, dos ícones ou do Bootstrap servidos por CDN.
+
+Continua pendente apenas a validação auditiva manual com um leitor de tela real; a exposição estrutural à tecnologia assistiva foi aprovada pela árvore nativa do Chromium. O procedimento, os cenários e o modelo para registrar o resultado estão em `CHECKLIST-LEITOR-TELA.md`. A identidade aplicada recebeu a captura final local e foi publicada no commit `e6856b9`. O HTML, o símbolo SVG e o manifesto retornados por `https://gerador-all.netlify.app` coincidiram por SHA-256 com os arquivos do build local.
+
+### Simplificação visual — 24/09/2026
+
+A nova camada `minimal.css` reduziu o conteúdo simultâneo. Categorias de geradores, lote e histórico usam divulgação progressiva. A gaveta de atalhos foi posteriormente removida; cenários e campos da NF-e passaram a ficar visíveis diretamente.
+
+A repetição da auditoria aprovou as seis telas em zoom simulado de 200%: nenhuma apresentou rolagem horizontal, elemento excedente, controle exposto sem nome, foco invisível ou foco sem contorno. A captura `thegenerator-docs-minimal-dark.png` registra a nova proporção da tela antes da geração.
+
+A versão foi publicada no commit `39ddc28`; a Netlify concluiu o deploy de produção desse mesmo commit com estado `ready`.

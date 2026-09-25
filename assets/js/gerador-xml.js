@@ -128,7 +128,11 @@ function processarXML(action) {
     }
   }
   finalizarEGerarXML(xml, hierarquia, action === acao.regenerar);
-  if (action !== acao.inicio) salvarEstadoXml();
+  if (action !== acao.inicio) {
+    salvarEstadoXml();
+    const selected=document.getElementById('xml-form-tipo').value;
+    (selected==='ambos'?['nfe','cte']:[selected]).forEach(registerGeneratorUse);
+  }
 }
 
 /* ══ Dados dinâmicos do gerador de NFe (evita repetição entre gerações) ══ */
@@ -264,6 +268,10 @@ function gerarXMLComCampos(forcarNovosDadosAleatorios = false) {
   let xml = xmlStringModelToObject();
   const hierarquia = { nfe: getHierarquiaNFe(), cte: getHierarquiaCTe() };
   finalizarEGerarXML(xml, hierarquia, forcarNovosDadosAleatorios);
+  if(forcarNovosDadosAleatorios) {
+    const selected=document.getElementById('xml-form-tipo').value;
+    (selected==='ambos'?['nfe','cte']:[selected]).forEach(registerGeneratorUse);
+  }
 }
 
 function finalizarEGerarXML(xml, hierarquia, forcarNovosDadosAleatorios = false) {
@@ -392,7 +400,7 @@ function preencherCamposFormulario(xml, hierarquia) {
         <div class="field-row">
           <div><label class="field-label" for="nfes_prod_${idx}_valor">Valor total (vProd)</label><input class="field-input" id="nfes_prod_${idx}_valor" value="${escapeAttr(valor)}" inputmode="decimal" autocomplete="off" /></div>
         </div>
-        <details class="xml-avancado"><summary>Identificação e tributação do item</summary><p class="texto-apoio">Confira código, NCM e quantidade tributária conforme o cenário de teste. Exemplo de NCM: 17019900.</p>
+        <div class="produto-detalhes">
         <div class="field-row-inline">
           <div><label class="field-label" for="nfes_prod_${idx}_codigo">Código do produto</label><input class="field-input" id="nfes_prod_${idx}_codigo" value="${escapeAttr(codigoAtual)}" inputmode="numeric" autocomplete="off" /></div>
           <div><label class="field-label" for="nfes_prod_${idx}_ncm">NCM</label><input class="field-input" id="nfes_prod_${idx}_ncm" value="${escapeAttr(ncmAtual)}" inputmode="numeric" autocomplete="off" /></div>
@@ -403,7 +411,7 @@ function preencherCamposFormulario(xml, hierarquia) {
         <div class="field-row-inline">
           <div><label class="field-label" for="nfes_prod_${idx}_CFOP">CFOP (somente leitura)</label><input class="field-input" id="nfes_prod_${idx}_CFOP" value="${escapeAttr(cfop)}" inputmode="numeric" autocomplete="off" readonly /></div>
         </div>
-        </details>
+        </div>
       </div>`;
   });
 }

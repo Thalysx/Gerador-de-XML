@@ -1,0 +1,78 @@
+schema: spec-driven
+
+context: |
+  Project: FUTURE G
+
+  FUTURE G is an evolution of the existing data generator into a modular
+  synthetic test-data platform focused on QA, development and port operations.
+
+  Core principles:
+  - Preserve existing working functionality.
+  - Do not rewrite the application unnecessarily.
+  - Prefer incremental and modular changes.
+  - Inspect the existing implementation before modifying it.
+  - Reuse existing components and architecture whenever appropriate.
+  - Separate UI, generation rules, validation and integrations.
+  - Avoid oversized components and files.
+  - Maintain desktop and mobile responsiveness.
+  - Never expose API keys, tokens or secrets in the frontend.
+  - Maintain compatibility with the existing deployment.
+  - Generated data must be synthetic and intended for testing.
+  - Every change must be validated before proceeding to another change.
+
+  Product environments:
+  - Geradores Gerais
+  - QA Portuário
+
+  UI direction:
+  - Modern and minimal interface without becoming visually sparse.
+  - Dark blue as the primary visual foundation.
+  - Blue for interactive elements.
+  - White and gray for contrast.
+  - Clear visual hierarchy.
+  - Consistent cards, inputs, buttons, spacing and icons.
+  - Preserve light/dark theme support when compatible with the existing project.
+  - The new FUTURE G interface must not be layered on top of or visually mixed
+    with the legacy interface.
+  - Legacy functionality should be migrated into the new application shell.
+
+  Implementation strategy:
+  - Work on one OpenSpec change at a time.
+  - Do not automatically implement subsequent changes.
+  - Before implementation, inspect the repository and understand the affected code.
+  - After implementation, run available tests, lint and production build.
+  - Report modified files, decisions, tests and remaining issues.
+
+rules:
+  proposal:
+    - Clearly define scope and non-goals.
+    - Do not include functionality belonging to later FUTURE G phases.
+    - Identify possible regression risks.
+
+  design:
+    - Prefer the existing project architecture when technically appropriate.
+    - Document important architectural decisions.
+    - Avoid unnecessary rewrites.
+    - Consider responsive behavior and accessibility.
+
+  tasks:
+    - Break implementation into small verifiable tasks.
+    - Include validation tasks.
+    - Include regression checks when existing functionality is affected.
+    - Do not include tasks from subsequent FUTURE G changes.
+
+operations:
+  apply:
+    guidance:
+      - Read the relevant proposal, design, specs and tasks before changing code.
+      - Inspect the current implementation before modifying it.
+      - Implement only the selected change.
+      - Preserve existing functionality unless the specification explicitly changes it.
+      - Run available tests, lint and production build before considering the change complete.
+      - Do not proceed automatically to the next FUTURE G change.
+
+  archive:
+    guidance:
+      - Confirm that acceptance criteria were satisfied.
+      - Summarize implemented behavior and architectural decisions.
+      - Record remaining known limitations before archiving.

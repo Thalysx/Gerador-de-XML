@@ -22,7 +22,11 @@ As cópias que existiam fora do Git foram compactadas antes da limpeza:
 - `github-copy-current.zip`: cópia intermediária do repositório.
 - `refactor-ui-evidence.zip`: baseline, capturas e evidências da refatoração.
 
-Os ZIPs têm manifesto SHA-256 publicado junto da Release `legacy-snapshots-2026-09`. Eles não contêm `.env` reais. Use esses arquivos apenas para consulta ou recuperação; novas alterações devem partir de `main`.
+Os ZIPs têm manifesto SHA-256 e estão preparados para a Release `legacy-snapshots-2026-09`. Eles não contêm `.env` reais. Use esses arquivos apenas para consulta ou recuperação; novas alterações devem partir de `main`.
+
+## Estado da publicação
+
+O commit consolidado e as tags foram criados localmente. O primeiro envio foi recusado pelo GitHub com HTTP 403 porque a credencial disponível não possui acesso de escrita ao repositório remoto. Até a autenticação do proprietário ser corrigida, o histórico completo permanece preservado no bundle `future-g-all.bundle`, ao lado dos ZIPs e do manifesto. Não considerar tags ou Releases remotas como publicadas antes de um `git push` bem-sucedido.
 
 ## Convenções
 

@@ -1,6 +1,6 @@
 # FUTURE G
 
-Plataforma de dados sintéticos para desenvolvimento e QA. Este diretório é a única fonte ativa do produto; versões anteriores são preservadas por tags e Releases do GitHub, não por cópias paralelas de pastas.
+Plataforma de dados sintéticos para desenvolvimento e QA. Este diretório é a única fonte ativa do produto; versões anteriores são preservadas por tags Git e pacotes preparados para Releases, não por cópias paralelas de pastas.
 
 O desenvolvimento gradual do backend público está descrito em [PLANO-IA-PUBLICA.md](PLANO-IA-PUBLICA.md). O chat com Groq, as rotas, as sessões Redis e os limites de uso já estão publicados na Netlify e foram verificados no ambiente real. As verificações de concorrência e expiração do Redis continuam registradas separadamente em [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md).
 

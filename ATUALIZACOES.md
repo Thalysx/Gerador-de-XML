@@ -1,6 +1,6 @@
 # FUTURE G 3.0.0-alpha.1 — 25/09/2026
 
-- A fonte ativa foi consolidada em um único repositório; cópias antigas passaram a ser preservadas por tags e Releases.
+- A fonte ativa foi consolidada em um único repositório; cópias antigas passaram a ser preservadas por tags e pacotes versionados para Releases.
 - O OpenSpec foi movido para a raiz versionada do projeto.
 - Produto, pacote, manifesto, documentação e arquivos de marca passaram a usar a nomenclatura FUTURE G / `future-g`.
 - O shell recebeu a fundação azul-marinho/azul e o seletor persistente Geradores Gerais / QA Portuário.

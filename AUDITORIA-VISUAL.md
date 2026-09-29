@@ -1,5 +1,65 @@
 # Evidências de acessibilidade e revisão visual
 
+## Polimento e robustez — 28/09/2026
+
+A matriz final capturou **128 combinações**: oito painéis, temas claro/escuro, larguras CSS de 360, 768, 1280 e 1920 px e sidebar expandida/recolhida. A primeira rodada encontrou somente o botão “Gerar XML intencionalmente inválido” excedendo o viewport de 360 px; após permitir quebra de linha, a repetição terminou sem falhas ou overflow horizontal.
+
+O auditor de 200% aprovou as oito telas e a busca `Ctrl+K` nos dois ambientes. O diálogo permaneceu nomeado, focado e contido no viewport; a consulta “transportadora” retornou zero resultados em Geradores Gerais e um em QA Portuário. A árvore nativa não encontrou controles ou marcos sem nome, e não houve foco invisível, foco sem contorno, exceção, erro ou aviso de console. A captura do próprio auditor também passou a disparar o evento real de troca de ambiente para impedir evidência visual com projeções desatualizadas.
+
+Os ativos locais medidos totalizaram 336.163 bytes de JavaScript e 107.872 bytes de CSS, com 1.420 nós DOM na amostra. O subset Lucide contém 49 ícones e 11.467 bytes, 97,4% menor que o runtime completo anterior de 433.756 bytes. A suíte terminou com **104 testes aprovados** e o build público foi concluído. A verificação auditiva manual com leitor de tela real continua sendo uma etapa humana separada.
+
+---
+
+## Produtividade — 28/09/2026
+
+A Home recebeu indicadores por ambiente e atividade recente sem conteúdo gerado. A busca global `Ctrl+K` usa diálogo nomeado, lista de resultados contextual, estado anunciado, navegação por setas, Enter, Escape, retorno de foco e contenção de Tab. Os lotes mantêm as mesmas ações e ganharam nomes de arquivo contextuais.
+
+O comando `npm run audit:browser` aprovou as oito telas em uma janela física de 1280 × 900 com escala 2, equivalente a 640 × 450 px CSS. Nenhuma tela apresentou rolagem horizontal ou elementos excedentes. O percurso somou **244 passos de teclado**, sem controles sem nome, focos invisíveis ou focos sem contorno. A árvore de acessibilidade não encontrou controles ou marcos sem nome, e a preferência de movimento reduzido permaneceu aplicada.
+
+A suíte automatizada passou com **102 testes** e o build público foi concluído. A cobertura da fase abre a busca por teclado, troca o ambiente com o diálogo ativo, verifica retorno/contenção de foco, filtra favoritos e atividade, rejeita campos sensíveis na persistência e exporta um lote integral de 75 itens.
+
+---
+
+## Cenários de teste coerentes — 28/09/2026
+
+O QA Portuário recebeu uma oitava tela para gerar e inspecionar massas operacionais relacionadas. Controles, resultado, aviso de dado inválido, lista de entidades, sequência de etapas e JSON completo permaneceram legíveis na grade responsiva e acessíveis pelo teclado.
+
+O comando `npm run audit:browser` aprovou as oito telas em uma janela física de 1280 × 900 com escala 2, equivalente a 640 × 450 px CSS. Nenhuma tela apresentou rolagem horizontal ou elementos excedentes. O percurso somou **244 passos de teclado**, sem controles sem nome, focos invisíveis ou focos sem contorno. A árvore de acessibilidade também não encontrou controles ou marcos sem nome, e a preferência de movimento reduzido permaneceu aplicada.
+
+A suíte automatizada passou com **98 testes** e o build público foi concluído. A cobertura da fase verifica os dez modelos, referências cruzadas, ordem de etapas, modos válido/inválido/aleatório, detecção de quebra estrutural, persistência, restauração e exportação JSON.
+
+---
+
+## QA Portuário — 27/09/2026
+
+O catálogo portuário recebeu perfis, empresas, veículos, contêineres detalhados, cargas e documentos especializados. A lista manual de NCM passou a acompanhar o ambiente ativo, e os novos geradores usam o mesmo workspace e os mesmos controles de lote e exportação.
+
+O comando `npm run audit:browser` aprovou as sete telas em uma janela física de 1280 × 900 com escala 2, equivalente a 640 × 450 px CSS. Nenhuma tela apresentou rolagem horizontal ou elementos excedentes. O percurso somou **233 passos de teclado**, sem controles sem nome, focos invisíveis ou focos sem contorno. A árvore de acessibilidade também não encontrou controles ou marcos sem nome, e a preferência de movimento reduzido permaneceu aplicada.
+
+A suíte automatizada passou com **92 testes** e o build público foi concluído. A cobertura nova verifica todos os perfis e empresas, combinações veiculares, contêiner ISO 6346, modalidades de carga, prioridade dos NCMs manuais, documentos e chave CT-e, além da integração com registry, lote e exportação.
+
+---
+
+## Validação XML avançada — 27/09/2026
+
+A tela de Validação XML recebeu o gerador de testes negativos e relatórios com abas Resumo, XML e Validação. A captura escura foi inspecionada após a mudança e os novos controles mantiveram a hierarquia da entrada existente. O relatório usa tabs nomeadas, painéis associados e navegação por setas, Home e End.
+
+O comando `npm run audit:browser` aprovou as sete telas em uma janela física de 1280 × 900 com escala 2, equivalente a 640 × 450 px CSS. Nenhuma tela apresentou rolagem horizontal ou elementos excedentes. O percurso somou **234 passos de teclado**, sem controles sem nome, focos invisíveis ou focos sem contorno. A árvore de acessibilidade não encontrou controles ou marcos sem nome, e a preferência de movimento reduzido permaneceu aplicada.
+
+A suíte automatizada passou com **84 testes**. A cobertura nova verifica o modelo estruturado, as três visões associadas, navegação das abas, as sete variantes negativas, preservação do documento-base, identificação explícita do dado inválido, download e exportação sem XML-fonte. A validação auditiva manual com leitor de tela real continua sendo uma etapa humana separada.
+
+---
+
+## Geradores Gerais — novos incrementos — 26/09/2026
+
+Nome fantasia, Endereço completo, CEP, RENAVAM, UUID v4, IPv4/IPv6 de documentação, MAC local, três fixtures financeiras e Crachá foram adicionados ao catálogo compartilhado de Geradores Gerais. Cadastro Geral também recebeu seleção de cinco grupos e resultado em ficha. A auditoria foi repetida após as novas categorias e controles.
+
+O comando `npm run audit:browser` aprovou as sete telas em uma janela física de 1280 × 900 com escala 2, equivalente a 640 × 450 px CSS. Nenhuma tela apresentou rolagem horizontal ou elementos excedentes. O percurso somou **231 passos de teclado**, sem controles sem nome, focos invisíveis ou focos sem contorno. A árvore de acessibilidade também não encontrou controles ou marcos sem nome, e a preferência de movimento reduzido permaneceu aplicada.
+
+A suíte automatizada passou com **81 testes** e o build público foi concluído. Os testes novos cobrem projeção por ambiente, busca, favoritos, recentes, lote heterogêneo, exportações, máscara de CEP, endereço sintético, o verificador de 500 RENAVAMs distintos, lotes de 500 valores de cada utilitário de desenvolvimento, fixture financeira e crachá, além dos estados vazio, parcial, completo e legado da ficha cadastral.
+
+---
+
 ## Home compacta e sidebar retrátil — 24/09/2026
 
 A camada `assets/css/experience.css` e o controlador `assets/js/home-dashboard.js` adicionaram a sétima tela da aplicação. A home foi inspecionada vazia e com um CPF gerado, nos temas escuro e claro. A geração usa as mesmas funções dos painéis especializados; favoritos e recentes persistem somente IDs de ferramentas.

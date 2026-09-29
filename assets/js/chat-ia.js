@@ -4,6 +4,7 @@ let requisicaoIa = null;
 let versaoIa = 0;
 let limpandoIa = false;
 let provedorIa = 'provedor configurado no servidor';
+let anexoIaNome = '';
 function mensagemFalhaIa(error) {
   if(error.name==='AbortError')return 'A resposta demorou mais que o esperado. Recupere a mensagem e tente novamente.';
   if(error.status===429)return 'Limite de mensagens atingido. Aguarde um pouco e tente novamente.';
@@ -23,7 +24,7 @@ function atualizarModoChat() {
   const ia = document.getElementById('chat-modo').value === 'ia';
   document.getElementById('chat-mensagens').hidden = ia;
   document.getElementById('chat-ia-mensagens').hidden = !ia;
-  document.getElementById('chat-anexo-area').hidden = !ia;
+  document.getElementById('chat-anexo-fluxo').hidden = !ia;
   document.getElementById('chat-vazio').hidden = ia ? mensagensIa.length > 0 : conversasChat.length > 0;
   document.getElementById('chat-status').textContent = ia ? `IA: mensagens e anexos enviados serão processados pelo ${provedorIa}.` : 'Modo local: comandos de geração, sem IA e sem envio externo.';
 }
@@ -39,7 +40,10 @@ function renderArtefatoIa(a,i,j) {
 
 function renderChatIa() {
   const nomesFerramentas={gerar_dados:'Gerar dados',gerar_xml:'Gerar XML',consultar_xml:'Consultar e validar XML'};
-  document.getElementById('chat-ia-mensagens').innerHTML = mensagensIa.map((m,i) => `<article class="chat-troca"><div class="chat-pedido"><span>Você</span><p>${escapeHtml(m.pedido)}</p>${m.anexo ? '<small>XML anexado</small>' : ''}</div><div class="chat-resposta"><strong>Assistente IA</strong><div class="ia-texto">${formatarRespostaIa(m.text || m.erro || (m.fase==='analisando'?'Analisando o pedido e escolhendo as ferramentas necessárias…':'Conectando ao assistente…'))}</div>${m.activities?.length ? `<div class="ia-ferramentas"><strong>Ferramentas executadas</strong><ul>${m.activities.map(nome=>`<li>${escapeHtml(nomesFerramentas[nome] || nome)}</li>`).join('')}</ul></div>` : ''}${(m.artifacts || []).map((a,j) => renderArtefatoIa(a,i,j)).join('')}</div></article>`).join('');
+  const area=document.getElementById('chat-ia-mensagens');
+  renderizarChatPreservandoScroll(area,()=>{
+    area.innerHTML = mensagensIa.map((m,i) => `<article class="chat-troca"><div class="chat-pedido"><span>Você</span><p>${escapeHtml(m.pedido)}</p>${m.anexo ? '<small>XML anexado</small>' : ''}</div><div class="chat-resposta"><strong>Assistente IA</strong><div class="ia-texto">${formatarRespostaIa(m.text || m.erro || (m.fase==='analisando'?'Analisando o pedido e escolhendo as ferramentas necessárias…':'Conectando ao assistente…'))}</div>${m.activities?.length ? `<div class="ia-ferramentas"><strong>Ferramentas executadas</strong><ul>${m.activities.map(nome=>`<li>${escapeHtml(nomesFerramentas[nome] || nome)}</li>`).join('')}</ul></div>` : ''}${(m.artifacts || []).map((a,j) => renderArtefatoIa(a,i,j)).join('')}</div></article>`).join('');
+  });
   document.getElementById('chat-vazio').hidden = mensagensIa.length > 0;
   document.querySelectorAll('#chat-ia-mensagens .chat-resposta').forEach((resposta,i)=>{
     const m=mensagensIa[i];
@@ -112,7 +116,7 @@ async function enviarChatIa() {
     document.getElementById('chat-enviar').textContent = 'Processando…';
     document.getElementById('chat-status').textContent = 'Conexão confirmada. A IA está analisando o pedido e escolhendo as ferramentas necessárias…';
     renderChatIa();
-    const response = await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:pedido,sessionId:sessaoIa,mascara:document.getElementById('chat-mascara').checked,xml:xml || undefined}),signal:controller.signal});
+    const response = await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:pedido,sessionId:sessaoIa,environment:activeEnvironmentId(),mascara:document.getElementById('chat-mascara').checked,xml:xml || undefined}),signal:controller.signal});
     const result = await response.json();
     if (!response.ok) {
       mensagem.limite=response.status===429;
@@ -124,6 +128,8 @@ async function enviarChatIa() {
     Object.assign(mensagem,result);
     mensagem.fase='concluido';
     document.getElementById('chat-anexo').value = '';
+    document.getElementById('chat-anexo-arquivo').value = '';
+    anexoIaNome='';
     atualizarStatusAnexoIa();
     document.getElementById('chat-status').textContent = 'Resposta concluída.';
   } catch(e) {
@@ -159,6 +165,8 @@ async function limparChat() {
   document.getElementById('chat-enviar').disabled = false;
   document.getElementById('chat-modo').disabled = false;
   document.getElementById('chat-anexo').value = '';
+  document.getElementById('chat-anexo-arquivo').value = '';
+  anexoIaNome='';
   atualizarStatusAnexoIa();
   limparChatLocal(); renderChatIa(); atualizarModoChat();
 }
@@ -179,32 +187,39 @@ function anexarXmlAtualIa() {
   gerarXMLComCampos();
   const tipo=document.getElementById('chat-anexo-tipo').value;
   document.getElementById('chat-anexo').value=serializarXml(xmlsGerados[tipo]);
-  atualizarStatusAnexoIa(`${tipo.toUpperCase()} atual carregado.`);
+  atualizarStatusAnexoIa(`${tipo.toUpperCase()} atual carregado.`,`${tipo.toUpperCase()} atual`);
+  document.getElementById('chat-anexo-area').open=false;
 }
 
-function atualizarStatusAnexoIa(mensagem) {
+function atualizarStatusAnexoIa(mensagem,nome) {
   const texto=document.getElementById('chat-anexo').value;
   const bytes=new Blob([texto]).size;
-  document.getElementById('chat-anexo-status').textContent=mensagem || (bytes ? `XML anexado: ${bytes.toLocaleString('pt-BR')} bytes de 100 KB.` : 'Nenhum XML anexado.');
+  if(nome)anexoIaNome=nome;
+  if(!texto)anexoIaNome='';
+  document.getElementById('chat-anexo-status').textContent=mensagem || (bytes ? `XML pendente: ${bytes.toLocaleString('pt-BR')} bytes de 100 KB.` : 'Nenhum anexo pendente.');
+  const pendente=document.getElementById('chat-anexo-pendente');
+  pendente.hidden=!texto;
   document.getElementById('chat-anexo-limpar').hidden=!texto;
+  if(texto)document.getElementById('chat-anexo-nome').textContent=`${anexoIaNome || 'XML colado'} · ${bytes.toLocaleString('pt-BR')} bytes`;
 }
 
 function limparAnexoIa() {
   document.getElementById('chat-anexo').value='';
   document.getElementById('chat-anexo-arquivo').value='';
+  anexoIaNome='';
   atualizarStatusAnexoIa('Anexo removido.');
-  document.getElementById('chat-anexo').focus();
+  document.querySelector('#chat-anexo-area > summary').focus();
 }
 
 function inicializarAnexoChatIa() {
   const textarea=document.getElementById('chat-anexo');
   const arquivo=document.getElementById('chat-anexo-arquivo');
-  textarea.addEventListener('input',()=>atualizarStatusAnexoIa());
+  textarea.addEventListener('input',()=>{anexoIaNome=textarea.value?'XML colado':'';atualizarStatusAnexoIa();});
   arquivo.addEventListener('change',()=>{
     const file=arquivo.files?.[0];if(!file)return;
     if(!/\.xml$/i.test(file.name)||file.size>100000){arquivo.value='';atualizarStatusAnexoIa(file.size>100000?'O arquivo ultrapassa 100 KB.':'Selecione um arquivo com extensão .xml.');return;}
     const leitor=new FileReader();
-    leitor.onload=()=>{textarea.value=String(leitor.result);atualizarStatusAnexoIa(`Arquivo ${file.name} anexado.`);};
+    leitor.onload=()=>{textarea.value=String(leitor.result);atualizarStatusAnexoIa(`Arquivo ${file.name} anexado.`,file.name);document.getElementById('chat-anexo-area').open=false;};
     leitor.onerror=()=>atualizarStatusAnexoIa('Não foi possível ler o arquivo.');
     leitor.readAsText(file,'UTF-8');
   });

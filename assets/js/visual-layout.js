@@ -1,14 +1,45 @@
 const seletorFormularioXml=document.getElementById('xml-form-tipo');
 function selecionarFormularioXml() {
   const tipo=seletorFormularioXml.value;
-  for(const documento of ['nfe','cte'])document.getElementById('xml-form-'+documento).hidden=tipo!=='ambos'&&tipo!==documento;
-  if(tipo!=='ambos') {
-    document.getElementById('xml-preview-tipo').value=tipo;
-    atualizarPreviaXml();
-  }
+  for(const documento of ['nfe','cte'])document.getElementById('xml-form-'+documento).hidden=tipo!==documento;
+  document.getElementById('xml-preview-tipo').value=tipo;
+  atualizarPreviaXml();
 }
 seletorFormularioXml.addEventListener('change',selecionarFormularioXml);
-selecionarFormularioXml();
+
+function definirOpcaoUnica(selectId,value,label) {
+  const select=document.getElementById(selectId);
+  if(!select)return;
+  const option=document.createElement('option');
+  option.value=value;option.textContent=label;
+  select.replaceChildren(option);
+  select.value=value;
+}
+
+function atualizarInterfacePorAmbiente() {
+  const general=activeEnvironmentId()==='general';
+  const tipo=general?'nfe':'cte';
+  const nome=general?'NF-e':'CT-e';
+  definirOpcaoUnica('xml-form-tipo',tipo,general?'NF-e — Nota fiscal':'CT-e — Conhecimento de transporte');
+  definirOpcaoUnica('xml-preview-tipo',tipo,nome);
+  definirOpcaoUnica('validacao-gerado-tipo',tipo,nome);
+  definirOpcaoUnica('validacao-negativa-tipo',tipo,nome);
+  definirOpcaoUnica('chat-anexo-tipo',tipo,`${nome} atual`);
+  document.getElementById('xml-form-help').textContent=`Este ambiente trabalha somente com ${nome}.`;
+  document.getElementById('xml-preview-title').textContent=`${nome} gerada`;
+  document.getElementById('docs-search').placeholder=general?'Ex.: CPF, CNPJ, e-mail ou UUID':'Ex.: contêiner, lacre, booking ou IMO';
+  document.getElementById('validate-input').placeholder=general?'CPF, RG, CNH, CNPJ, RENAVAM ou placa...':'Contêiner ou IMO...';
+  document.getElementById('docs-environment-note').textContent=general
+    ? 'Os dados são sintéticos e não representam registros oficiais.'
+    : 'Booking e DU-E são referências fictícias. Os dados não representam registros oficiais.';
+  document.getElementById('ncm-manual-help').textContent=general
+    ? 'Adicione códigos de 8 dígitos separados por espaço, vírgula ou linha. Ao aplicar, eles seguem a ordem dos produtos atuais.'
+    : 'Adicione códigos de 8 dígitos para usar nos geradores de carga do QA Portuário.';
+  document.getElementById('ncm-manual-aplicar').hidden=!general;
+  selecionarFormularioXml();
+}
+window.addEventListener('futureg:environmentchange',atualizarInterfacePorAmbiente);
+atualizarInterfacePorAmbiente();
 
 const buscaGerador=document.getElementById('docs-search');
 const categoriaGerador=document.getElementById('docs-category');
@@ -25,10 +56,7 @@ function filtrarGeradores() {
     });
     const secao=grupo.closest('.docs-generator-group');
     grupo.hidden=visiveis===0;
-    if(secao) {
-      secao.hidden=visiveis===0;
-      if(termo || categoriaGerador.value!=='todas') secao.open=visiveis>0;
-    }
+    if(secao) secao.hidden=visiveis===0;
     total+=visiveis;
   });
   document.getElementById('docs-search-status').textContent=total?`${total} opções disponíveis.`:'Nenhum gerador encontrado. Tente outro nome ou limpe a busca.';

@@ -33,6 +33,12 @@ function adicionarHistoricoDocs(dados) {
 
 function categoriaHistoricoDocs(dados) {
   const tipo = (dados.currentType || dados.tipo || '').toLowerCase();
+  const generator = typeof generatorById === 'function' ? generatorById(tipo) : null;
+  if (generator?.environments?.includes('port')) {
+    if (generator.category === 'empresa') return 'empresas';
+    if (generator.category === 'pessoa') return 'pessoas';
+    return 'transporte';
+  }
   if (['empresa','cnpj','cnpj-alfa'].includes(tipo) || tipo.includes('cnpj') || tipo.includes('empresa')) return 'empresas';
   if (['telefone','email'].includes(tipo) || tipo.includes('telefone') || tipo.includes('e-mail')) return 'contato';
   if (['placa','conteiner','conteiner-lacre','lacre','imo','booking','due'].includes(tipo) || /placa|contêiner|lacre|imo|booking|du-e/.test(tipo)) return 'transporte';
@@ -100,6 +106,7 @@ function restaurarHistoricoDocs(idx) {
   esconderPlaca();
   esconderConteiner();
   esconderTelefone();
+  if (typeof esconderCracha === 'function') esconderCracha();
   document.getElementById('nome-box').classList.remove('visible');
   nomeAtualDoc = '';
 
@@ -112,6 +119,7 @@ function restaurarHistoricoDocs(idx) {
     document.getElementById('container-preview').classList.add('visible');
   } else {
     setOutput(d.valor);
+    if (d.currentType === 'cracha' && d.cracha && typeof mostrarCracha === 'function') mostrarCracha(d.cracha);
     if (d.tipo === 'Placa') mostrarPlacaVisual(d.valor, d.subtipo || 'mercosul');
     if (d.tipo === 'Contêiner') {
       document.getElementById('container-num-val').textContent = d.conteiner || d.valor;
@@ -127,9 +135,13 @@ function restaurarHistoricoDocs(idx) {
     }
   }
 
-  if (d.nome) mostrarNome(d.nome, d.currentType === 'cpf' ? 'cpf' : 'cnpj');
+  if (d.nome && d.currentType !== 'cracha') mostrarNome(d.nome, d.currentType === 'cpf' ? 'cpf' : 'cnpj');
   const id=currentType==='placa'&&placaTipoAtual==='antiga'?'placa-antiga':currentType;
-  if(generatorById(id))openGenerator(id);
+  const generator=generatorById(id);
+  if(generator) {
+    if(!generatorSupportsEnvironment(generator))definirAmbiente(generator.environments[0]);
+    openGenerator(id);
+  }
   rolarParaElemento(document.getElementById('output-val'));
   mostrarStatus(`${d.tipo || 'Registro'} restaurado.`);
 }
@@ -188,8 +200,6 @@ function renderHistorico() {
       { label: 'E-mail', value: d.email },
       { label: 'CNPJ', value: d.cnpj },
       { label: 'Placa', value: d.placa },
-      { label: 'Contêiner', value: d.conteiner },
-      { label: 'Lacre', value: d.lacre },
     ].filter(c => c.value);
 
     return `
@@ -246,8 +256,10 @@ function restaurarDoHistorico(idx) {
   document.getElementById('cad_cnpj').value     = d.cnpj || '';
   document.getElementById('cad_doc_empresa').value = d.documento_estrangeiro_empresa || '';
   document.getElementById('cad_placa').value    = d.placa || '';
-  document.getElementById('cad_conteiner').value = d.conteiner || '';
-  document.getElementById('cad_lacre').value    = d.lacre || '';
+  const gruposRestaurados = Array.isArray(d.grupos)
+    ? d.grupos
+    : getCadastroGruposComDados(d).map(grupo => grupo.id);
+  aplicarGruposCadastro(gruposRestaurados);
   cadAtualizarResultado();
   atualizarStatusResultadoCadastro(`Cadastro de ${d.nome || 'registro'} restaurado no resultado.`);
   rolarParaElemento(document.getElementById('cadastro-result'));

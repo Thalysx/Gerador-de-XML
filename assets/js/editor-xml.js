@@ -128,7 +128,7 @@ function editorRenderizarGrupos() {
   const bar = document.getElementById('editor-grupos-bar');
   bar.innerHTML = editorGrupos.map(g => `
     <button type="button" class="nfe-group-tab${g.id === editorGrupoAtivo ? ' active' : ''}" onclick="editorSelecionarGrupo(${g.id})">${escapeHtml(g.nome)}</button>
-  `).join('') + `<button type="button" class="nfe-group-tab nfe-group-add" onclick="editorNovoGrupo()"><i class="bi bi-plus-lg" aria-hidden="true"></i> Novo Grupo</button>`;
+  `).join('') + `<button type="button" class="nfe-group-tab nfe-group-add" onclick="editorNovoGrupo()"><i data-lucide="plus" aria-hidden="true"></i> Novo Grupo</button>`;
 }
 
 /* ── Abas de arquivos ── */
@@ -138,7 +138,7 @@ function editorRenderizarAbasArquivos() {
   bar.innerHTML = arqs.length ? arqs.map(a => `
     <div class="nfe-file-tab${a.id === editorArquivoAtivoId ? ' active' : ''}">
       <button type="button" class="editor-file-select" id="editor-file-${a.id}" aria-pressed="${a.id === editorArquivoAtivoId}" onclick="editorSelecionarArquivo(${a.id});document.getElementById('editor-file-${a.id}').focus()">
-      <i class="bi bi-file-earmark-code" style="font-size:12px" aria-hidden="true"></i>
+      <i data-lucide="file-code-2" style="font-size:12px" aria-hidden="true"></i>
       <span title="${escapeAttr(a.nome)}">${escapeHtml(a.nome)}</span>
       ${a.modificado ? '<span class="editor-modificado-badge" title="Este arquivo contém alterações">Alterado</span>' : ''}
       </button>
@@ -355,7 +355,7 @@ function editorHtmlProdutos(arq) {
       <span class="nfe-section-title">PRODUTOS <span class="nfe-count-badge">${dets.length}</span></span>
       <div class="nfe-section-actions">
         <div class="nfe-search"><label for="editor-busca-produto" class="sr-only">Buscar produto por descrição, código ou NCM</label><input id="editor-busca-produto" type="search" placeholder="Descrição, código ou NCM" oninput="editorFiltrarCards(this.value,'nfe-produto-card')" aria-describedby="nfe-produto-card-busca-status"></div>
-        <button type="button" class="nfe-btn nfe-btn-primary" onclick="editorAdicionarItem(${arq.id})"><i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar Item</button>
+        <button type="button" class="nfe-btn nfe-btn-primary" onclick="editorAdicionarItem(${arq.id})"><i data-lucide="plus" aria-hidden="true"></i> Adicionar Item</button>
       </div>
     </div>
     <p class="texto-apoio" id="nfe-produto-card-busca-status" role="status" aria-live="polite">${dets.length} produtos neste arquivo.</p>
@@ -376,8 +376,8 @@ function editorProdutoCard(arqId, det, idx) {
   return `
   <div class="nfe-card nfe-produto-card" data-busca="${busca}">
     <div class="nfe-card-header">
-      <span class="nfe-card-badge"><i class="bi bi-box-seam" aria-hidden="true"></i> ITEM ${escapeHtml(nItem)}</span>
-      <button class="nfe-card-delete" onclick="editorRemoverItem(${arqId},${idx},this)" aria-label="Remover item"><i class="bi bi-trash" aria-hidden="true"></i></button>
+      <span class="nfe-card-badge"><i data-lucide="package" aria-hidden="true"></i> ITEM ${escapeHtml(nItem)}</span>
+      <button class="nfe-card-delete" onclick="editorRemoverItem(${arqId},${idx},this)" aria-label="Remover item"><i data-lucide="trash-2" aria-hidden="true"></i></button>
     </div>
     <div class="nfe-card-title">${escapeHtml(xProd) || '(sem descrição)'}</div>
     <div class="nfe-field-grid nfe-field-grid-3">
@@ -388,7 +388,7 @@ function editorProdutoCard(arqId, det, idx) {
       ${campoHtml(arqId, 'det', idx, 'prod>vUnCom', 'V. UNITÁRIO', vUnCom)}
       ${campoHtml(arqId, 'det', idx, 'prod>vProd', 'V. TOTAL', vProd, true)}
     </div>
-    <button type="button" class="nfe-ver-todos" onclick="editorToggleTodosCampos(this,${arqId},'det',${idx},PRODUTO_CAMPOS_PRINCIPAIS)"><i class="bi bi-file-earmark-text" aria-hidden="true"></i> Ver todos os campos (imposto, etc)</button>
+    <button type="button" class="nfe-ver-todos" onclick="editorToggleTodosCampos(this,${arqId},'det',${idx},PRODUTO_CAMPOS_PRINCIPAIS)"><i data-lucide="file-text" aria-hidden="true"></i> Ver todos os campos (imposto, etc)</button>
     <div class="nfe-todos-campos-body" style="display:none"></div>
   </div>`;
 }
@@ -396,8 +396,9 @@ function editorProdutoCard(arqId, det, idx) {
 function editorRemoverItem(arqId, idx, btn) {
   if (!btn.classList.contains('confirmar')) {
     btn.classList.add('confirmar');
-    btn.innerHTML = '<i class="bi bi-check-lg" aria-hidden="true"></i>';
-    setTimeout(() => { btn.classList.remove('confirmar'); btn.innerHTML = '<i class="bi bi-trash" aria-hidden="true"></i>'; }, 2000);
+    btn.innerHTML = '<i data-lucide="check" aria-hidden="true"></i>';
+    renderLucideIcons(btn);
+    setTimeout(() => { btn.classList.remove('confirmar'); btn.innerHTML = '<i data-lucide="trash-2" aria-hidden="true"></i>'; renderLucideIcons(btn); }, 2000);
     return;
   }
   const arq = editorArquivos.find(a => a.id === arqId);
@@ -446,7 +447,7 @@ function editorHtmlVolumes(arq) {
       <span class="nfe-section-title">VOLUMES (VOL) <span class="nfe-count-badge">${vols.length}</span></span>
       <div class="nfe-section-actions">
         <div class="nfe-search"><label for="editor-busca-volume" class="sr-only">Buscar volume por espécie, marca ou número</label><input id="editor-busca-volume" type="search" placeholder="Espécie, marca ou número" oninput="editorFiltrarCards(this.value,'nfe-volume-card')" aria-describedby="nfe-volume-card-busca-status"></div>
-        <button type="button" class="nfe-btn nfe-btn-primary" onclick="editorAdicionarVolume(${arq.id})"><i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar Volume</button>
+        <button type="button" class="nfe-btn nfe-btn-primary" onclick="editorAdicionarVolume(${arq.id})"><i data-lucide="plus" aria-hidden="true"></i> Adicionar Volume</button>
       </div>
     </div>
     <p class="texto-apoio" id="nfe-volume-card-busca-status" role="status" aria-live="polite">${vols.length} volumes neste arquivo.</p>
@@ -465,8 +466,8 @@ function editorVolumeCard(arqId, vol, idx) {
   return `
   <div class="nfe-card nfe-volume-card" data-busca="${busca}">
     <div class="nfe-card-header">
-      <span class="nfe-card-badge"><i class="bi bi-box" aria-hidden="true"></i> VOLUME ${idx + 1}</span>
-      <button class="nfe-card-delete" onclick="editorRemoverVolume(${arqId},${idx},this)" aria-label="Remover volume"><i class="bi bi-trash" aria-hidden="true"></i></button>
+      <span class="nfe-card-badge"><i data-lucide="box" aria-hidden="true"></i> VOLUME ${idx + 1}</span>
+      <button class="nfe-card-delete" onclick="editorRemoverVolume(${arqId},${idx},this)" aria-label="Remover volume"><i data-lucide="trash-2" aria-hidden="true"></i></button>
     </div>
     <div class="nfe-field-grid nfe-field-grid-2">
       ${campoHtml(arqId, 'vol', idx, 'qVol', 'QTD (QVOL)', qVol)}
@@ -476,7 +477,7 @@ function editorVolumeCard(arqId, vol, idx) {
       ${campoHtml(arqId, 'vol', idx, 'pesoL', 'PESO LÍQUIDO (PESOL)', pesoL)}
       ${campoHtml(arqId, 'vol', idx, 'pesoB', 'PESO BRUTO (PESOB)', pesoB)}
     </div>
-    <button type="button" class="nfe-ver-todos" onclick="editorToggleTodosCampos(this,${arqId},'vol',${idx},VOLUME_CAMPOS_PRINCIPAIS)"><i class="bi bi-file-earmark-text" aria-hidden="true"></i> Ver todos os campos (lacre, etc)</button>
+    <button type="button" class="nfe-ver-todos" onclick="editorToggleTodosCampos(this,${arqId},'vol',${idx},VOLUME_CAMPOS_PRINCIPAIS)"><i data-lucide="file-text" aria-hidden="true"></i> Ver todos os campos (lacre, etc)</button>
     <div class="nfe-todos-campos-body" style="display:none"></div>
   </div>`;
 }
@@ -484,8 +485,9 @@ function editorVolumeCard(arqId, vol, idx) {
 function editorRemoverVolume(arqId, idx, btn) {
   if (!btn.classList.contains('confirmar')) {
     btn.classList.add('confirmar');
-    btn.innerHTML = '<i class="bi bi-check-lg" aria-hidden="true"></i>';
-    setTimeout(() => { btn.classList.remove('confirmar'); btn.innerHTML = '<i class="bi bi-trash" aria-hidden="true"></i>'; }, 2000);
+    btn.innerHTML = '<i data-lucide="check" aria-hidden="true"></i>';
+    renderLucideIcons(btn);
+    setTimeout(() => { btn.classList.remove('confirmar'); btn.innerHTML = '<i data-lucide="trash-2" aria-hidden="true"></i>'; renderLucideIcons(btn); }, 2000);
     return;
   }
   const arq = editorArquivos.find(a => a.id === arqId);
@@ -525,7 +527,7 @@ function editorHtmlTotais(arq) {
   return `
     <div class="nfe-section-header"><span class="nfe-section-title">TOTAIS DA NFE (ICMSTOT)</span></div>
     <div class="nfe-card">
-      <div class="nfe-card-badge"><i class="bi bi-calculator" aria-hidden="true"></i> TOTALIZADORES</div>
+      <div class="nfe-card-badge"><i data-lucide="calculator" aria-hidden="true"></i> TOTALIZADORES</div>
       <div class="nfe-field-grid nfe-field-grid-5">${campos}</div>
     </div>
   `;
@@ -558,20 +560,20 @@ function editorHtmlChaves(arq) {
   return `
     <div class="nfe-section-header">
       <span class="nfe-section-title">CHAVES E IDENTIFICAÇÃO (IDE / PROTNFE)</span>
-      <button type="button" class="nfe-btn nfe-btn-accent" onclick="editorSomarUm(${arq.id})"><i class="bi bi-plus-circle" aria-hidden="true"></i> Somar +1 (nNF / chNFe)</button>
+      <button type="button" class="nfe-btn nfe-btn-accent" onclick="editorSomarUm(${arq.id})"><i data-lucide="circle-plus" aria-hidden="true"></i> Somar +1 (nNF / chNFe)</button>
     </div>
     <div class="nfe-chaves-layout">
       <div class="nfe-card">
-        <div class="nfe-card-badge"><i class="bi bi-key" aria-hidden="true"></i> IDENTIFICAÇÃO (IDE)</div>
+        <div class="nfe-card-badge"><i data-lucide="key-round" aria-hidden="true"></i> IDENTIFICAÇÃO (IDE)</div>
         <div class="nfe-field-grid nfe-field-grid-3">${ideCampos}</div>
       </div>
       <div class="nfe-chaves-col">
         <div class="nfe-card">
-          <div class="nfe-card-badge nfe-badge-green"><i class="bi bi-fingerprint" aria-hidden="true"></i> ID PRINCIPAL DO XML</div>
+          <div class="nfe-card-badge nfe-badge-green"><i data-lucide="fingerprint" aria-hidden="true"></i> ID PRINCIPAL DO XML</div>
           ${idField}
         </div>
         <div class="nfe-card">
-          <div class="nfe-card-badge nfe-badge-blue"><i class="bi bi-patch-check" aria-hidden="true"></i> PROTOCOLO (INFPROT)</div>
+          <div class="nfe-card-badge nfe-badge-blue"><i data-lucide="badge-check" aria-hidden="true"></i> PROTOCOLO (INFPROT)</div>
           ${protHtml}
         </div>
       </div>

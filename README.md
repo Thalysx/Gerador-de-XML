@@ -6,7 +6,7 @@ O desenvolvimento gradual do backend público está descrito em [PLANO-IA-PUBLIC
 
 Abra `index.html` no navegador para usar os geradores, editor e validação local. Mantenha a pasta `assets` ao lado do HTML. O **chat com IA** precisa do servidor Node.js e de uma chave do provedor escolhido, conforme abaixo.
 
-Bootstrap, ícones e fontes continuam sendo carregados de serviços externos e precisam de conexão para estar disponíveis.
+Bootstrap e fontes continuam sendo carregados de serviços externos e precisam de conexão para estar disponíveis. Os ícones Lucide usados pela aplicação são empacotados localmente.
 
 Veja [ATUALIZACOES.md](ATUALIZACOES.md) para as funcionalidades adicionadas, exemplos do chat, verificações e limitações. O andamento da revisão de interface está em [PLANO-VISUAL.md](PLANO-VISUAL.md), com as evidências em [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md) e o roteiro final em [CHECKLIST-LEITOR-TELA.md](CHECKLIST-LEITOR-TELA.md).
 
@@ -14,7 +14,9 @@ A identidade, os arquivos de logo, as regras de uso e a triagem pública do nome
 
 ## Organização
 
-A Home reúne descoberta, busca, categorias, favoritos e recentes. Cada ferramenta abre pelo ID do registry único e executa no seu workspace. A identidade FUTURE G e a navegação pertencem à sidebar; temas claro/escuro usam azul-marinho como base e azul nas interações. O seletor Geradores Gerais / QA Portuário troca o contexto sem recarregar a aplicação. Os seis arquivos CSS têm responsabilidades definidas, sem camadas de overrides. Veja [Arquitetura da interface](docs/ui-architecture.md) para contratos, persistência, estilos e verificações.
+A Home reúne descoberta, busca, categorias, favoritos e recentes. Cada ferramenta abre pelo ID do registry único e executa no seu workspace. A identidade FUTURE G e a navegação pertencem à sidebar; Geradores Gerais usa a identidade branca/roxa (ou escura/roxa) e QA Portuário mantém a identidade azul. O seletor troca o contexto sem recarregar a aplicação e projeta catálogos, XMLs e sugestões exclusivos de cada ambiente. Os seis arquivos CSS têm responsabilidades definidas, sem camadas de overrides. Veja [Arquitetura da interface](docs/ui-architecture.md) para contratos, persistência, estilos e verificações.
+
+O fluxo OpenSpec deve permanecer uniforme: concluir checklist e relatório, incorporar as decisões às especificações canônicas, executar testes/build/auditoria pertinentes e mover a mudança para `openspec/changes/archive/AAAA-MM-DD-nome-da-mudanca`. A etapa seguinte só começa depois desse arquivamento.
 
 | Arquivo | Responsabilidade |
 | --- | --- |
@@ -39,18 +41,24 @@ A Home reúne descoberta, busca, categorias, favoritos e recentes. Cada ferramen
 | `assets/js/historico.js` | Histórico dos documentos e cadastros |
 | `assets/js/editor-xml.js` | Importação, edição e exportação de XML |
 | `assets/js/geracao-dados.js` | API de geração independente da interface, novos documentos e exportação |
+| `assets/js/development-generators.js` | UUID v4, endereços de documentação IPv4/IPv6 e MAC local para testes |
+| `assets/js/finance-generators.js` | Valores BRL, chave Pix EVP não registrada e IDs fictícios de transação |
+| `assets/js/port-generators.js` | Perfis, empresas, veículos, contêineres, cargas e documentos sintéticos do QA Portuário |
+| `assets/js/test-scenarios.js` | Cenários operacionais coerentes, referências, modos de validade e histórico local |
 | `assets/js/chat.js` | Interpretação local de pedidos e interface de chat/lotes |
 | `assets/js/chat-ia.js` | Conversa com IA, anexos explícitos e artefatos |
-| `assets/js/validacao-xml.js` | Sintaxe e consistência básica de NF-e/CT-e |
+| `assets/js/validacao-xml.js` | Relatórios estruturados, resumo e testes negativos de NF-e/CT-e |
 | `assets/css/validacao-xml.css` | Tela de validação XML |
 | `scripts/ai.cjs` | Orquestração dos provedores, sessões e ferramentas |
 | `scripts/engine.cjs` | Reutilização do gerador e validador no servidor |
 | `assets/js/xml-workflow.js` | Prévia, integração com editor/cadastro, cenários e comparação de XML |
 | `assets/js/app.js` | Inicialização da aplicação e restauração do estado |
 | `assets/js/home-dashboard.js` | Descoberta, favoritos e recentes; navegação por ID |
+| `assets/js/productivity.js` | Busca global Ctrl+K, dashboards por ambiente e atividade resumida sem resultados |
 | `tests/projeto.test.cjs` | Testes de geração e fluxos com DOM simulado |
 | `scripts/serve.cjs` | Servidor local opcional para desenvolvimento |
 | `scripts/audit-browser.cjs` | Auditoria reproduzível de zoom, overflow, foco por teclado e movimento reduzido em Chrome/Edge |
+| `scripts/build-icons.cjs` | Geração do runtime Lucide local contendo somente os ícones utilizados |
 | `scripts/export-brand.cjs` | Exportação das versões PNG da marca a partir dos SVGs oficiais |
 | `openspec/` | Especificações, mudanças incrementais e roadmap FUTURE G |
 
@@ -85,13 +93,15 @@ npm run dev
 
 Abra `http://127.0.0.1:4173`. A dependência `jsdom` é usada nos testes e no servidor para reaproveitar as regras do gerador; ela não é carregada pelo navegador.
 
-Para conferir as sete telas em escala de 200%, percorrer os controles por teclado e verificar movimento reduzido em um Chrome ou Edge instalado:
+Para conferir as oito telas em escala de 200%, percorrer os controles por teclado, testar a busca global, inspecionar console e orçamentos de recursos e verificar movimento reduzido em um Chrome ou Edge instalado:
 
 ```sh
 npm run audit:browser
 ```
 
 O comando cria um servidor temporário sem dependências externas, grava as evidências locais em `artifacts/visual-review` e encerra o navegador isolado ao concluir. A dependência de desenvolvimento `ws` é usada somente para essa comunicação com o navegador.
+
+`npm run build` recria antes da distribuição o subset local de 49 ícones. Para executar somente essa etapa, use `npm run icons:build`. A matriz responsiva completa pode ser repetida com `$env:AUDIT_MATRIX='1'; npm run audit:browser` no PowerShell.
 
 Para recriar os PNGs da identidade em `assets/brand`:
 
@@ -105,8 +115,18 @@ Consulte [ATIVACAO-IA.md](ATIVACAO-IA.md) para configurar Groq ou OpenAI, desenv
 
 ## Validação XML
 
-A aba **Validação XML** aceita conteúdo colado, XML atual do gerador ou até 10 arquivos UTF-8 de 5 MB cada. Verifica sintaxe, estrutura básica, chave, CNPJ, campos e totais de produtos; exporta relatório JSON e abre cópia no editor. Essa tela funciona localmente, sem IA. Não verifica XSD, assinatura digital, regras tributárias completas ou autorização SEFAZ. O anexo do chat tem um limite separado de 100 KB.
+A aba **Validação XML** aceita conteúdo colado, XML atual do gerador ou até 10 arquivos UTF-8 de 5 MB cada. O relatório estruturado classifica achados como Erro, Aviso ou Informação e, quando disponíveis, mostra tag, valor, caminho, linha e coluna. As visões Resumo, XML e Validação permanecem ligadas ao mesmo documento; a exportação JSON não inclui o XML-fonte.
+
+A mesma tela cria cópias intencionalmente inválidas de NF-e/CT-e para QA: CPF ou CNPJ inválido, chave inconsistente, campo obrigatório ausente, formato ou tag inválida e XML malformado. Essas cópias recebem identificação explícita, podem ser baixadas e nunca alteram o XML-base do gerador. A análise funciona localmente, sem IA, e não verifica XSD, assinatura digital, regras tributárias completas ou autorização SEFAZ. O anexo do chat tem um limite separado de 100 KB. Consulte [FUTURE G 07 — Validação XML avançada](docs/future-g-07-xml-validation.md).
+
+## Cenários de teste
+
+O ambiente **QA Portuário** possui uma biblioteca de dez fluxos operacionais, de agendamento e Gate IN ao Gate OUT. Cada massa usa IDs internos estáveis para motorista, transportadora, veículo, contêiner e carga, preserva essas referências em todas as etapas e pode ser gerada nos modos Válido, Inválido intencional ou Aleatório. O resultado pode ser inspecionado, copiado, baixado e restaurado do histórico local. Consulte [FUTURE G 09 — Cenários de teste coerentes](docs/future-g-09-test-scenarios.md).
+
+## Produtividade
+
+`Ctrl+K` abre uma busca global por geradores e áreas disponíveis no ambiente atual. A Home apresenta contadores e atividade recente específica de Geradores Gerais ou QA Portuário. Esse resumo guarda somente identificador, ambiente, tipo de ação, quantidade e horário — nunca valores gerados, prompts, anexos ou segredos. Lotes compatíveis podem ser copiados e baixados integralmente em JSON, CSV ou TXT, com nome contextual. Consulte [FUTURE G 10 — Produtividade](docs/future-g-10-productivity.md).
 
 Os testes automatizados da IA usam um provedor simulado para manter a suíte determinística e verificam a execução real das ferramentas. A integração pública com Groq também foi exercitada no site implantado.
 
-Os 58 testes abrangem geração, home, favoritos e recentes, atalhos, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API e fluxos de XML. A atualização também foi conferida em Chromium em escala de 200% e desktop, incluindo as sete telas e os dois temas.
+Os 104 testes abrangem geração geral e portuária, ficha seletiva do Cadastro Geral, crachá sintético, cenários operacionais coerentes, busca global, dashboards, privacidade da atividade, home, favoritos e recentes, atalhos, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API, relatórios XML estruturados, variantes negativas e o estado de processamento do upload. A atualização também foi conferida em Chromium em escala de 200% e numa matriz de 128 combinações de painel, tema, largura e sidebar. Consulte [FUTURE G 11 — Polimento e robustez](docs/future-g-11-polish.md).

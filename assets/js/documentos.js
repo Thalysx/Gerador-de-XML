@@ -206,6 +206,28 @@ function gerarPlacaMercosulRaw() {
   return semRepeticaoRecente('placa', () => letraAleatoria() + letraAleatoria() + letraAleatoria() + rand(10) + letraAleatoria() + rand(10) + rand(10));
 }
 
+function calcularDigitoRenavam(base) {
+  const digitos = String(base).replace(/\D/g, '');
+  if (digitos.length !== 10) throw new Error('A base do RENAVAM deve ter dez dígitos.');
+  const pesos = [3,2,9,8,7,6,5,4,3,2];
+  const soma = [...digitos].reduce((total, digito, indice) => total + Number(digito) * pesos[indice], 0);
+  const resto = soma % 11;
+  return resto < 2 ? 0 : 11 - resto;
+}
+
+function gerarRenavamRaw() {
+  return semRepeticaoRecente('renavam', () => {
+    const base = randomDigits(10);
+    if (base.every(digito => digito === base[0])) base[0] = (base[0] + 1) % 10;
+    return base.join('') + calcularDigitoRenavam(base.join(''));
+  });
+}
+
+function validarRenavam(valor) {
+  const raw = String(valor).replace(/\D/g, '');
+  return raw.length === 11 && !/^(\d)\1{10}$/.test(raw) && calcularDigitoRenavam(raw.slice(0, 10)) === Number(raw[10]);
+}
+
 function gerarPlaca(tipo) {
   let placa, subtipo;
   subtipo = tipo === 'aleatoria' ? (rand(2) === 0 ? 'mercosul' : 'antiga') : tipo;
@@ -334,21 +356,61 @@ function copiarLacre() {
 }
 
 // ── CNH ──────────────────────────────────────────────────────
-function calcDSP(digs) {
-  let sum = 0;
-  for (let i = 0; i < 9; i++) sum += digs[i] * (9 - i);
-  let dsp = sum % 11;
-  return dsp >= 10 ? 0 : dsp;
+function calcularDigitoRGSP(digitos) {
+  const soma = digitos.reduce((total, digito, indice) => total + digito * (indice + 2), 0);
+  const resto = soma % 11;
+  return resto === 10 ? 'X' : String(resto);
+}
+
+function gerarRGRaw() {
+  return semRepeticaoRecente('rg', () => {
+    const digitos = randomDigits(8);
+    if (digitos.every(digito => digito === digitos[0])) digitos[0] = (digitos[0] + 1) % 10;
+    return digitos.join('') + calcularDigitoRGSP(digitos);
+  });
+}
+
+function gerarNomeFantasia() {
+  return semRepeticaoRecente('nome-fantasia', () => {
+    const marca = pick(MARCAS_EMPRESA);
+    const complemento = pick([...SETORES_EMPRESA, ...REGIOES_EMPRESA]);
+    return rand(3) === 0 ? marca : `${marca} ${complemento}`;
+  });
+}
+
+function gerarRGBR() { return formatRG(gerarRGRaw()); }
+
+function validarRGSP(valor) {
+  const raw = String(valor || '').replace(/[^0-9X]/gi, '').toUpperCase();
+  if (!/^\d{8}[0-9X]$/.test(raw) || /^(\d)\1{7}/.test(raw.slice(0, 8))) return false;
+  return calcularDigitoRGSP(raw.slice(0, 8).split('').map(Number)) === raw[8];
+}
+
+function calcularDigitosCNH(digitos) {
+  const somaPrimeiro = digitos.reduce((total, digito, indice) => total + digito * (9 - indice), 0);
+  const restoPrimeiro = somaPrimeiro % 11;
+  const desconto = restoPrimeiro === 10 ? 2 : 0;
+  const primeiro = restoPrimeiro >= 10 ? 0 : restoPrimeiro;
+  const somaSegundo = digitos.reduce((total, digito, indice) => total + digito * (indice + 1), 0);
+  let restoSegundo = (somaSegundo % 11) - desconto;
+  if (restoSegundo < 0) restoSegundo += 11;
+  const segundo = restoSegundo >= 10 ? 0 : restoSegundo;
+  return [primeiro, segundo];
 }
 
 function gerarCNHRaw() {
-  const digs = Array.from({length: 9}, () => rand(10));
-  const d1 = calcDSP(digs);
-  let sumD2 = 0;
-  for (let i = 0; i < 9; i++) sumD2 += digs[i] * (1 + i);
-  const rawD2 = sumD2 % 11;
-  const d2 = rawD2 >= 10 ? 0 : rawD2;
-  return digs.join('') + String(d1) + String(d2);
+  return semRepeticaoRecente('cnh', () => {
+    const digitos = randomDigits(9);
+    if (digitos.every(digito => digito === digitos[0])) digitos[0] = (digitos[0] + 1) % 10;
+    return digitos.join('') + calcularDigitosCNH(digitos).join('');
+  });
+}
+
+function validarCNH(valor) {
+  const raw = String(valor || '').replace(/\D/g, '');
+  if (!/^\d{11}$/.test(raw) || /^(\d)\1{10}$/.test(raw)) return false;
+  const digitos = raw.slice(0, 9).split('').map(Number);
+  return raw.slice(9) === calcularDigitosCNH(digitos).join('');
 }
 
 function gerarCNH() {
@@ -402,21 +464,29 @@ function gerarEmailDocs() {
 function gerarNovoDocumentoAtual() {
   const id=currentType==='placa'&&placaTipoAtual==='antiga'?'placa-antiga':currentType;
   const item=generatorById(id);
-  if(item?.run)item.run();
+  if(item?.run){
+    const button=document.getElementById('new-doc-btn');
+    button.classList.remove('is-activating');
+    void button.offsetWidth;
+    button.classList.add('is-activating');
+    item.run();
+    setTimeout(()=>button.classList.remove('is-activating'),220);
+  }
   else mostrarStatus('Gere um documento primeiro.', 'error');
 }
 
 // ── Máscara ───────────────────────────────────────────────────
 function removerMascara() {
-  if (!currentValue || ['placa','conteiner','conteiner-lacre','lacre','email','nome','empresa','booking'].includes(currentType)) return;
+  if (!currentValue || ['placa','conteiner','conteiner-lacre','lacre','email','nome','empresa','nome-fantasia','endereco','renavam','booking'].includes(currentType)) return;
   currentValue = currentValue.replace(/[^0-9A-Za-z]/g, '');
   setOutput(currentValue);
 }
 
 function aplicarMascara() {
-  if (!currentValue || ['placa','conteiner','conteiner-lacre','lacre','email','nome','empresa','booking'].includes(currentType)) return;
+  if (!currentValue || ['placa','conteiner','conteiner-lacre','lacre','email','nome','empresa','nome-fantasia','endereco','renavam','booking'].includes(currentType)) return;
   const raw = currentValue.replace(/[^0-9A-Za-z]/g, '');
   if (currentType === 'rg') { setOutput(formatRG(raw)); return; }
+  if (currentType === 'cep') { setOutput(formatCEP(raw)); return; }
   if (currentType === 'due') { setOutput(raw.slice(0,-1) + '-' + raw.slice(-1)); return; }
   if (currentType === 'cpf' && raw.length === 11) setOutput(`${raw.slice(0,3)}.${raw.slice(3,6)}.${raw.slice(6,9)}-${raw.slice(9)}`);
   else if ((currentType === 'cnpj' || currentType === 'cnpj-alfa') && raw.length === 14) setOutput(formatCNPJ(raw));
@@ -436,11 +506,16 @@ function gerarCNPJComToggle()             { gerarCNPJ(document.getElementById('t
 function gerarCNPJAlfanumericoComToggle() { gerarCNPJAlfanumerico(document.getElementById('toggle-mascara').checked); }
 
 function setOutput(val) {
+  if (typeof esconderCracha === 'function') esconderCracha();
   const box = document.getElementById('docs-output-box');
   if (box) box.style.display = '';
   const el = document.getElementById('output-val');
   el.textContent = val;
   el.classList.remove('placeholder');
+  box.classList.remove('is-updated');
+  void box.offsetWidth;
+  box.classList.add('is-updated');
+  setTimeout(() => box.classList.remove('is-updated'), 220);
   const generatorId=currentType==='placa'&&placaTipoAtual==='antiga'?'placa-antiga':currentType;
   document.getElementById('docs-result-label').textContent='Resultado · '+(generatorById(generatorId)?.label || 'Documento');
   document.getElementById('new-doc-btn').style.display = 'inline-block';
@@ -457,25 +532,46 @@ function atualizarOpcoesDocumento(tipoAtual = currentType, tipoLote = document.g
   const comNome=!!generatorById(tipoAtual)?.name;
   const comMascara=!!generatorById(tipoAtual)?.mask || !!generatorById(tipoLote)?.mask;
   const comTelefone=tipoAtual==='telefone' || tipoLote==='telefone';
+  const comPlaca=tipoAtual==='placa';
+  const comCracha=tipoAtual==='cracha' || tipoLote==='cracha';
   document.getElementById('docs-option-name').hidden=!comNome;
   document.getElementById('docs-option-mask').hidden=!comMascara;
   document.getElementById('docs-preferencias').hidden=!comNome&&!comMascara;
   document.getElementById('docs-phone-options').hidden=!comTelefone;
+  document.getElementById('docs-plate-options').hidden=!comPlaca;
+  document.getElementById('docs-badge-options').hidden=!comCracha;
 }
 
 function copyResult() {
   const val = document.getElementById('output-val').textContent;
   copiarTexto(val, 'Resultado copiado.').then((ok) => {
     if (!ok) return;
+    const button = document.getElementById('copy-btn');
+    const original = button.innerHTML;
+    button.innerHTML = '<i data-lucide="check" aria-hidden="true"></i> Copiado';
+    renderLucideIcons(button);
+    button.classList.add('is-copied');
+    button.setAttribute('aria-label', 'Resultado copiado');
     const msg = document.getElementById('copied-msg');
     msg.style.opacity = '1';
-    setTimeout(() => msg.style.opacity = '0', 1500);
+    setTimeout(() => {
+      msg.style.opacity = '0';
+      button.innerHTML = original;
+      renderLucideIcons(button);
+      button.classList.remove('is-copied');
+      button.setAttribute('aria-label', 'Copiar resultado gerado');
+    }, 1500);
   });
 }
 
 function baixarResultadoDocumento() {
   const valorExibido = document.getElementById('output-val').textContent;
   if (!currentType || !valorExibido) { mostrarStatus('Gere um documento antes de baixar.', 'error'); return; }
+  if (currentType === 'cracha' && typeof formatarCrachaTexto === 'function' && crachaAtual) {
+    baixarTexto('cracha-sintetico.txt', formatarCrachaTexto(crachaAtual));
+    mostrarStatus('Arquivo TXT do crachá preparado para download.');
+    return;
+  }
   const rotulos = Object.fromEntries(GENERATORS.map(g=>[g.id,g.label]));
   const linhas = [];
   if (nomeAtualDoc && document.getElementById('nome-box').classList.contains('visible')) linhas.push(`${currentType === 'cpf' ? 'Nome' : 'Razão social'}: ${nomeAtualDoc}`);

@@ -1,5 +1,5 @@
 const { spawn, spawnSync } = require('node:child_process');
-const { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } = require('node:fs');
+const { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, readdirSync } = require('node:fs');
 const http = require('node:http');
 const { tmpdir } = require('node:os');
 const path = require('node:path');
@@ -69,6 +69,7 @@ function criarClienteCdp(url) {
   const socket = new WebSocket(url);
   let id = 0;
   const pendentes = new Map();
+  const listeners = new Map();
   socket.on('message', async entrada => {
     try {
       let bruto = entrada;
@@ -76,7 +77,11 @@ function criarClienteCdp(url) {
       else if (bruto instanceof ArrayBuffer) bruto = Buffer.from(bruto).toString('utf8');
       else if (ArrayBuffer.isView(bruto)) bruto = Buffer.from(bruto.buffer, bruto.byteOffset, bruto.byteLength).toString('utf8');
       const mensagem = JSON.parse(bruto);
-      if (!mensagem.id || !pendentes.has(mensagem.id)) return;
+      if (!mensagem.id) {
+        for (const listener of listeners.get(mensagem.method) || []) listener(mensagem.params || {});
+        return;
+      }
+      if (!pendentes.has(mensagem.id)) return;
       const { resolve, reject } = pendentes.get(mensagem.id);
       pendentes.delete(mensagem.id);
       if (mensagem.error) reject(new Error(`${mensagem.error.message}${mensagem.error.data ? `: ${mensagem.error.data}` : ''}`));
@@ -111,6 +116,11 @@ function criarClienteCdp(url) {
       socket.send(JSON.stringify({ id: atual, method, params }));
       return resposta;
     },
+    on(method, listener) {
+      if (!listeners.has(method)) listeners.set(method, new Set());
+      listeners.get(method).add(listener);
+      return () => listeners.get(method)?.delete(listener);
+    },
     fechar() { socket.close(); }
   };
 }
@@ -131,7 +141,7 @@ async function esperarPagina(cdp) {
   for (let i = 0; i < 80; i += 1) {
     const estado = await avaliar(cdp, `({
       readyState: document.readyState,
-      pronta: typeof switchTab === 'function' && document.querySelectorAll('.tab-panel').length === 7
+      pronta: typeof switchTab === 'function' && document.querySelectorAll('.tab-panel').length === 8
     })`);
     ultimoEstado = estado;
     if (estado?.pronta) {
@@ -191,10 +201,24 @@ async function main() {
     if (!pagina) throw new Error('O Chrome não publicou uma página para auditoria.');
     console.error(`[auditoria] alvo ${pagina.type} ${pagina.webSocketDebuggerUrl}`);
     cdp = criarClienteCdp(pagina.webSocketDebuggerUrl);
+    const consoleAudit = { exceptions: [], errors: [], warnings: [] };
+    const consoleText = args => args.map(arg => arg.value ?? arg.description ?? '').join(' ').slice(0,1000);
+    cdp.on('Runtime.exceptionThrown', event => consoleAudit.exceptions.push(String(event.exceptionDetails?.exception?.description || event.exceptionDetails?.text || 'Exceção não identificada').slice(0,1000)));
+    cdp.on('Runtime.consoleAPICalled', event => {
+      const text = consoleText(event.args || []);
+      if (['error','assert'].includes(event.type)) consoleAudit.errors.push(text);
+      else if (event.type === 'warning') consoleAudit.warnings.push(text);
+    });
+    cdp.on('Log.entryAdded', event => {
+      const entry=event.entry || {};
+      if(entry.level === 'error')consoleAudit.errors.push(String(entry.text || '').slice(0,1000));
+      else if(entry.level === 'warning')consoleAudit.warnings.push(String(entry.text || '').slice(0,1000));
+    });
     console.error('[auditoria] conectando ao CDP');
     await cdp.enviar('Page.enable');
     await cdp.enviar('Runtime.enable');
     await cdp.enviar('Network.enable');
+    await cdp.enviar('Log.enable');
     await cdp.enviar('Accessibility.enable');
     await cdp.enviar('Network.setBlockedURLs', { urls: [ ...(process.env.AUDIT_CDN ? [] : [
       'https://cdn.jsdelivr.net/*',
@@ -223,9 +247,10 @@ async function main() {
       const measurements = [];
       for (const width of [360,768,1280,1920]) {
         await cdp.enviar('Emulation.setDeviceMetricsOverride', {width,height:900,deviceScaleFactor:1,mobile:false});
-        for (const dark of [false,true]) for (const panel of ['home','xml','docs','cadastro','editor','validacao','chat']) for(const collapsed of process.env.AUDIT_MATRIX?[false,true]:[false]) {
+        for (const dark of [false,true]) for (const panel of ['home','xml','docs','cadastro','scenarios','editor','validacao','chat']) for(const collapsed of process.env.AUDIT_MATRIX?[false,true]:[false]) {
           measurements.push(await avaliar(cdp, `(() => {
             if(document.body.classList.contains('dark')!==${dark})toggleTheme();
+            definirAmbiente('${panel}'==='scenarios'?'port':'general',false);
             switchTab('${panel}'); scrollTo(0,0);
             if(typeof definirSidebar==='function')definirSidebar(${collapsed},false);
             const outside=[...document.querySelectorAll('button,input,select,textarea,summary')].filter(el=>{
@@ -240,6 +265,7 @@ async function main() {
         }
       }
       const phone = await avaliar(cdp, `(() => {
+        definirAmbiente('general',false);
         const results=[];
         for(const term of ['', 'empresa']) {
           document.getElementById('docs-search').value=term;
@@ -262,11 +288,12 @@ async function main() {
     }
 
     const paineis = await avaliar(cdp, `(async () => {
-      const ids = ['home','xml','docs','cadastro','editor','validacao','chat'];
+      const ids = ['home','xml','docs','cadastro','scenarios','editor','validacao','chat'];
       const resultados = [];
       const nome = el => el.getAttribute('aria-label') || el.innerText?.trim().replace(/\\s+/g,' ').slice(0,100) || el.id || el.tagName;
       for (const id of ids) {
         const botao = document.getElementById('tab-btn-' + id);
+        if(id==='scenarios')definirAmbiente('port',false);
         if (typeof switchTab === 'function') switchTab(id, botao);
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
         const visiveis = [...document.querySelectorAll('body *')].filter(el => {
@@ -290,11 +317,43 @@ async function main() {
       document.documentElement.scrollTop = 0;
       return resultados;
     })()`);
-    console.error('[auditoria] sete painéis medidos');
+    console.error('[auditoria] oito painéis medidos');
+
+    const commandPalette = await avaliar(cdp, `(async () => {
+      definirAmbiente('general',false);
+      switchTab('home',document.getElementById('tab-btn-home'));
+      openCommandPalette();
+      const input=document.getElementById('command-palette-input');
+      input.value='transportadora';input.dispatchEvent(new Event('input',{bubbles:true}));
+      const generalCount=document.querySelectorAll('#command-palette-results [role="option"]').length;
+      definirAmbiente('port',false);
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      const portCount=document.querySelectorAll('#command-palette-results [role="option"]').length;
+      const panel=document.querySelector('.command-palette-panel'),rect=panel.getBoundingClientRect();
+      const result={
+        named:document.getElementById('command-palette').getAttribute('aria-labelledby')==='command-palette-title',
+        focused:document.activeElement===input,
+        generalCount,portCount,
+        insideViewport:rect.left>=-1&&rect.right<=innerWidth+1&&rect.top>=-1&&rect.bottom<=innerHeight+1
+      };
+      closeCommandPalette();definirAmbiente('general',false);
+      return result;
+    })()`);
+    const assetBytes = extension => readdirSync(path.join(RAIZ,'assets',extension==='css'?'css':'js'))
+      .filter(name => name.endsWith(`.${extension}`))
+      .reduce((total,name) => total + readFileSync(path.join(RAIZ,'assets',extension==='css'?'css':'js',name)).length,0);
+    const performanceAudit = {
+      lucideBytes: readFileSync(path.join(RAIZ,'assets','js','lucide.min.js')).length,
+      localJavaScriptBytes: assetBytes('js'),
+      localCssBytes: assetBytes('css'),
+      domNodes: await avaliar(cdp,'document.getElementsByTagName("*").length')
+    };
+    console.error('[auditoria] busca global e orçamento de recursos conferidos');
 
     const acessibilidade = [];
-    for (const painel of ['home','xml','docs','cadastro','editor','validacao','chat']) {
+    for (const painel of ['home','xml','docs','cadastro','scenarios','editor','validacao','chat']) {
       await avaliar(cdp, `(() => {
+        if(${JSON.stringify(painel)}==='scenarios')definirAmbiente('port',false);
         switchTab(${JSON.stringify(painel)}, document.getElementById('tab-btn-' + ${JSON.stringify(painel)}));
         return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       })()`);
@@ -315,11 +374,12 @@ async function main() {
         marcosSemNome
       });
     }
-    console.error('[auditoria] árvore de acessibilidade conferida nas sete telas');
+    console.error('[auditoria] árvore de acessibilidade conferida nas oito telas');
 
     const percursos = [];
-    for (const painel of ['home','xml','docs','cadastro','editor','validacao','chat']) {
+    for (const painel of ['home','xml','docs','cadastro','scenarios','editor','validacao','chat']) {
       await avaliar(cdp, `(() => {
+        if(${JSON.stringify(painel)}==='scenarios')definirAmbiente('port',false);
         switchTab(${JSON.stringify(painel)}, document.getElementById('tab-btn-' + ${JSON.stringify(painel)}));
         const ativo = document.activeElement;
         if (ativo && ativo !== document.body) ativo.blur();
@@ -347,7 +407,7 @@ async function main() {
       }
       percursos.push({ painel, itens });
     }
-    console.error('[auditoria] percurso de teclado concluído nas sete telas');
+    console.error('[auditoria] percurso de teclado concluído nas oito telas');
 
     await cdp.enviar('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
     const movimento = await avaliar(cdp, `(() => {
@@ -359,6 +419,10 @@ async function main() {
     })()`);
 
     mkdirSync(SAIDA, { recursive: true });
+    await avaliar(cdp, `(() => {definirAmbiente('general',false);switchTab('home');openCommandPalette();return true})()`);
+    const capturaBusca = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    writeFileSync(path.join(SAIDA, 'command-palette-200.png'), Buffer.from(capturaBusca.data, 'base64'));
+    await avaliar(cdp, 'closeCommandPalette()');
     await avaliar(cdp, `(() => {
       switchTab('home', document.getElementById('tab-btn-home'));
       const alvo = document.getElementById('home-generator-search');
@@ -378,8 +442,13 @@ async function main() {
       screenWidth: 1440,
       screenHeight: 900
     });
-    const marca = await avaliar(cdp, `(() => {
+    await avaliar(cdp, `(() => {
+      definirAmbiente('general', false);
       switchTab('home', document.getElementById('tab-btn-home'));
+      return true;
+    })()`);
+    await dormir(100);
+    const marca = await avaliar(cdp, `(() => {
       document.documentElement.scrollTop = 0;
       if (!document.body.classList.contains('dark')) toggleTheme();
       const imagem = document.querySelector('.sidebar-brand img');
@@ -416,12 +485,14 @@ async function main() {
     writeFileSync(path.join(SAIDA, 'future-g-docs-minimal-dark.png'), Buffer.from(capturaDocsMinimalista.data, 'base64'));
     const capturasTelas = [
       ['cadastro', 'future-g-cadastro-dark.png'],
+      ['scenarios', 'future-g-scenarios-dark.png'],
       ['editor', 'future-g-editor-dark.png'],
       ['validacao', 'future-g-validacao-dark.png'],
       ['chat', 'future-g-chat-dark.png']
     ];
     for (const [painel, arquivo] of capturasTelas) {
       await avaliar(cdp, `(() => {
+        if(${JSON.stringify(painel)}==='scenarios')definirAmbiente('port',false);
         switchTab(${JSON.stringify(painel)}, document.getElementById('tab-btn-' + ${JSON.stringify(painel)}));
         return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       })()`);
@@ -432,7 +503,7 @@ async function main() {
       const imagemTela = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
       writeFileSync(path.join(SAIDA, arquivo), Buffer.from(imagemTela.data, 'base64'));
     }
-    await avaliar(cdp, `switchTab('home', document.getElementById('tab-btn-home'))`);
+    await avaliar(cdp, `(() => {definirAmbiente('general',false);switchTab('home', document.getElementById('tab-btn-home'));return true})()`);
     await avaliar(cdp, `toggleTheme()`);
     await dormir(500);
     await avaliar(cdp, `new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(resolve))))`);
@@ -462,9 +533,12 @@ async function main() {
         primeiros: percursos[0].itens.slice(0,12)
       },
       acessibilidade,
+      commandPalette,
+      console: consoleAudit,
+      performance: performanceAudit,
       marca,
       movimentoReduzidoAplicado: movimento,
-      aprovado: paineis.every(item => !item.rolagemHorizontal && item.elementosExcedentes.length === 0) && acessibilidade.every(item => item.controlesSemNome.length === 0 && item.marcosSemNome.length === 0) && nomesVazios === 0 && focosInvisiveis === 0 && focosSemContorno === 0 && movimento && marca.nome === 'FUTURE G' && marca.assinatura === 'Geradores Gerais' && marca.imagemCarregada && marca.imagemVisivel && marca.favicon === 'assets/brand/favicon.svg'
+      aprovado: paineis.every(item => !item.rolagemHorizontal && item.elementosExcedentes.length === 0) && acessibilidade.every(item => item.controlesSemNome.length === 0 && item.marcosSemNome.length === 0) && nomesVazios === 0 && focosInvisiveis === 0 && focosSemContorno === 0 && movimento && commandPalette.named && commandPalette.focused && commandPalette.generalCount === 0 && commandPalette.portCount > 0 && commandPalette.insideViewport && Object.values(consoleAudit).every(items => items.length === 0) && performanceAudit.lucideBytes <= 20000 && performanceAudit.localJavaScriptBytes <= 600000 && performanceAudit.localCssBytes <= 150000 && performanceAudit.domNodes <= 2500 && marca.nome === 'FUTURE G' && marca.assinatura === 'Geradores Gerais' && marca.imagemCarregada && marca.imagemVisivel && marca.favicon === 'assets/brand/favicon.svg'
     };
     writeFileSync(path.join(SAIDA, 'auditoria-200.json'), JSON.stringify(resultado, null, 2));
     console.log(JSON.stringify(resultado, null, 2));

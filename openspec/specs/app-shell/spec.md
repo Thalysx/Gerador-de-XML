@@ -5,7 +5,7 @@
 The application SHALL use FUTURE G as the product identity.
 
 ### Visual language
-The UI SHALL use a coherent visual system inspired by the iPORT ecosystem without copying existing screens literally: dark blue base, blue interactive accents, white/gray contrast, defined cards, standardized inputs/buttons/icons, consistent spacing and hierarchy, and clear hover/focus/selected/error/success states.
+The UI SHALL use a coherent visual system with defined cards, standardized inputs/buttons/icons, consistent spacing and hierarchy, and clear hover/focus/selected/error/success states. Geradores Gerais SHALL use the original purple identity in light and dark themes; QA Portuário SHALL use the blue identity inspired by the iPORT ecosystem without copying existing screens literally.
 
 ### Theme
 Existing light/dark theme capability SHALL be preserved when present.

@@ -1,5 +1,9 @@
 // Interpretador local de pedidos, sem chamadas a modelos ou APIs externas.
 const ALIASES_PEDIDOS = [
+  ['carga-conteinerizada', 'cargas? conteinerizadas?'], ['granel-solido', 'graneis? solidos?'], ['granel-liquido', 'graneis? liquidos?'], ['carga-solta', 'cargas? soltas?'],
+  ['conjunto-veicular', 'conjuntos? veiculares?'], ['cavalo-mecanico', 'cavalos? mecanicos?'], ['carreta', 'carretas?'],
+  ['transportadora', 'transportadoras?'], ['importador', 'importadores?'], ['exportador', 'exportadores?'], ['depositante', 'depositantes?'],
+  ['operador-portuario', 'operadores? portuarios?'], ['visitante-portuario', 'visitantes? portuarios?'],
   ['cnpj-alfa', 'cnpjs? alfanumericos?'], ['conteiner-lacre', '(?:conteiner(?:es)?|containers?) (?:com|e) lacres?'],
   ['cadastro', 'cadastros?(?: completos?)?'], ['motorista', '(?:dados para (?:um |uma )?)?motoristas?'],
   ['empresa', '(?:nomes? de empresas?|razoes sociais|razao social|empresas?)'],
@@ -40,6 +44,33 @@ function interpretarPedido(texto, mascaraPadrao = true) {
 
 let conversasChat = [];
 let ultimoLote = [];
+const SUGESTOES_CHAT_AMBIENTE = Object.freeze({
+  general: Object.freeze(['3 CPFs e 2 CNPJs','2 cadastros','3 nomes e 2 empresas','5 telefones fixos UF SP']),
+  port: Object.freeze(['2 cargas conteinerizadas','1 conjunto veicular','3 transportadoras','dados para um motorista'])
+});
+
+function atualizarChatPorAmbiente() {
+  const ambiente=activeEnvironmentId();
+  const sugestoes=document.getElementById('chat-sugestoes');
+  sugestoes.replaceChildren(...SUGESTOES_CHAT_AMBIENTE[ambiente].map(pedido=>{
+    const button=document.createElement('button');
+    button.type='button';button.textContent=pedido;
+    button.addEventListener('click',()=>sugerirChat(pedido));
+    return button;
+  }));
+  document.getElementById('chat-pedido').placeholder=ambiente==='general'
+    ? 'Ex.: Gere 3 CPFs e 2 CNPJs'
+    : 'Ex.: Gere 5 contêineres com lacre';
+}
+
+function renderizarChatPreservandoScroll(area, render) {
+  const scrollAnterior = area.scrollTop;
+  const distanciaDoFim = area.scrollHeight - area.clientHeight - area.scrollTop;
+  const acompanhar = area.scrollHeight <= area.clientHeight || distanciaDoFim <= 80;
+  render();
+  area.scrollTop = acompanhar ? area.scrollHeight : scrollAnterior;
+  return acompanhar;
+}
 
 function renderRegistros(registros) {
   const visiveis = registros.slice(0, 50);
@@ -50,15 +81,16 @@ function renderRegistros(registros) {
 function renderChat() {
   const area = document.getElementById('chat-mensagens');
   document.getElementById('chat-vazio').hidden = conversasChat.length > 0;
-  area.innerHTML = conversasChat.map((conversa, idx) => `
-    <article class="chat-troca">
-      <div class="chat-pedido"><span>Você</span><p>${escapeHtml(conversa.pedido)}</p></div>
-      <div class="chat-resposta"><strong>${conversa.erro ? 'Vamos ajustar o pedido' : `${conversa.registros.length} registros gerados`}</strong>
-        ${conversa.erro ? `<p>${escapeHtml(conversa.erro)}</p>` : renderRegistros(conversa.registros)}
-        ${conversa.erro ? '' : `<div class="acoes-inline"><button type="button" onclick="copiarChat(${idx})">Copiar tudo</button><button type="button" onclick="exportarChat(${idx}, 'json')">JSON</button><button type="button" onclick="exportarChat(${idx}, 'csv')">CSV</button><button type="button" onclick="exportarChat(${idx}, 'txt')">TXT</button></div>`}
-      </div>
-    </article>`).join('');
-  area.scrollTop = area.scrollHeight;
+  renderizarChatPreservandoScroll(area, () => {
+    area.innerHTML = conversasChat.map((conversa, idx) => `
+      <article class="chat-troca">
+        <div class="chat-pedido"><span>Você</span><p>${escapeHtml(conversa.pedido)}</p></div>
+        <div class="chat-resposta"><strong>${conversa.erro ? 'Vamos ajustar o pedido' : `${conversa.registros.length} registros gerados`}</strong>
+          ${conversa.erro ? `<p>${escapeHtml(conversa.erro)}</p>` : renderRegistros(conversa.registros)}
+          ${conversa.erro ? '' : `<div class="acoes-inline"><button type="button" onclick="copiarChat(${idx})">Copiar tudo</button><button type="button" onclick="exportarChat(${idx}, 'json')">JSON</button><button type="button" onclick="exportarChat(${idx}, 'csv')">CSV</button><button type="button" onclick="exportarChat(${idx}, 'txt')">TXT</button></div>`}
+        </div>
+      </article>`).join('');
+  });
 }
 
 function enviarChatLocal(event) {
@@ -68,6 +100,8 @@ function enviarChatLocal(event) {
   if (!pedido) { input.focus(); return false; }
   try {
     const { pedidos, opcoes } = interpretarPedido(pedido, document.getElementById('chat-mascara').checked);
+    const indisponivel=pedidos.find(item=>!generatorSupportsEnvironment(generatorById(item.tipo)));
+    if(indisponivel)throw new Error(`${generatorById(indisponivel.tipo)?.label || indisponivel.tipo} não está disponível em ${APP_ENVIRONMENTS[activeEnvironmentId()].label}.`);
     conversasChat.push({ pedido, registros: gerarLoteDados(pedidos, opcoes) });
     document.getElementById('chat-status').textContent = 'Pedido concluído. Resultados disponíveis na conversa.';
   } catch (erro) {
@@ -96,14 +130,29 @@ function gerarLoteInterface(event) {
     ultimoLote = gerarLoteDados([{ tipo: document.getElementById('lote-tipo').value, quantidade: Number(document.getElementById('lote-quantidade').value) }], {
       mascara: document.getElementById('toggle-mascara').checked,
       uf: document.getElementById('gerador-uf').value,
-      telefoneTipo: document.getElementById('gerador-telefone-tipo').value
+      telefoneTipo: document.getElementById('gerador-telefone-tipo').value,
+      crachaModelo: document.getElementById('gerador-cracha-modelo').value,
+      codigoBarras: document.getElementById('gerador-cracha-codigo-barras').checked
     });
     document.getElementById('lote-resultados').innerHTML = renderRegistros(ultimoLote);
     document.getElementById('lote-status').textContent = `${ultimoLote.length} registros gerados, sem repetições neste lote.${ultimoLote.length > 50 ? ' A prévia mostra os primeiros 50; copiar e baixar incluem todos.' : ''}`;
     document.getElementById('lote-exportacao').hidden = false;
+    registerGeneratorUse(document.getElementById('lote-tipo').value,{kind:'batch',quantity:ultimoLote.length});
     document.getElementById('lote-resultados').focus({preventScroll:true});
   } catch (erro) { mostrarStatus(erro.message, 'error'); }
   return false;
+}
+
+function exportarLoteInterface(formato) {
+  const type=document.getElementById('lote-tipo').value;
+  const generator=generatorById(type);
+  if(!generator?.capabilities.export){mostrarStatus('Este tipo não oferece exportação em lote.','error');return false;}
+  const exported=exportarRegistros(ultimoLote,formato,`lote-${activeEnvironmentId()}-${type}`);
+  if(exported) {
+    recordProductivityActivity(type,{kind:'export',quantity:ultimoLote.length});
+    mostrarStatus(`Lote de ${generator.label} exportado em ${formato.toUpperCase()}.`);
+  }
+  return exported;
 }
 
 function limparLoteInterface() {
@@ -116,8 +165,21 @@ function limparLoteInterface() {
 
 function inicializarGeracao() {
   document.getElementById('gerador-uf').innerHTML = '<option value="">Todas as UFs</option>' + Object.keys(DDD_POR_UF).sort().map(uf => `<option>${uf}</option>`).join('');
-  document.getElementById('lote-tipo').innerHTML = Object.entries(TIPOS_DADOS).map(([tipo, rotulo]) => `<option value="${tipo}">${rotulo}</option>`).join('');
+  atualizarTiposLotePorAmbiente();
+  atualizarChatPorAmbiente();
   document.getElementById('lote-tipo').addEventListener('change',()=>atualizarOpcoesDocumento(selectedGeneratorId || currentType,document.getElementById('lote-tipo').value));
   atualizarOpcoesDocumento(currentType,document.getElementById('lote-tipo').value);
   renderChat();
 }
+
+function atualizarTiposLotePorAmbiente() {
+  const select=document.getElementById('lote-tipo');
+  const previous=select.value;
+  const types=batchTypesForEnvironment();
+  select.innerHTML=Object.entries(types).map(([tipo,rotulo])=>`<option value="${tipo}">${rotulo}</option>`).join('');
+  if(types[previous])select.value=previous;
+  if(typeof atualizarOpcoesDocumento==='function')atualizarOpcoesDocumento(typeof selectedGeneratorId==='undefined'?'':selectedGeneratorId || currentType,select.value);
+  if(typeof updateBatchIndicator==='function')updateBatchIndicator();
+}
+window.addEventListener('futureg:environmentchange',atualizarTiposLotePorAmbiente);
+window.addEventListener('futureg:environmentchange',atualizarChatPorAmbiente);

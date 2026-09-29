@@ -48,6 +48,21 @@ test('IA trata ausência de chave, erros do provedor e ferramentas inválidas',a
   assert.equal((await bad.chat({message:'Teste'})).text,'Operação indisponível.');
 });
 
+test('IA limita dados e XML ao ambiente ativo mesmo se o provedor pedir outra ferramenta',async()=>{
+  let round=0;
+  const ai=createAssistant({apiKey:'test',fetchImpl:async(_,options)=>{
+    const body=JSON.parse(options.body);
+    assert.deepEqual(body.tools[0].parameters.properties.pedidos.items.properties.tipo.enum,['conteiner','conteiner-lacre','conteiner-detalhado','lacre','imo','booking','due','motorista','operador-portuario','visitante-portuario','pessoa-portuaria','transportadora','cliente-portuario','depositante','importador','exportador','cavalo-mecanico','carreta','conjunto-veicular','carga-solta','granel-solido','granel-liquido','carga-conteinerizada','chave-cte','di','duimp','documento-carga']);
+    assert.deepEqual(body.tools[1].parameters.properties.tipo.enum,['cte']);
+    if(round===0){round++;return {ok:true,json:async()=>({output:[call('gerar_dados',{pedidos:[{tipo:'cpf',quantidade:1}],mascara:true,uf:null})]})};}
+    if(round===1){assert.match(JSON.parse(body.input.at(-1).output).erro,/indisponível/);round++;return {ok:true,json:async()=>({output:[call('gerar_xml',{tipo:'nfe',itens:1},'call2')]})};}
+    assert.match(JSON.parse(body.input.at(-1).output).erro,/indisponível/);
+    return {ok:true,json:async()=>({output:[answer('Usei somente as opções do QA Portuário.')]})};
+  }});
+  assert.equal((await ai.chat({message:'Teste os limites',environment:'port'})).text,'Usei somente as opções do QA Portuário.');
+  await assert.rejects(ai.chat({message:'Teste',environment:'desconhecido'}),/Ambiente inválido/);
+});
+
 test('servidor restringe origem, corpo, métodos e arquivos internos',async()=>{
   const server=createServer(createAssistant({apiKey:''}));
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));

@@ -6,6 +6,29 @@
 - O shell recebeu a fundação azul-marinho/azul e o seletor persistente Geradores Gerais / QA Portuário.
 - Chaves locais `thegenerator:*` foram mantidas para compatibilidade com preferências existentes.
 - A versão foi validada com testes, build e auditoria responsiva antes da publicação.
+- A fase de Geradores Gerais começou com RG paulista e CNH validados por dígito, seguida de Nome fantasia, Endereço completo, CEP sintético e RENAVAM no registry, na geração individual e no lote.
+- Utilitários de desenvolvimento adicionaram UUID v4, IPv4/IPv6 reservados para documentação e MAC unicast administrado localmente, sem gerar credenciais ou endereços públicos arbitrários.
+- Finanças sintéticas adicionaram valor em BRL, chave Pix EVP não registrada e ID de transação com marcador `TESTE`, sem cartões, contas, boletos ou pagamentos reais.
+- Cadastro Geral passou a gerar uma ficha com seleção independente de Identificação, Documentos, Contato, Endereço e Dados profissionais, mantendo compatibilidade com históricos anteriores.
+- O novo gerador de crachá cria cartões funcionais sintéticos com avatar, código, empresa, função, matrícula, validade, status e código de barras ilustrativo opcional, inclusive em lote e exportação estruturada.
+- O OpenSpec 6 foi concluído com uma matriz final dos 14 novos geradores em busca, favoritos, recentes, ambientes, lote e exportações JSON/CSV/TXT.
+- O OpenSpec 7 evoluiu o mesmo validador XML para achados estruturados com Erro, Aviso e Informação, incluindo tag, valor, caminho e posição de sintaxe quando disponíveis.
+- Relatórios de NF-e/CT-e agora possuem visões Resumo, XML e Validação, navegação acessível por abas e exportação JSON sem o conteúdo-fonte.
+- A Validação XML cria sete variantes negativas explicitamente identificadas para QA: CPF, CNPJ ou chave inválida; campo ausente; formato ou tag inválida; e XML malformado. O documento-base permanece intacto.
+- Geradores Gerais agora mostra exclusivamente dados gerais e NF-e, com a paleta roxa anterior; QA Portuário mostra exclusivamente dados portuários e CT-e, mantendo a paleta azul. Home, busca, lote, XML, validação, anexos e sugestões do Assistente acompanham a troca.
+- O Cadastro completo em lote deixou de incluir contêiner e lacre no objeto gerado.
+- O QA Portuário passou a reunir perfis de Motorista, Operador, Visitante e Pessoa; cinco entidades empresariais; cavalo, carreta e conjunto; contêineres ISO 6346; quatro modalidades de carga; NCM manual; CT-e, chave CT-e, Booking, DI, DUIMP, DU-E, lacre e documento de carga.
+- Os novos geradores usam o mesmo registry, busca, favoritos, recentes, histórico, lote, exportação e Assistente, respeitando a separação completa entre NF-e no Geral e CT-e no Portuário.
+- A biblioteca do QA Portuário recebeu dez cenários de teste, com IDs estáveis e relações coerentes entre processo, agendamento, motorista, transportadora, veículo, contêiner, carga e etapas operacionais.
+- Os cenários oferecem modos Válido, Inválido intencional e Aleatório, histórico local, restauração, cópia e download JSON sem misturar o ambiente Geradores Gerais.
+- `Ctrl+K` agora abre busca global por ferramentas e áreas do ambiente ativo, com setas, Enter, Escape, retorno e contenção de foco.
+- Cada ambiente recebeu indicadores e atividade recente próprios. O resumo persiste somente identificador, ambiente, ação, quantidade e horário, descartando resultados e campos extras.
+- Exportações de lote JSON, CSV e TXT passaram a usar nomes contextuais e continuam incluindo todos os registros, mesmo quando a prévia mostra apenas 50.
+- A revisão foi fechada com 102 testes, build aprovado e auditoria das oito telas em 200%, com 244 passos de teclado e nenhum overflow, controle sem nome ou foco inválido.
+- O polimento final corrigiu a quebra do botão de teste negativo em 360 px e repetiu uma matriz de 128 combinações de painel, tema, largura e sidebar sem overflow ou elementos excedentes.
+- O runtime local do Lucide passou a conter somente os 49 ícones utilizados, caindo de 433.756 para 11.467 bytes (redução de 97,4%) sem alterar a API consumida pela interface.
+- O upload da Validação XML agora expõe `aria-busy`, status ao vivo e bloqueio temporário durante a leitura local. O auditor também reprova erros, avisos ou exceções de console, falhas na busca global e estouros de orçamento de recursos.
+- O roadmap FUTURE G foi encerrado localmente com 104 testes, build aprovado, console limpo e auditorias normal e responsiva aprovadas. Não houve deploy nesta etapa.
 
 # Nova experiência inicial compacta — 24/09/2026
 
@@ -110,7 +133,8 @@ A ampliação não altera arbitrariamente os formatos para criar mais números: 
 ### Novos botões e documentos
 
 - Nome de pessoa e razão social, gerados individualmente.
-- RG para testes, reaproveitando o gerador existente do cadastro.
+- RG para testes no padrão de São Paulo e CNH com regras explícitas de dígitos verificadores, disponíveis também em lote e na conferência automática.
+- Nome fantasia, endereço completo, CEP sintético e RENAVAM foram adicionados ao catálogo de Geradores Gerais e às exportações em lote.
 - Booking: referência fictícia `BK` + data local `AAAAMMDD` + oito dígitos, sem representar padrão universal de armadoras.
 - DU-E: ano + `BR` + nove dígitos de sequência aleatória + verificador módulo 11. A máscara acrescenta hífen antes do dígito. A numeração não é registrada no Siscomex.
 - Conferência automática de CPF, CNPJ, placa, contêiner e IMO ao digitar. Para placa, verifica o formato; para os demais tipos suportados, verifica os dígitos correspondentes. Não consulta existência ou titularidade.
@@ -191,7 +215,7 @@ No cadastro geral, **Usar a empresa na NF-e** aplica razão social e CNPJ ao emi
 ## Limites e decisões desta entrega
 
 - Os dados são sintéticos; nomes, documentos ou telefones podem coincidir com dados existentes. Não há consulta a bases de pessoas/empresas.
-- CEPs e endereços são exemplos, sem garantia de correspondência postal. IEs não têm validação estadual. RG e CNH continuam usando as rotinas existentes e não foram certificados contra bases oficiais; a conferência automática não valida esses dois tipos.
+- CEPs e endereços são sintéticos, sem garantia de correspondência postal. IEs não têm validação estadual. RG usa o padrão declarado de São Paulo; RG, CNH e RENAVAM têm conferência matemática local, sem consulta de existência, titularidade ou situação em bases oficiais.
 - A chave numérica do modelo XML não foi migrada para CNPJ alfanumérico. Esse CNPJ funciona nos geradores, cadastro, chat e lotes.
 - A prévia e os avisos **não equivalem a validação fiscal completa**. Não há validação XSD, assinatura digital válida, autorização SEFAZ ou atualização integral de regras tributárias. Datas, protocolos e partes dos modelos fiscais existentes permanecem como exemplos.
 - Lotes de documentos/cadastros estão implementados. Geração de múltiplos XMLs em lote e download ZIP ficam para uma próxima etapa, junto da revisão dos modelos fiscais; os downloads individuais continuam disponíveis.

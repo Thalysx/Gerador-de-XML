@@ -44,6 +44,9 @@ function gerarRegistro(tipo, opcoes = {}) {
     }
     case 'nome': valor = gerarNomePessoa(); break;
     case 'empresa': valor = gerarNomeEmpresa(); break;
+    case 'nome-fantasia': valor = gerarNomeFantasia(); break;
+    case 'endereco': valor = gerarEnderecoBR(); break;
+    case 'cep': { const raw = gerarCEPRaw(); valor = mascara ? formatCEP(raw) : raw; break; }
     case 'cnh': valor = gerarCNHRaw(); break;
     case 'rg': { const rg = gerarRGBR(); valor = mascara ? rg : rg.replace(/\W/g,''); break; }
     case 'telefone': { const tel = gerarTelefoneBR({ uf: opcoes.uf, tipo: opcoes.telefoneTipo }); valor = mascara ? tel.formatted : tel.raw; break; }
@@ -51,22 +54,45 @@ function gerarRegistro(tipo, opcoes = {}) {
     case 'placa': valor = opcoes.placaTipo === 'antiga'
       ? letraAleatoria() + letraAleatoria() + letraAleatoria() + (mascara ? '-' : '') + randomDigits(4).join('')
       : gerarPlacaMercosulRaw(); break;
+    case 'renavam': valor = gerarRenavamRaw(); break;
+    case 'uuid-v4': valor = gerarUUIDv4(); break;
+    case 'ipv4-documentacao': valor = gerarIPv4Documentacao(); break;
+    case 'ipv6-documentacao': valor = gerarIPv6Documentacao(); break;
+    case 'mac-local': valor = gerarMacLocal(); break;
+    case 'valor-brl': valor = gerarValorBRLSintetico(); break;
+    case 'pix-evp': valor = gerarChavePixEVPSintetica(); break;
+    case 'transacao-teste': valor = gerarIdTransacaoTeste(); break;
+    case 'cracha': valor = gerarDadosCracha({ modelo: opcoes.crachaModelo, codigoBarras: opcoes.codigoBarras !== false }); break;
     case 'conteiner': valor = gerarNumeroConteiner(); break;
     case 'lacre': valor = gerarLacreArmador(); break;
     case 'conteiner-lacre': valor = { conteiner: gerarNumeroConteiner(), lacre: gerarLacreArmador() }; break;
     case 'imo': { const base = randomDigits(6).join(''); valor = (mascara ? 'IMO ' : '') + base + calcDVIMO(base); break; }
     case 'booking': valor = gerarBooking(); break;
     case 'due': { const raw = gerarDUEExemplo(); valor = mascara ? raw.slice(0,-1) + '-' + raw.slice(-1) : raw; break; }
-    case 'motorista': case 'cadastro': {
+    case 'motorista': valor = gerarPerfilPortuario('motorista'); break;
+    case 'operador-portuario': valor = gerarPerfilPortuario('operador'); break;
+    case 'visitante-portuario': valor = gerarPerfilPortuario('visitante'); break;
+    case 'pessoa-portuaria': valor = gerarPerfilPortuario('pessoa'); break;
+    case 'transportadora': valor = gerarEmpresaPortuaria('transportadora'); break;
+    case 'cliente-portuario': valor = gerarEmpresaPortuaria('cliente'); break;
+    case 'depositante': valor = gerarEmpresaPortuaria('depositante'); break;
+    case 'importador': valor = gerarEmpresaPortuaria('importador'); break;
+    case 'exportador': valor = gerarEmpresaPortuaria('exportador'); break;
+    case 'cavalo-mecanico': valor = gerarVeiculoPortuario('cavalo'); break;
+    case 'carreta': valor = gerarVeiculoPortuario('carreta'); break;
+    case 'conjunto-veicular': valor = gerarVeiculoPortuario('conjunto'); break;
+    case 'conteiner-detalhado': valor = gerarConteinerDetalhado(); break;
+    case 'carga-solta': case 'granel-solido': case 'granel-liquido': case 'carga-conteinerizada': valor = gerarCargaPortuaria(tipo); break;
+    case 'chave-cte': case 'di': case 'duimp': case 'documento-carga': valor = gerarDocumentoPortuario(tipo); break;
+    case 'cadastro': {
       const nome = gerarNomePessoa();
       valor = {
         nome, cpf: gerarRegistro('cpf', opcoes).valor, cnh: gerarCNHRaw(),
         telefone: gerarRegistro('telefone', opcoes).valor, email: gerarEmailPessoa(nome), placa: gerarRegistro('placa', opcoes).valor
       };
-      if (tipo === 'cadastro') Object.assign(valor, {
+      Object.assign(valor, {
         rg: gerarRegistro('rg', opcoes).valor, endereco: gerarEnderecoBR(),
-        empresa: gerarNomeEmpresa(), cnpj: gerarRegistro(opcoes.cnpjAlfa ? 'cnpj-alfa' : 'cnpj', opcoes).valor,
-        conteiner: gerarNumeroConteiner(), lacre: gerarLacreArmador()
+        empresa: gerarNomeEmpresa(), cnpj: gerarRegistro(opcoes.cnpjAlfa ? 'cnpj-alfa' : 'cnpj', opcoes).valor
       });
       break;
     }
@@ -113,9 +139,10 @@ function baixarTexto(nome, texto, mime = 'text/plain;charset=utf-8') {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function exportarRegistros(registros, formato) {
-  if (!registros.length) { mostrarStatus('Gere um lote primeiro.', 'error'); return; }
-  if (formato === 'json') baixarTexto('dados-teste.json', JSON.stringify(registros, null, 2), 'application/json');
+function exportarRegistros(registros, formato, nomeBase = 'dados-teste') {
+  if (!registros.length) { mostrarStatus('Gere um lote primeiro.', 'error'); return false; }
+  const nomeSeguro=String(nomeBase||'dados-teste').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'')||'dados-teste';
+  if (formato === 'json') baixarTexto(`${nomeSeguro}.json`, JSON.stringify(registros, null, 2), 'application/json');
   else if (formato === 'csv') {
     // Mantém cada campo em uma coluna; neutraliza fórmulas ao abrir em planilhas.
     const campos = [...new Set(registros.flatMap(r => typeof r.valor === 'object' ? Object.keys(r.valor) : ['valor']))];
@@ -124,18 +151,29 @@ function exportarRegistros(registros, formato) {
       const dados = typeof r.valor === 'object' ? r.valor : { valor: r.valor };
       return [r.rotulo, ...campos.map(c => dados[c] ?? '')];
     })];
-    baixarTexto('dados-teste.csv', '\uFEFF' + linhas.map(l => l.map(celula).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
-  } else baixarTexto('dados-teste.txt', registros.map(r => `${r.rotulo}: ${textoRegistro(r)}`).join('\n\n'));
+    baixarTexto(`${nomeSeguro}.csv`, '\uFEFF' + linhas.map(l => l.map(celula).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
+  } else if(formato === 'txt') baixarTexto(`${nomeSeguro}.txt`, registros.map(r => `${r.rotulo}: ${textoRegistro(r)}`).join('\n\n'));
+  else { mostrarStatus('Formato de exportação não suportado.','error'); return false; }
+  return true;
 }
 
 function gerarDocumentoExtra(tipo) {
   const registro = gerarRegistro(tipo, { mascara: document.getElementById('toggle-mascara').checked });
   currentType = tipo;
-  currentValue = tipo === 'rg' ? registro.valor.replace(/\W/g,'') : registro.valor;
+  currentValue = ['rg','cep'].includes(tipo) ? registro.valor.replace(/\W/g,'') : registro.valor;
   nomeAtualDoc = '';
   document.getElementById('nome-box').classList.remove('visible');
   setOutput(registro.valor); esconderPlaca(); esconderConteiner();
   registrarHistoricoDocs(registro.rotulo, registro.valor);
+}
+
+function gerarDocumentoComposto(tipo) {
+  const registro=gerarRegistro(tipo,{mascara:document.getElementById('toggle-mascara').checked});
+  const texto=textoRegistro(registro);
+  currentType=tipo;currentValue=texto;nomeAtualDoc='';
+  document.getElementById('nome-box').classList.remove('visible');
+  setOutput(texto);esconderPlaca();esconderConteiner();
+  registrarHistoricoDocs(registro.rotulo,texto,{estrutura:registro.valor});
 }
 
 function conferirDocumento(valor) {
@@ -152,15 +190,22 @@ function conferirDocumento(valor) {
     const ok = calcDVIMO(num.slice(0,6)) === Number(num[6]);
     return { ok, mensagem: `IMO: dígito ${ok ? 'consistente' : 'inconsistente'}.` };
   }
+  if (/^\d{8}[0-9X]$/.test(raw)) {
+    const ok = validarRGSP(raw);
+    return { ok, mensagem: `RG (SP): dígito ${ok ? 'consistente' : 'inconsistente'}.` };
+  }
   if (/^\d{11}$/.test(raw)) {
-    const ok = validarCPF(raw);
-    return { ok, mensagem: ok ? 'CPF: dígitos consistentes.' : 'CPF: dígitos inconsistentes. CNH não é verificada aqui.' };
+    const cpf = validarCPF(raw);
+    const cnh = validarCNH(raw);
+    const renavam = validarRenavam(raw);
+    const tipos = [cpf && 'CPF', cnh && 'CNH', renavam && 'RENAVAM'].filter(Boolean);
+    return { ok: tipos.length > 0, mensagem: tipos.length ? `${tipos.join(', ').replace(/, ([^,]*)$/, ' e $1')}: dígitos consistentes.` : 'CPF/CNH/RENAVAM: dígitos inconsistentes.' };
   }
   if (/^[A-Z0-9]{12}\d{2}$/.test(raw)) {
     const ok = validarCNPJ(raw);
     return { ok, mensagem: `CNPJ: dígitos ${ok ? 'consistentes' : 'inconsistentes'}.` };
   }
-  return { ok: false, mensagem: 'Use CPF, CNPJ, placa, contêiner ou IMO.' };
+  return { ok: false, mensagem: 'Use CPF, RG (SP), CNH, CNPJ, RENAVAM, placa, contêiner ou IMO.' };
 }
 
 function atualizarValidacaoDocumento() {

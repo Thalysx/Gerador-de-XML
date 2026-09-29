@@ -22,4 +22,7 @@ Support Loose Cargo, Solid Bulk, Liquid Bulk and Containerized Cargo with descri
 Users SHALL be able to manually add multiple NCMs, remove individual entries, validate format and use manually added values in generation rather than being restricted to presets.
 
 ## Port documents
-Centralize NFe/XML, NFe key, Booking, DI, DUIMP, seal and cargo documents. Existing XML generation SHALL migrate without functional loss.
+Centralize CT-e/XML, CT-e key, Booking, DI, DUIMP, DU-E, seal and cargo documents. Existing CT-e XML generation SHALL migrate without functional loss. NF-e and its access key SHALL remain exclusive to General Generators.
+
+## Environment boundary
+All port profiles, companies, vehicles, containers, cargo and port documents SHALL be discoverable only in QA Portuário. Registry, search, favorites, recent tools, batch generation, export and the Assistant SHALL honor the active environment without duplicating domain engines.

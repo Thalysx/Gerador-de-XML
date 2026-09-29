@@ -1,35 +1,107 @@
 // Canonical tool identities. Adapters call existing engines; no generation algorithm lives here.
-const GENERATOR_CATEGORIES = Object.freeze({pessoa:'Pessoa',empresa:'Empresa',contato:'Contato',veiculo:'Veículo',logistica:'Logística',xml:'XML'});
+const APP_ENVIRONMENTS = Object.freeze({
+  general: Object.freeze({ label: 'Geradores Gerais', summary: 'Geradores Gerais', documentType: 'nfe', brandMark: 'assets/brand/future-g-mark-general.svg', themeColor: '#2d1b45' }),
+  port: Object.freeze({ label: 'QA Portuário', summary: 'QA Portuário', documentType: 'cte', brandMark: 'assets/brand/future-g-mark.svg', themeColor: '#071a33' })
+});
+
+const APP_NAVIGATION = Object.freeze([
+  {id:'home',label:'Início',description:'Escolha uma ferramenta e gere dados de teste com rapidez.',group:'Visão geral',environments:['general','port'],icon:'layout-grid'},
+  {id:'xml',label:'XML fiscal',description:'Prepare o documento fiscal de teste disponível neste ambiente.',group:'Gerar',environments:['general','port'],icon:'file-code-2'},
+  {id:'docs',label:'Dados cadastrais',description:'Gere documentos e identificadores, individualmente ou em lote.',group:'Gerar',environments:['general','port'],icon:'contact'},
+  {id:'cadastro',label:'Cadastro geral',description:'Monte perfis completos e organize seus dados de teste.',group:'Gerar',environments:['general'],icon:'panels-top-left'},
+  {id:'scenarios',label:'Cenários de teste',description:'Gere fluxos portuários completos com entidades relacionadas.',group:'Operar',environments:['port'],icon:'workflow'},
+  {id:'editor',label:'Editor XML',description:'Importe documentos, ajuste campos e revise as alterações.',group:'Trabalhar com XML',environments:['general','port'],icon:'square-pen'},
+  {id:'validacao',label:'Validação XML',description:'Confira a sintaxe e a consistência básica dos documentos.',group:'Trabalhar com XML',environments:['general','port'],icon:'shield-check'},
+  {id:'chat',label:'Assistente de geração',description:'Converse sobre dados, gere documentos e explore seus XMLs.',group:'Assistente',environments:['general','port'],icon:'message-circle-more'}
+].map(item=>Object.freeze({...item,environments:Object.freeze(item.environments)})));
+
+const GENERATOR_CATEGORIES = Object.freeze({pessoa:'Pessoa física',empresa:'Pessoa jurídica',contato:'Contato',endereco:'Endereço',veiculo:'Veículo',carga:'Carga',documento:'Documentos portuários',desenvolvimento:'Desenvolvimento',financeiro:'Finanças sintéticas',logistica:'Logística',xml:'XML'});
+const GENERAL_ENVIRONMENT = Object.freeze(['general']);
+const PORT_ENVIRONMENT = Object.freeze(['port']);
+
 const GENERATORS = Object.freeze([
-  {id:'cpf',label:'CPF',description:'Documento de pessoa física',category:'pessoa',priority:true,run:()=>gerarCPFComToggle(),name:true,mask:true,validate:true},
-  {id:'nome',label:'Nome completo',description:'Nome de pessoa fictícia',category:'pessoa',priority:true,run:()=>gerarDocumentoExtra('nome')},
-  {id:'cnpj',label:'CNPJ',description:'Cadastro empresarial numérico',category:'empresa',priority:true,run:()=>gerarCNPJComToggle(),name:true,mask:true,validate:true},
-  {id:'empresa',label:'Razão social',description:'Nome de empresa fictícia',category:'empresa',priority:true,run:()=>gerarDocumentoExtra('empresa')},
-  {id:'telefone',label:'Telefone',description:'Fixo ou celular, com DDD por UF',category:'contato',priority:true,run:()=>gerarTelefone(),mask:true},
-  {id:'placa',label:'Placa Mercosul',description:'Formato ABC1D23',category:'veiculo',priority:true,run:()=>gerarPlaca('mercosul'),validate:true},
-  {id:'nfe',label:'NF-e',description:'Nota fiscal eletrônica de teste',category:'xml',tool:'xml',batch:false,priority:true},
-  {id:'cadastro',label:'Cadastro completo',description:'Pessoa, empresa e logística',category:'pessoa',tool:'cadastro',priority:true},
-  {id:'rg',label:'RG',description:'Registro geral para testes',category:'pessoa',run:()=>gerarDocumentoExtra('rg'),mask:true},
-  {id:'cnh',label:'CNH',description:'Registro RENACH para testes',category:'pessoa',run:()=>gerarCNH()},
-  {id:'cnpj-alfa',label:'CNPJ alfanumérico',description:'Cadastro empresarial alfanumérico',category:'empresa',run:()=>gerarCNPJAlfanumericoComToggle(),name:true,mask:true,validate:true},
-  {id:'email',label:'E-mail',description:'Endereço baseado em nome',category:'contato',aliases:'email',run:()=>gerarEmailDocs()},
-  {id:'placa-antiga',label:'Placa antiga',description:'Formato ABC-1234',category:'veiculo',domainType:'placa',batch:false,run:()=>gerarPlaca('antiga'),validate:true},
-  {id:'conteiner',label:'Contêiner',description:'Identificador ISO 6346',category:'logistica',run:()=>gerarConteiner(),validate:true},
-  {id:'conteiner-lacre',label:'Contêiner e lacre',description:'Identificador e lacre de armador',category:'logistica',run:()=>gerarConteinerComLacre()},
-  {id:'lacre',label:'Lacre',description:'Lacre de armador',category:'logistica',run:()=>gerarLacreSomente()},
-  {id:'imo',label:'IMO',description:'Identificador de embarcação',category:'logistica',run:()=>gerarIMO(),validate:true},
-  {id:'booking',label:'Booking',description:'Reserva logística fictícia',category:'logistica',run:()=>gerarDocumentoExtra('booking')},
-  {id:'due',label:'DU-E',description:'Declaração de exportação de exemplo',category:'logistica',run:()=>gerarDocumentoExtra('due'),mask:true},
-  {id:'motorista',label:'Motorista',description:'Dados de motorista em lote',category:'pessoa',batchOnly:true},
-  {id:'cte',label:'CT-e',description:'Conhecimento de transporte',category:'xml',tool:'xml',batch:false}
-].map(item=>Object.freeze({tool:'docs',batch:true,domainType:item.id,...item})));
+  {id:'cpf',label:'CPF',description:'Documento de pessoa física',category:'pessoa',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarCPFComToggle(),name:true,mask:true,validate:true},
+  {id:'nome',label:'Nome completo',description:'Nome de pessoa fictícia',category:'pessoa',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarDocumentoExtra('nome')},
+  {id:'cnpj',label:'CNPJ',description:'Cadastro empresarial numérico',category:'empresa',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarCNPJComToggle(),name:true,mask:true,validate:true},
+  {id:'empresa',label:'Razão social',description:'Nome de empresa fictícia',category:'empresa',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarDocumentoExtra('empresa')},
+  {id:'telefone',label:'Telefone',description:'Fixo ou celular, com DDD por UF',category:'contato',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarTelefone(),mask:true,requiresConfiguration:true},
+  {id:'placa',label:'Placa',description:'Padrões Mercosul e antigo',category:'veiculo',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarPlaca(document.getElementById('gerador-placa-tipo')?.value || 'mercosul'),validate:true,requiresConfiguration:true},
+  {id:'nfe',label:'NF-e',description:'Nota fiscal eletrônica de teste',category:'xml',environments:GENERAL_ENVIRONMENT,route:'xml',batch:false,priority:true},
+  {id:'cadastro',label:'Cadastro completo',description:'Pessoa e empresa em uma ficha sintética',category:'pessoa',environments:GENERAL_ENVIRONMENT,route:'cadastro',priority:true},
+  {id:'rg',label:'RG',description:'Registro de identidade no padrão de São Paulo',category:'pessoa',environments:GENERAL_ENVIRONMENT,run:()=>gerarDocumentoExtra('rg'),mask:true,validate:true},
+  {id:'cnh',label:'CNH',description:'Número de registro nacional com dois dígitos verificadores',category:'pessoa',environments:GENERAL_ENVIRONMENT,run:()=>gerarCNH(),validate:true},
+  {id:'cracha',label:'Crachá',description:'Identificação funcional sintética com avatar e validade',category:'pessoa',environments:GENERAL_ENVIRONMENT,keywords:['badge','funcionario','identificacao funcional'],run:()=>gerarCrachaIndividual(),requiresConfiguration:true},
+  {id:'cnpj-alfa',label:'CNPJ alfanumérico',description:'Cadastro empresarial alfanumérico',category:'empresa',environments:GENERAL_ENVIRONMENT,run:()=>gerarCNPJAlfanumericoComToggle(),name:true,mask:true,validate:true},
+  {id:'nome-fantasia',label:'Nome fantasia',description:'Marca empresarial fictícia',category:'empresa',environments:GENERAL_ENVIRONMENT,run:()=>gerarDocumentoExtra('nome-fantasia')},
+  {id:'email',label:'E-mail',description:'Endereço baseado em nome',category:'contato',environments:GENERAL_ENVIRONMENT,keywords:['email'],run:()=>gerarEmailDocs()},
+  {id:'endereco',label:'Endereço completo',description:'Logradouro, bairro, cidade, UF e CEP sintéticos',category:'endereco',environments:GENERAL_ENVIRONMENT,keywords:['logradouro','bairro','cidade'],run:()=>gerarDocumentoExtra('endereco')},
+  {id:'cep',label:'CEP',description:'Código postal sintético sem vínculo com endereço real',category:'endereco',environments:GENERAL_ENVIRONMENT,run:()=>gerarDocumentoExtra('cep'),mask:true},
+  {id:'renavam',label:'RENAVAM',description:'Identificador veicular sintético com dígito verificador',category:'veiculo',environments:GENERAL_ENVIRONMENT,run:()=>gerarDocumentoExtra('renavam'),validate:true},
+  {id:'uuid-v4',label:'UUID v4',description:'Identificador aleatório conforme RFC 9562',category:'desenvolvimento',environments:GENERAL_ENVIRONMENT,keywords:['guid'],run:()=>gerarDocumentoExtra('uuid-v4')},
+  {id:'ipv4-documentacao',label:'IPv4 de documentação',description:'Endereço reservado em TEST-NET para exemplos',category:'desenvolvimento',environments:GENERAL_ENVIRONMENT,keywords:['ip','test-net','rede'],run:()=>gerarDocumentoExtra('ipv4-documentacao')},
+  {id:'ipv6-documentacao',label:'IPv6 de documentação',description:'Endereço reservado no prefixo 2001:db8::/32',category:'desenvolvimento',environments:GENERAL_ENVIRONMENT,keywords:['ip','rede'],run:()=>gerarDocumentoExtra('ipv6-documentacao')},
+  {id:'mac-local',label:'Endereço MAC local',description:'MAC unicast administrado localmente para testes',category:'desenvolvimento',environments:GENERAL_ENVIRONMENT,keywords:['mac address','rede'],run:()=>gerarDocumentoExtra('mac-local')},
+  {id:'valor-brl',label:'Valor em BRL',description:'Valor monetário sintético para cenários de teste',category:'financeiro',environments:GENERAL_ENVIRONMENT,keywords:['dinheiro','moeda','real'],run:()=>gerarDocumentoExtra('valor-brl')},
+  {id:'pix-evp',label:'Chave Pix EVP sintética',description:'UUID v4 não registrado no DICT',category:'financeiro',environments:GENERAL_ENVIRONMENT,keywords:['pix','chave aleatoria'],run:()=>gerarDocumentoExtra('pix-evp')},
+  {id:'transacao-teste',label:'ID de transação de teste',description:'Referência fictícia sem vínculo financeiro',category:'financeiro',environments:GENERAL_ENVIRONMENT,keywords:['transacao','pagamento','referencia'],run:()=>gerarDocumentoExtra('transacao-teste')},
+  {id:'placa-antiga',label:'Placa antiga',description:'Formato ABC-1234',category:'veiculo',environments:GENERAL_ENVIRONMENT,domainType:'placa',batch:false,discoverable:false,variantOf:'placa',run:()=>gerarPlaca('antiga'),validate:true},
+  {id:'conteiner',label:'Contêiner',description:'Identificador ISO 6346',category:'logistica',environments:PORT_ENVIRONMENT,keywords:['container'],run:()=>gerarConteiner(),validate:true},
+  {id:'conteiner-lacre',label:'Contêiner e lacre',description:'Identificador e lacre de armador',category:'logistica',environments:PORT_ENVIRONMENT,keywords:['container'],run:()=>gerarConteinerComLacre()},
+  {id:'lacre',label:'Lacre',description:'Lacre de armador',category:'logistica',environments:PORT_ENVIRONMENT,run:()=>gerarLacreSomente()},
+  {id:'imo',label:'IMO',description:'Identificador de embarcação',category:'logistica',environments:PORT_ENVIRONMENT,run:()=>gerarIMO(),validate:true},
+  {id:'conteiner-detalhado',label:'Contêiner detalhado',description:'ISO, tipo, lacre, tara e pesos consistentes',category:'logistica',environments:PORT_ENVIRONMENT,priority:true,keywords:['container','iso 6346','reefer','dry','open top','flat rack'],run:()=>gerarDocumentoComposto('conteiner-detalhado')},
+  {id:'booking',label:'Booking',description:'Reserva logística fictícia',category:'documento',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoExtra('booking')},
+  {id:'due',label:'DU-E',description:'Declaração de exportação de exemplo',category:'documento',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoExtra('due'),mask:true},
+  {id:'motorista',label:'Motorista',description:'Perfil completo de motorista portuário',category:'pessoa',environments:PORT_ENVIRONMENT,priority:true,run:()=>gerarDocumentoComposto('motorista')},
+  {id:'operador-portuario',label:'Operador portuário',description:'Perfil de operador com turno, matrícula e treinamento',category:'pessoa',environments:PORT_ENVIRONMENT,keywords:['operador','nr29','turno'],run:()=>gerarDocumentoComposto('operador-portuario')},
+  {id:'visitante-portuario',label:'Visitante portuário',description:'Perfil de visitante com motivo e validade de acesso',category:'pessoa',environments:PORT_ENVIRONMENT,keywords:['visitante','acesso'],run:()=>gerarDocumentoComposto('visitante-portuario')},
+  {id:'pessoa-portuaria',label:'Pessoa portuária',description:'Perfil cadastral sintético para operações portuárias',category:'pessoa',environments:PORT_ENVIRONMENT,keywords:['pessoa','perfil'],run:()=>gerarDocumentoComposto('pessoa-portuaria')},
+  {id:'transportadora',label:'Transportadora',description:'Empresa transportadora com cadastro e contato',category:'empresa',environments:PORT_ENVIRONMENT,priority:true,run:()=>gerarDocumentoComposto('transportadora')},
+  {id:'cliente-portuario',label:'Cliente portuário',description:'Entidade cliente de serviços portuários',category:'empresa',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoComposto('cliente-portuario')},
+  {id:'depositante',label:'Depositante',description:'Empresa depositante de mercadorias',category:'empresa',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoComposto('depositante')},
+  {id:'importador',label:'Importador',description:'Empresa sintética de importação',category:'empresa',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoComposto('importador')},
+  {id:'exportador',label:'Exportador',description:'Empresa sintética de exportação',category:'empresa',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoComposto('exportador')},
+  {id:'cavalo-mecanico',label:'Cavalo mecânico',description:'Veículo trator com placa, RENAVAM e capacidade',category:'veiculo',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoComposto('cavalo-mecanico')},
+  {id:'carreta',label:'Carreta',description:'Semirreboque com identificação e capacidade de carga',category:'veiculo',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoComposto('carreta')},
+  {id:'conjunto-veicular',label:'Conjunto veicular',description:'Combinação sintética de cavalo mecânico e carreta',category:'veiculo',environments:PORT_ENVIRONMENT,priority:true,run:()=>gerarDocumentoComposto('conjunto-veicular')},
+  {id:'carga-solta',label:'Carga solta',description:'Mercadoria, volumes, embalagem, pesos e NCM',category:'carga',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoComposto('carga-solta')},
+  {id:'granel-solido',label:'Granel sólido',description:'Carga a granel com quantidade, pesos e NCM',category:'carga',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoComposto('granel-solido')},
+  {id:'granel-liquido',label:'Granel líquido',description:'Carga líquida com volume, pesos e NCM',category:'carga',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoComposto('granel-liquido')},
+  {id:'carga-conteinerizada',label:'Carga conteinerizada',description:'Carga, NCM, contêiner ISO e lacre relacionados',category:'carga',environments:PORT_ENVIRONMENT,priority:true,run:()=>gerarDocumentoComposto('carga-conteinerizada')},
+  {id:'chave-cte',label:'Chave de CT-e',description:'Chave sintética de 44 dígitos com DV consistente',category:'documento',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoExtra('chave-cte')},
+  {id:'di',label:'DI de teste',description:'Referência sintética de declaração de importação',category:'documento',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoExtra('di')},
+  {id:'duimp',label:'DUIMP de teste',description:'Referência sintética de declaração única de importação',category:'documento',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoExtra('duimp')},
+  {id:'documento-carga',label:'Documentos de carga',description:'Manifesto, ordem de carga, ticket de balança e booking',category:'documento',environments:PORT_ENVIRONMENT,run:()=>gerarDocumentoComposto('documento-carga')},
+  {id:'cte',label:'CT-e',description:'Conhecimento de transporte',category:'xml',environments:PORT_ENVIRONMENT,route:'xml',batch:false,priority:true}
+].map(item=>{
+  const route=item.route||'docs';
+  const batch=item.batch!==false;
+  const keywords=Object.freeze([...(item.keywords||[]),item.label,item.description,GENERATOR_CATEGORIES[item.category]]);
+  const capabilities=Object.freeze({batch,export:batch,validate:!!item.validate,validInvalid:false});
+  return Object.freeze({route,tool:route,batch:true,domainType:item.id,...item,batch,keywords,capabilities});
+}));
+
 const TIPOS_DADOS = Object.freeze(Object.fromEntries(GENERATORS.filter(g=>g.batch).map(g=>[g.id,g.id==='placa'?'Placa':g.id==='nome'?'Nome':g.id==='due'?'DU-E (exemplo)':g.label])));
+function activeEnvironmentId() { return APP_ENVIRONMENTS[document.body?.dataset.environment] ? document.body.dataset.environment : 'general'; }
 function generatorById(id) { return GENERATORS.find(g=>g.id===id); }
+function generatorNeedsConfiguration(generator) { return !!(generator?.requiresConfiguration || generator?.batchOnly || !generator?.run); }
+function navigationById(id) { return APP_NAVIGATION.find(item=>item.id===id); }
+function generatorSupportsEnvironment(generator,environment=activeEnvironmentId()) { return !!generator?.environments?.includes(environment); }
+function navigationSupportsEnvironment(item,environment=activeEnvironmentId()) { return !!item?.environments?.includes(environment); }
+function generatorsForEnvironment(environment=activeEnvironmentId()) { return GENERATORS.filter(generator=>generatorSupportsEnvironment(generator,environment)); }
+function navigationForEnvironment(environment=activeEnvironmentId()) { return APP_NAVIGATION.filter(item=>navigationSupportsEnvironment(item,environment)); }
+function generatorCategoriesForEnvironment(environment=activeEnvironmentId(),route) {
+  const categories=new Set(generatorsForEnvironment(environment).filter(generator=>!route||generator.route===route).map(generator=>generator.category));
+  return Object.fromEntries(Object.entries(GENERATOR_CATEGORIES).filter(([id])=>categories.has(id)));
+}
+function batchTypesForEnvironment(environment=activeEnvironmentId()) {
+  return Object.fromEntries(generatorsForEnvironment(environment).filter(generator=>generator.batch).map(generator=>[generator.id,TIPOS_DADOS[generator.id]]));
+}
 function normalizeGeneratorText(value) { return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
-function matchesGenerator(g,term,category='todos') {return (category==='todos'||category==='todas'||g.category===category) && normalizeGeneratorText([g.label,g.description,g.aliases,GENERATOR_CATEGORIES[g.category]].join(' ')).includes(normalizeGeneratorText(term));}
+function matchesGenerator(g,term,category='todos') {return !!g&&(category==='todos'||category==='todas'||g.category===category) && normalizeGeneratorText(g.keywords.join(' ')).includes(normalizeGeneratorText(term));}
 function generatorIcon(g) {
-  const paths={pessoa:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M4 21v-2a8 8 0 0 1 16 0v2',empresa:'M4 21V3h12v18M8 7h4M8 11h4M8 15h4M16 9h4v12',contato:'M5 3h4l2 5-3 2a14 14 0 0 0 6 6l2-3 5 2v4c0 5-18-1-18-14z',veiculo:'M3 17v-6l3-6h12l3 6v6H3m0-6h18M6 17v3m12-3v3M6 14h2m8 0h2',logistica:'m3 7 9-4 9 4v10l-9 4-9-4V7m0 0 9 4 9-4m-9 4v10',xml:'M5 3h10l4 4v14H5V3m4 8-2 3 2 3m6-6 2 3-2 3'};
-  return `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[g.category]}"/></svg>`;
+  const icons={pessoa:'user',empresa:'building-2',contato:'phone',endereco:'map-pin',veiculo:'truck',carga:'boxes',documento:'files',desenvolvimento:'code-2',financeiro:'badge-dollar-sign',logistica:'package',xml:'file-code-2'};
+  return `<i data-lucide="${icons[g.category]}" aria-hidden="true"></i>`;
 }
 const PERSONALIZATION_VERSION='thegenerator:registry-version';
 const FAVORITES_KEY='thegenerator:favorite-generators', RECENTS_KEY='thegenerator:recent-generators';
@@ -37,6 +109,7 @@ function readGeneratorIds(key) {
   const saved=storageGet(key,[]);
   return Array.isArray(saved)?[...new Set(saved.filter(id=>generatorById(id)))]:[];
 }
+function generatorIdsForEnvironment(ids,environment=activeEnvironmentId()) { return ids.filter(id=>generatorSupportsEnvironment(generatorById(id),environment)); }
 function migrateGeneratorPreferences() {
   if(storageGet(PERSONALIZATION_VERSION,0)>=1)return;
   for(const key of [FAVORITES_KEY,RECENTS_KEY]) {
@@ -45,9 +118,10 @@ function migrateGeneratorPreferences() {
   }
   storageSet(PERSONALIZATION_VERSION,1);
 }
-function registerGeneratorUse(id) {
+function registerGeneratorUse(id,activityOptions) {
   if(!generatorById(id))return;
   storageSet(RECENTS_KEY,[id,...readGeneratorIds(RECENTS_KEY).filter(value=>value!==id)].slice(0,5));
+  if(typeof recordProductivityActivity==='function')recordProductivityActivity(id,activityOptions);
   document.dispatchEvent(new CustomEvent('generator-used',{detail:{id}}));
 }
 migrateGeneratorPreferences();

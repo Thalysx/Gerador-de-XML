@@ -19,4 +19,5 @@ window.onload = () => {
   inicializarAnexoChatIa();
   inicializarWorkflowXml();
   inicializarValidacaoXml();
+  inicializarCenariosTeste();
 };

@@ -40,6 +40,7 @@ function getHierarquiaCTe() {
 
 let quantidadeItensXml = null;
 let lockAtivo = false;
+let ncmsManuais = [];
 const LOCKABLE_FIELDS = [
   'cte_cnpjEmit','cte_nomeEmit','cte_cnpjRem','cte_nomeRem','cte_cnpjReceb','cte_nomeReceb','cte_cnpjDest','cte_nomeDest',
   'Emitente_Nota','nfe_nomeEmit','nfe_cnpjDest','nfe_nomeDest','nfe_cnpjTransp','nfe_nomeTransp'
@@ -48,9 +49,10 @@ const LOCKABLE_FIELDS = [
 function toggleLock() {
   lockAtivo = !lockAtivo;
   const btn = document.getElementById('lock-btn');
-  const lockIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
-  const unlockIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>';
+  const lockIcon = '<i data-lucide="lock" aria-hidden="true"></i>';
+  const unlockIcon = '<i data-lucide="lock-open" aria-hidden="true"></i>';
   btn.innerHTML = lockAtivo ? lockIcon + ' Desbloquear alterações' : unlockIcon + ' Bloquear alterações';
+  renderLucideIcons(btn);
   btn.setAttribute('aria-pressed', String(lockAtivo));
   btn.setAttribute('aria-label', lockAtivo ? 'Desbloquear alterações dos campos XML' : 'Bloquear alterações dos campos XML');
   lockAtivo ? btn.classList.add('active') : btn.classList.remove('active');
@@ -426,6 +428,65 @@ function onProdutoChange(idx) {
   scheduleGerarXMLComCampos();
 }
 
+function normalizarNcmsManuais(valor) {
+  const entradas=String(valor||'').trim().split(/[\s,;]+/).filter(Boolean);
+  if(!entradas.length)return {erro:'Informe ao menos um NCM.'};
+  const invalidos=entradas.filter(ncm=>!/^\d{8}$/.test(ncm)&&!/^\d{4}\.\d{2}\.\d{2}$/.test(ncm));
+  if(invalidos.length)return {erro:`NCM inválido: ${invalidos[0]}. Use exatamente 8 dígitos.`};
+  return {valores:entradas.map(ncm=>ncm.replace(/\D/g,''))};
+}
+
+function renderNcmsManuais(mensagem) {
+  const lista=document.getElementById('ncm-manual-lista');
+  if(!lista)return;
+  lista.innerHTML=ncmsManuais.map((ncm,idx)=>`<span class="ncm-manual-chip">${ncm}<button type="button" onclick="removerNcmManual(${idx})" aria-label="Remover NCM ${ncm}">×</button></span>`).join('');
+  document.getElementById('ncm-manual-aplicar').disabled=!ncmsManuais.length;
+  document.getElementById('ncm-manual-limpar').disabled=!ncmsManuais.length;
+  document.getElementById('ncm-manual-status').textContent=mensagem||(ncmsManuais.length?`${ncmsManuais.length} NCM(s) manual(is) disponível(is).`:'Nenhum NCM manual adicionado.');
+}
+
+function adicionarNcmsManuais(event) {
+  event?.preventDefault();
+  const input=document.getElementById('ncm-manual-input');
+  const resultado=normalizarNcmsManuais(input.value);
+  if(resultado.erro){renderNcmsManuais(resultado.erro);input.setAttribute('aria-invalid','true');input.focus();return false;}
+  const combinados=[...ncmsManuais];
+  resultado.valores.forEach(ncm=>{if(!combinados.includes(ncm))combinados.push(ncm);});
+  if(combinados.length>50){renderNcmsManuais('Use no máximo 50 NCMs manuais.');input.setAttribute('aria-invalid','true');return false;}
+  const adicionados=combinados.length-ncmsManuais.length;
+  ncmsManuais=combinados;
+  input.value='';input.setAttribute('aria-invalid','false');
+  storageSet('gerador:ncms_manuais',ncmsManuais);
+  renderNcmsManuais(adicionados?`${adicionados} NCM(s) adicionado(s).`:'Os NCMs informados já estavam na lista.');
+  return false;
+}
+
+function removerNcmManual(idx) {
+  const removido=ncmsManuais[idx];
+  if(!removido)return;
+  ncmsManuais.splice(idx,1);
+  storageSet('gerador:ncms_manuais',ncmsManuais);
+  renderNcmsManuais(`NCM ${removido} removido.`);
+}
+
+function limparNcmsManuais() {
+  ncmsManuais=[];
+  storageSet('gerador:ncms_manuais',ncmsManuais);
+  renderNcmsManuais('Lista de NCMs manuais limpa.');
+  document.getElementById('ncm-manual-input').focus();
+}
+
+function aplicarNcmsManuais() {
+  if(!ncmsManuais.length){renderNcmsManuais('Adicione ao menos um NCM antes de aplicar.');return false;}
+  const campos=[...document.querySelectorAll('.produto-item input[id$="_ncm"]')];
+  if(!campos.length){renderNcmsManuais('Adicione ao menos um produto antes de aplicar os NCMs.');return false;}
+  campos.forEach((campo,idx)=>{campo.value=ncmsManuais[idx%ncmsManuais.length];});
+  gerarXMLComCampos();
+  salvarEstadoXml();
+  renderNcmsManuais(`${campos.length} produto(s) atualizado(s) com a lista de NCMs manuais.`);
+  return true;
+}
+
 function setUnidade(idx, unidade) {
   const hiddenInput = document.getElementById(`nfes_prod_${idx}_uCom`);
   const prevUnit = hiddenInput.value;
@@ -574,7 +635,8 @@ function geraDownloadLinks(xmlDoc, docNome) {
   a.download = arquivo;
   a.className = 'download-badge';
   a.setAttribute('aria-label', `Baixar arquivo ${arquivo}`);
-  a.innerHTML = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M5 7l3 3 3-3M2 12h12" /></svg>Baixar ${escapeHtml(arquivo)}`;
+  a.innerHTML = `<i data-lucide="download" aria-hidden="true"></i>Baixar ${escapeHtml(arquivo)}`;
+  renderLucideIcons(a);
   area.appendChild(a);
   return arquivo;
 }
@@ -610,9 +672,13 @@ function salvarEstadoXml() {
   storageSet('gerador:xml_campos', snap);
   storageSet('gerador:xml_quantidade', document.querySelectorAll('.produto-item').length);
   storageSet('gerador:lock', lockAtivo);
+  storageSet('gerador:ncms_manuais', ncmsManuais);
 }
 
 function restaurarEstadoXml() {
+  const salvosNcm=storageGet('gerador:ncms_manuais',[]);
+  ncmsManuais=Array.isArray(salvosNcm)?[...new Set(salvosNcm.filter(ncm=>/^\d{8}$/.test(String(ncm))))].slice(0,50):[];
+  renderNcmsManuais();
   const snap = storageGet('gerador:xml_campos');
   const lockSalvo = storageGet('gerador:lock', false);
   if (snap) {

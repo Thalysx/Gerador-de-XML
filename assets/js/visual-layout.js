@@ -48,6 +48,7 @@ const listaGeradores=document.getElementById('docs-generator-list');
 function filtrarGeradores() {
   const normalizar=valor=>valor.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
   const termo=normalizar(buscaGerador.value);
+  document.getElementById('docs-search-clear').hidden=!buscaGerador.value;
   let total=0;
   listaGeradores.querySelectorAll('.btn-grid').forEach(grupo=>{
     let visiveis=0;

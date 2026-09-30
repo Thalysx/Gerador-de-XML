@@ -311,16 +311,22 @@ function finalizarEGerarXML(xml, hierarquia, forcarNovosDadosAleatorios = false)
   guardarXmlsGerados(xml, tiposAtivos);
 }
 
+function normalizarAssinaturaExemplo(xml) {
+  return xml
+    .replaceAll('ASSINATURA_EXEMPLO','QU1PU1RSQQ==')
+    .replaceAll('CERTIFICADO_EXEMPLO','Q0VSVElGSUNBRE8=');
+}
+
 function xmlStringModelToObject() {
   const parser = new DOMParser();
-  const nfe = parser.parseFromString(nfeModel, 'text/xml');
+  const nfe = parser.parseFromString(normalizarAssinaturaExemplo(nfeModel), 'text/xml');
   const inf = nfe.querySelector('infNFe');
   const modelo = inf.querySelector('det').cloneNode(true);
   const quantidade = quantidadeItensXml || inf.querySelectorAll('det').length;
   while (inf.querySelectorAll('det').length > quantidade) [...inf.querySelectorAll('det')].pop().remove();
   while (inf.querySelectorAll('det').length < quantidade) inf.insertBefore(modelo.cloneNode(true), inf.querySelector('total'));
   inf.querySelectorAll('det').forEach((det, idx) => det.setAttribute('nItem', String(idx+1)));
-  return { cte:parser.parseFromString(cteModel, 'text/xml'), nfeList:[nfe] };
+  return { cte:parser.parseFromString(normalizarAssinaturaExemplo(cteModel), 'text/xml'), nfeList:[nfe] };
 }
 
 function preencherCamposFormulario(xml, hierarquia) {

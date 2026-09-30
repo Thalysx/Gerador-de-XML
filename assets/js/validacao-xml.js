@@ -1,5 +1,7 @@
-// Verificações locais: não executa XSD, assinatura digital ou consulta à SEFAZ.
+// O parser e as regras de domínio rodam no navegador; XSD 4.00 usa o endpoint first-party.
 const LIMITE_XML_BYTES = 5 * 1024 * 1024;
+const LIMITE_XSD_BYTES = 4 * 1024 * 1024;
+const CODIGOS_ESTRUTURA_COBERTOS_POR_XSD = new Set(['namespace-invalido','estrutura-principal-ausente','campo-obrigatorio','modelo-invalido','produtos-ausentes','item-numero','produto-campo','produto-valor']);
 const VISAO_VALIDACAO_PADRAO = 'resumo';
 let relatoriosXml = [];
 let validacaoXmlVersao = 0;
@@ -79,6 +81,7 @@ function analisarXml(texto, nome = 'XML colado', opcoes = {}) {
     visao:opcoes.visao || VISAO_VALIDACAO_PADRAO,
     intencional:Boolean(opcoes.intencional),
     varianteNegativa:opcoes.varianteNegativa || null
+    ,cobertura:{sintaxe:'nao-executado',xsd:'nao-executado',regrasLocais:'nao-executado',oficial:'nao-executado'}
   };
   const add = (nivel, etapa, mensagem, detalhes = {}) => {
     if (typeof detalhes === 'string') detalhes = { caminho:detalhes };
@@ -93,6 +96,7 @@ function analisarXml(texto, nome = 'XML colado', opcoes = {}) {
       etapa,
       mensagem,
       problema:mensagem,
+      origem:detalhes.origem || (etapa === 'Sintaxe' || etapa === 'Entrada' ? 'sintaxe' : etapa === 'Cobertura' ? 'cobertura' : 'regra-local'),
       ...(detalhes.codigo ? {codigo:detalhes.codigo} : {}),
       ...(detalhes.tag ? {tag:detalhes.tag} : {}),
       ...(Object.hasOwn(detalhes,'valor') ? {valor:String(detalhes.valor)} : {}),
@@ -105,14 +109,15 @@ function analisarXml(texto, nome = 'XML colado', opcoes = {}) {
   };
   if (!texto.trim()) { add('erro','Entrada','O conteúdo está vazio.'); return r; }
   if (new Blob([texto]).size > LIMITE_XML_BYTES) {
-    r.texto = ''; add('erro','Entrada','O limite é de 5 MB por XML.'); return r;
+    r.texto = ''; r.cobertura.sintaxe='nao-executado'; add('erro','Entrada','O limite é de 5 MB por XML.'); return r;
   }
   const markup = texto.replace(/<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>/g, '');
   if (/<!DOCTYPE\b|<!ENTITY\b/i.test(markup)) {
-    add('erro','Sintaxe','Documentos com DTD ou entidades declaradas não são suportados nesta tela.'); return r;
+    r.cobertura.sintaxe='reprovado'; add('erro','Sintaxe','Documentos com DTD ou entidades declaradas não são suportados nesta tela.'); return r;
   }
   const original = new DOMParser().parseFromString(texto, 'application/xml');
   if (original.getElementsByTagNameNS('*','parsererror').length) {
+    r.cobertura.sintaxe='reprovado';
     const detalhe=original.documentElement.textContent.trim();
     const ponto=detalhe.match(/(?:linha|line)?\s*(\d+)\s*[:;,]\s*(?:coluna|column)?\s*(\d+)/i);
     add('erro','Sintaxe','XML malformado: ' + detalhe.slice(0,1200),ponto
@@ -120,11 +125,13 @@ function analisarXml(texto, nome = 'XML colado', opcoes = {}) {
       : { localizacao:'Posição não informada pelo navegador', codigo:'xml-malformado' });
     return r;
   }
+  r.cobertura.sintaxe='aprovado';
   add('informacao','Sintaxe','XML bem formado: tags, atributos e caracteres puderam ser interpretados.',{codigo:'xml-bem-formado'});
   const raiz = original.documentElement.localName;
   const tipos = { NFe:'NF-e', nfeProc:'NF-e', CTe:'CT-e', cteProc:'CT-e' };
   if (!Object.hasOwn(tipos, raiz)) {
     r.tipo = raiz; r.resumo = {tipo:raiz,raiz}; r.status = 'nao-suportado';
+    r.cobertura.xsd='nao-suportado';
     add('aviso','Estrutura',`Raiz ${raiz}: apenas a sintaxe foi conferida. As regras desta tela atendem NF-e e CT-e.`,{tag:raiz,valor:raiz,caminho:raiz,codigo:'raiz-nao-suportada'}); return r;
   }
   r.tipo = tipos[raiz];
@@ -136,10 +143,13 @@ function analisarXml(texto, nome = 'XML colado', opcoes = {}) {
   const infNome=tag === 'NFe' ? 'infNFe' : 'infCte';
   const inf = fiscal && [...fiscal.children].find(el => el.localName === infNome);
   if (!inf || inf.namespaceURI !== namespace) {
+    r.cobertura.regrasLocais='reprovado';
     add('erro','Estrutura',`Estrutura principal de ${r.tipo} ausente ou com namespace incorreto.`,{tag:infNome,caminho:`${tag} > ${infNome}`,codigo:'estrutura-principal-ausente'}); return r;
   }
   r.editavel = true;
+  r.versao = inf.getAttribute('versao') || doc.documentElement.getAttribute('versao') || '';
   r.resumo = extrairResumoXml(doc,r.tipo,inf);
+  r.resumo.versao = r.versao;
   add('informacao','Estrutura',`Estrutura principal de ${r.tipo} identificada.`,{tag:infNome,caminho:`${tag} > ${infNome}`,codigo:'estrutura-identificada'});
 
   const campos = ['ide > cUF','ide > mod','ide > serie','ide > cDV','emit > CNPJ','emit > xNome', tag === 'NFe' ? 'ide > nNF' : 'ide > nCT'];
@@ -196,8 +206,53 @@ function analisarXml(texto, nome = 'XML colado', opcoes = {}) {
     if (valor !== chave) add('erro','Protocolo','Chave do protocolo diverge do Id do documento.',{tag:chaveProtocolo?.localName || (tag === 'NFe' ? 'chNFe' : 'chCTe'),valor,caminho:caminhoXml(chaveProtocolo,doc.documentElement.parentElement),codigo:'protocolo-chave'});
   } else add('aviso','Protocolo','Protocolo não encontrado. O XML pode ser um documento ainda não processado.',{codigo:'protocolo-ausente'});
 
-  add('aviso','Cobertura','Não foram verificados XSD, assinatura digital, todas as regras tributárias nem autorização na SEFAZ.',{codigo:'cobertura-local'});
+  r.cobertura.regrasLocais = r.verificacoes.some(v => v.nivel === 'erro' && v.origem === 'regra-local') ? 'reprovado' : 'aprovado';
+  if (r.versao !== '4.00') r.cobertura.xsd='nao-suportado';
+  add('aviso','Cobertura',r.cobertura.xsd === 'nao-suportado'
+    ? `XSD não suportado para ${r.tipo} ${r.versao || 'sem versão'}; as regras locais continuam disponíveis.`
+    : 'Validação XSD ainda não executada. Assinatura digital e autorização na SEFAZ não fazem parte desta etapa.',{codigo:'cobertura-xsd',origem:'cobertura'});
   r.status = r.verificacoes.some(v => v.nivel === 'erro') ? 'erro' : 'sem-erros';
+  return r;
+}
+
+function adicionarAchadoRelatorio(r,nivel,etapa,mensagem,detalhes={}) {
+  const linha=detalhes.linha?Number(detalhes.linha):undefined;
+  r.verificacoes.push({
+    id:`achado-${r.verificacoes.length+1}`,nivel,severidade:nivel,etapa,mensagem,problema:mensagem,
+    origem:detalhes.origem || 'cobertura',
+    ...(detalhes.codigo?{codigo:detalhes.codigo}:{}),
+    ...(linha?{linha,localizacao:`Linha ${linha}`}:{})
+  });
+}
+
+async function completarRelatorioXsd(r) {
+  if (!r?.texto || r.cobertura?.sintaxe !== 'aprovado' || !['NF-e','CT-e'].includes(r.tipo)) return r;
+  r.verificacoes=r.verificacoes.filter(v=>v.codigo!=='cobertura-xsd');
+  if (r.versao !== '4.00') {
+    r.cobertura.xsd='nao-suportado';
+    adicionarAchadoRelatorio(r,'aviso','Cobertura',`XSD não suportado para ${r.tipo} ${r.versao || 'sem versão'}; as regras locais continuam disponíveis.`,{codigo:'xsd-nao-suportado'});
+    return r;
+  }
+  if (new Blob([r.texto]).size > LIMITE_XSD_BYTES) {
+    r.cobertura.xsd='nao-executado';
+    adicionarAchadoRelatorio(r,'aviso','Cobertura','XSD não executado: o limite dessa etapa é de 4 MiB.',{codigo:'xsd-limite'});
+    return r;
+  }
+  try {
+    const response=await fetch('/api/validate-xml',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xml:r.texto}),credentials:'same-origin'});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(data.error || 'Serviço XSD indisponível.');
+    r.cobertura.xsd=data.cobertura?.xsd || 'indisponivel';
+    r.schemaPacote=data.pacote || '';
+    r.verificacoes=r.verificacoes.filter(achado=>!(achado.origem==='regra-local' && CODIGOS_ESTRUTURA_COBERTOS_POR_XSD.has(achado.codigo)));
+    for(const achado of data.achados || []) r.verificacoes.push({...achado,id:`achado-${r.verificacoes.length+1}`});
+    r.cobertura.regrasLocais=r.verificacoes.some(v=>v.nivel==='erro'&&v.origem==='regra-local')?'reprovado':'aprovado';
+    if(r.cobertura.xsd==='aprovado') adicionarAchadoRelatorio(r,'informacao','Schema XSD',`Documento compatível com o schema ${r.schemaPacote || 'oficial versionado'}.`,{codigo:'xsd-aprovado',origem:'xsd'});
+  } catch {
+    r.cobertura.xsd='indisponivel';
+    adicionarAchadoRelatorio(r,'aviso','Cobertura','A validação XSD está indisponível; o resultado das regras locais foi preservado.',{codigo:'xsd-indisponivel'});
+  }
+  r.status=r.verificacoes.some(v=>v.nivel==='erro')?'erro':'sem-erros';
   return r;
 }
 
@@ -212,16 +267,23 @@ function renderResumoValidacao(r) {
   return `<p class="validacao-conclusao">${titulo}</p>
     ${r.intencional ? `<div class="validacao-intencional" role="note"><strong>Dado sintético intencionalmente inválido</strong><span>${escapeHtml(r.varianteNegativa?.rotulo || 'Variante negativa')} — ${escapeHtml(r.varianteNegativa?.descricao || 'Use somente em testes controlados.')}</span></div>` : ''}
     <dl class="validacao-resumo-grade">
-      ${valorResumo('Tipo',resumo.tipo || r.tipo)}${valorResumo('Raiz',resumo.raiz)}${valorResumo('Chave',resumo.chave)}
+      ${valorResumo('Tipo',resumo.tipo || r.tipo)}${valorResumo('Raiz',resumo.raiz)}${valorResumo('Versão',resumo.versao || r.versao)}${valorResumo('Chave',resumo.chave)}
       ${valorResumo('Emitente',resumo.emitente)}${valorResumo('Documento do emitente',resumo.documentoEmitente)}
       ${valorResumo('Destinatário',resumo.destinatario)}${valorResumo('Documento do destinatário',resumo.documentoDestinatario)}
       ${valorResumo('Itens',resumo.itens)}${valorResumo('Valor total',resumo.valorTotal)}${valorResumo('Peso bruto',resumo.pesoBruto)}
-    </dl>`;
+    </dl>${renderCoberturaValidacao(r)}`;
+}
+
+function renderCoberturaValidacao(r) {
+  const labels={sintaxe:'Sintaxe',xsd:'Schema XSD',regrasLocais:'Regras locais',oficial:'SEFAZ'};
+  const estados={aprovado:'Aprovado',reprovado:'Reprovado','nao-executado':'Não executado','nao-suportado':'Não suportado',indisponivel:'Indisponível'};
+  return `<div class="validacao-cobertura" aria-label="Cobertura da validação">${Object.entries(r.cobertura||{}).map(([chave,estado])=>`<span><b>${labels[chave]||chave}:</b> ${estados[estado]||estado}</span>`).join('')}</div>`;
 }
 
 function renderAchadoValidacao(v) {
   const rotulo={erro:'Erro',aviso:'Aviso',informacao:'Informação'}[v.nivel] || v.nivel;
   const detalhes=[
+    v.origem ? `<span><b>Origem:</b> ${escapeHtml({'regra-local':'Regra local',sintaxe:'Sintaxe',xsd:'Schema XSD',cobertura:'Cobertura'}[v.origem] || v.origem)}</span>` : '',
     v.tag ? `<span><b>Tag:</b> ${escapeHtml(v.tag)}</span>` : '',
     Object.hasOwn(v,'valor') ? `<span><b>Valor:</b> ${escapeHtml(v.valor || '(vazio)')}</span>` : '',
     v.caminho ? `<span class="validacao-localizacao"><b>Caminho:</b> ${escapeHtml(v.caminho)}</span>` : '',
@@ -274,17 +336,21 @@ function navegarAbasValidacao(event,idx) {
 }
 
 function validarXmlColado(event) {
-  event?.preventDefault(); validacaoXmlVersao++;
-  relatoriosXml = [analisarXml(document.getElementById('validacao-texto').value)];
-  renderValidacaoXml(); return false;
+  event?.preventDefault(); const versao=++validacaoXmlVersao;
+  const relatorio=analisarXml(document.getElementById('validacao-texto').value);
+  relatoriosXml = [relatorio]; renderValidacaoXml();
+  completarRelatorioXsd(relatorio).then(()=>{if(versao===validacaoXmlVersao && typeof document!=='undefined')renderValidacaoXml();});
+  return false;
 }
 
 function validarXmlDoGerador() {
-  validacaoXmlVersao++; gerarXMLComCampos();
+  const versao=++validacaoXmlVersao; gerarXMLComCampos();
   const tipo = document.getElementById('validacao-gerado-tipo').value;
   const doc = xmlsGerados[tipo];
   if (!doc) { mostrarStatus('Gere um XML primeiro.','error'); return; }
-  relatoriosXml = [analisarXml(serializarXml(doc),`${tipo.toUpperCase()} do gerador`)]; renderValidacaoXml();
+  const relatorio=analisarXml(serializarXml(doc),`${tipo.toUpperCase()} do gerador`);
+  relatoriosXml = [relatorio]; renderValidacaoXml();
+  completarRelatorioXsd(relatorio).then(()=>{if(versao===validacaoXmlVersao && typeof document!=='undefined')renderValidacaoXml();});
 }
 
 const VARIANTES_XML_NEGATIVAS = {
@@ -332,7 +398,7 @@ function criarVarianteNegativaXml(tipo,variante) {
 }
 
 function gerarXmlNegativo() {
-  validacaoXmlVersao++; gerarXMLComCampos();
+  const versao=++validacaoXmlVersao; gerarXMLComCampos();
   const tipo=document.getElementById('validacao-negativa-tipo').value;
   const variante=document.getElementById('validacao-negativa-variante').value;
   const negativo=criarVarianteNegativaXml(tipo,variante);
@@ -342,6 +408,7 @@ function gerarXmlNegativo() {
   relatoriosXml=[relatorio];
   document.getElementById('validacao-texto').value=negativo.texto;
   renderValidacaoXml();
+  completarRelatorioXsd(relatorio).then(()=>{if(versao===validacaoXmlVersao && typeof document!=='undefined')renderValidacaoXml();});
   document.getElementById('validacao-resultados').focus({preventScroll:true});
   mostrarStatus(`Variante “${negativo.rotulo}” criada para teste controlado.`);
 }
@@ -389,7 +456,7 @@ async function validarArquivosXml(files) {
       try {
         if (!/\.xml$/i.test(file.name)) throw new Error('Selecione um arquivo com extensão .xml.');
         if (file.size > LIMITE_XML_BYTES) throw new Error('O limite é de 5 MB por XML.');
-        resultados.push(analisarXml(await lerArquivoValidacao(file),file.name));
+        resultados.push(await completarRelatorioXsd(analisarXml(await lerArquivoValidacao(file),file.name)));
       } catch (erro) {
         resultados.push({ nome:file.name,tipo:'Não identificado',status:'erro',resumo:{tipo:'Não identificado'},texto:'',editavel:false,visao:VISAO_VALIDACAO_PADRAO,intencional:false,varianteNegativa:null,verificacoes:[{id:'achado-1',nivel:'erro',severidade:'erro',etapa:'Leitura',mensagem:erro.message,problema:erro.message}] });
       }
@@ -415,7 +482,7 @@ function limparValidacaoXml() {
 function exportarRelatorioXml() {
   if (!relatoriosXml.length) return;
   const documentos = relatoriosXml.map(({texto,editavel,visao,...relatorio}) => relatorio);
-  baixarTexto('relatorio-validacao-xml.json',JSON.stringify({geradoEm:new Date().toISOString(),cobertura:'Sintaxe e verificações estruturais e de domínio disponíveis localmente; sem XSD, assinatura digital ou consulta SEFAZ.',documentos},null,2),'application/json');
+  baixarTexto('relatorio-validacao-xml.json',JSON.stringify({geradoEm:new Date().toISOString(),cobertura:'Sintaxe, XSD versionado quando suportado e regras FUTURE G; sem assinatura digital ou consulta SEFAZ.',documentos},null,2),'application/json');
 }
 
 function abrirValidacaoNoEditor(idx) {

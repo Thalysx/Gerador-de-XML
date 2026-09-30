@@ -8,5 +8,5 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
-  external_node_modules = ["jsdom"]
-  included_files = ["index.html", "assets/js/**", "scripts/**"]
+  external_node_modules = ["jsdom", "xmllint-wasm"]
+  included_files = ["index.html", "assets/js/**", "scripts/**", "schemas/fiscal/**"]

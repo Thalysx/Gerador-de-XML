@@ -1,5 +1,9 @@
 # FUTURE G 3.0.0-alpha.3 — 30/09/2026
 
+- A fase 13A incorporou validação XSD first-party para NF-e 4.00 e CT-e 4.00 com schemas oficiais versionados, hashes de integridade, cobertura explícita e fallback para o relatório local.
+- A aplicação da empresa cadastrada à NF-e agora oferece “Todas as opções”, preenchendo Emitente, Destinatário e Transportadora em uma única ação.
+- O refinamento de interface foi formalizado no roadmap/OpenSpec como FUTURE 12; a trilha de validação fiscal foi renumerada para FUTURE 13A/13B/13C.
+
 - O painel Resultado passou a apresentar objetos estruturados em grid semântico, com labels amigáveis e fallback seguro para texto livre.
 - A interface mantém o texto completo separado da projeção visual para Copiar, Baixar TXT, detalhes e restauração do histórico.
 - Resultados extensos possuem rolagem interna; cada nova geração retorna ao topo após renderizar sem deslocar a página.
@@ -14,7 +18,7 @@
 - Movimento, transições, tooltips, link de salto e quebra de identificadores receberam correções de robustez.
 - A auditoria passou a verificar foco dentro da viewport e alcance vertical da navegação.
 - A suíte passou a 105 testes; build, auditoria de 200% e matriz de 128 combinações foram aprovados.
-- O roadmap consolidado foi incorporado e a fase 12A foi aberta apenas para especificar validação fiscal local determinística.
+- O roadmap consolidado foi incorporado e a fase 13A foi aberta apenas para especificar validação fiscal local determinística.
 
 # FUTURE G 3.0.0-alpha.1 — 25/09/2026
 

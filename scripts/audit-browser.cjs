@@ -304,9 +304,18 @@ async function main() {
           const r = el.getBoundingClientRect();
           return s.display !== 'none' && s.visibility !== 'hidden' && r.width > 1 && r.height > 1;
         });
+        const temRolagemHorizontalIntencional = el => {
+          let ancestral=el.parentElement;
+          while(ancestral && ancestral!==document.body) {
+            const estilo=getComputedStyle(ancestral);
+            if(['auto','scroll'].includes(estilo.overflowX) && ancestral.scrollWidth>ancestral.clientWidth+1) return true;
+            ancestral=ancestral.parentElement;
+          }
+          return false;
+        };
         const excedentes = visiveis.filter(el => {
           const r = el.getBoundingClientRect();
-          return r.left < -1 || r.right > innerWidth + 1;
+          return (r.left < -1 || r.right > innerWidth + 1) && !temRolagemHorizontalIntencional(el);
         }).map(el => ({ elemento: nome(el), esquerda: Math.round(el.getBoundingClientRect().left), direita: Math.round(el.getBoundingClientRect().right) })).slice(0,10);
         const nav=document.getElementById('workspace-navigation');
         const navStyle=getComputedStyle(nav);

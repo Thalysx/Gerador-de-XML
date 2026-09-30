@@ -43,7 +43,8 @@ The visual projection SHALL remain independent from the complete text representa
 - AND arbitrary content is not coerced into fields.
 
 ### Requirement: Result scroll lifecycle
-When a new document result replaces the previous result, the internal result content SHALL return to its top after the new DOM has rendered. Reading, manual scrolling, selecting, copying, downloading, resizing or changing only the presentation of the current value SHALL NOT continuously reset that position. If the result has its own scroll container, this reset SHALL NOT move the document scroll.
+
+Every result content replacement SHALL reset the internal scroll to zero immediately and after rendering. The result SHALL NOT receive programmatic focus or an animated outline after generation. Copying, downloading, resizing and manual reading SHALL preserve the current position.
 
 #### Scenario: Generate two long results
 - GIVEN the user has scrolled inside a long result
@@ -51,14 +52,29 @@ When a new document result replaces the previous result, the internal result con
 - THEN the internal result position returns to zero after rendering
 - AND the page position remains unchanged.
 
+#### Scenario: Reformat or restore a result
+- GIVEN the result was manually scrolled
+- WHEN its content is reformatted or restored from history
+- THEN the internal result position returns to zero immediately
+- AND no animated outline is shown around the result.
+
 ### Requirement: Search placement
-Search SHALL appear before the generator collection and SHALL respect the active environment.
+
+Search and category filtering SHALL appear in a shared horizontal region before the configuration/result workspace, SHALL respect the active environment and SHALL expose contextual clearing only while a query exists.
 
 #### Scenario: Search the active environment
-- GIVEN the user is viewing the generator collection for an environment
+- GIVEN the user is viewing Dados cadastrais
 - WHEN the user enters a search term
-- THEN the search is positioned before the collection
-- AND only matching generators available in the active environment are shown.
+- THEN search and category are positioned above both configuration and result
+- AND only matching generators available in the active environment are shown
+- AND a named clear action is available in the field while text exists.
+
+#### Scenario: Clear a generator query
+- GIVEN the search field contains text
+- WHEN the contextual clear action is activated
+- THEN the query and category filter are reset
+- AND the complete generator collection for the active environment is restored
+- AND focus returns to the search field.
 
 ### Requirement: Primary content visibility
 Primary categories SHALL remain directly discoverable. Accordions SHALL be reserved for secondary or advanced content.
@@ -70,14 +86,15 @@ Primary categories SHALL remain directly discoverable. Accordions SHALL be reser
 - AND an accordion is used only for secondary or advanced content.
 
 ### Requirement: Full-page assistant
-The AI assistant SHALL use the available application content area without a redundant outer chat card, while retaining FUTURE G navigation.
+
+The AI assistant SHALL dedicate the central application area to empty state or conversation, SHALL keep suggestions immediately before the lower composer and SHALL group attachment, message, send, mode, mask and new-conversation controls inside that composer.
 
 #### Scenario: Open the AI assistant
 - GIVEN the FUTURE G shell is visible
 - WHEN the user opens the AI assistant
 - THEN the conversation uses the available content area without a redundant outer card
-- AND the FUTURE G navigation remains available
-- AND the composer remains in the lower conversation region.
+- AND no permanent controls or privacy drawer interrupt the conversation
+- AND the unified composer remains in the lower conversation region.
 
 ### Requirement: UI foundations
 When compatible with the stack, reusable UI SHALL use shadcn/ui as a technical base and Lucide as the standard icon set, customized to FUTURE G.
@@ -125,3 +142,14 @@ General and port-specific generator composition SHALL remain separated. Cadastro
 - GIVEN the active environment is QA Portuário
 - WHEN the user browses or searches port-specific generators
 - THEN the appropriate port registration options remain available in that environment.
+
+### Requirement: Compact XML dropzone
+
+The Editor XML SHALL expose one compact visual dropzone while retaining the existing upload behavior.
+
+#### Scenario: Import XML files
+- GIVEN no files are loaded in the Editor XML
+- WHEN the import state is shown
+- THEN exactly one dashed dropzone surface is visible
+- AND its desktop width is bounded
+- AND selection, multiple files, drag-and-drop, parsing and errors remain available.

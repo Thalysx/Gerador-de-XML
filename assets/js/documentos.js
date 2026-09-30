@@ -481,20 +481,20 @@ function gerarNovoDocumentoAtual() {
 function removerMascara() {
   if (!currentValue || ['placa','conteiner','conteiner-lacre','lacre','email','nome','empresa','nome-fantasia','endereco','renavam','booking'].includes(currentType)) return;
   currentValue = currentValue.replace(/[^0-9A-Za-z]/g, '');
-  setOutput(currentValue,null,{resetScroll:false});
+  setOutput(currentValue);
 }
 
 function aplicarMascara() {
   if (!currentValue || ['placa','conteiner','conteiner-lacre','lacre','email','nome','empresa','nome-fantasia','endereco','renavam','booking'].includes(currentType)) return;
   const raw = currentValue.replace(/[^0-9A-Za-z]/g, '');
-  if (currentType === 'rg') { setOutput(formatRG(raw),null,{resetScroll:false}); return; }
-  if (currentType === 'cep') { setOutput(formatCEP(raw),null,{resetScroll:false}); return; }
-  if (currentType === 'due') { setOutput(raw.slice(0,-1) + '-' + raw.slice(-1),null,{resetScroll:false}); return; }
-  if (currentType === 'cpf' && raw.length === 11) setOutput(`${raw.slice(0,3)}.${raw.slice(3,6)}.${raw.slice(6,9)}-${raw.slice(9)}`,null,{resetScroll:false});
-  else if ((currentType === 'cnpj' || currentType === 'cnpj-alfa') && raw.length === 14) setOutput(formatCNPJ(raw),null,{resetScroll:false});
+  if (currentType === 'rg') { setOutput(formatRG(raw)); return; }
+  if (currentType === 'cep') { setOutput(formatCEP(raw)); return; }
+  if (currentType === 'due') { setOutput(raw.slice(0,-1) + '-' + raw.slice(-1)); return; }
+  if (currentType === 'cpf' && raw.length === 11) setOutput(`${raw.slice(0,3)}.${raw.slice(3,6)}.${raw.slice(6,9)}-${raw.slice(9)}`);
+  else if ((currentType === 'cnpj' || currentType === 'cnpj-alfa') && raw.length === 14) setOutput(formatCNPJ(raw));
   else if (currentType === 'telefone') {
-    if (raw.length === 10 || raw.length === 11) { const ddd = raw.slice(0,2), num = raw.slice(2); setOutput(`(${ddd}) ${num.slice(0,-4)}-${num.slice(-4)}`,null,{resetScroll:false}); }
-    else setOutput(raw,null,{resetScroll:false});
+    if (raw.length === 10 || raw.length === 11) { const ddd = raw.slice(0,2), num = raw.slice(2); setOutput(`(${ddd}) ${num.slice(0,-4)}-${num.slice(-4)}`); }
+    else setOutput(raw);
   }
 }
 
@@ -589,11 +589,12 @@ function restaurarTopoResultadoAposRender(elemento,renderToken) {
     if(renderToken!==currentResultRenderToken)return;
     elemento.scrollTop=0;
   };
+  aplicar();
   if(typeof requestAnimationFrame==='function')requestAnimationFrame(aplicar);
   else setTimeout(aplicar,0);
 }
 
-function setOutput(val, structuredData = null, options = {}) {
+function setOutput(val, structuredData = null) {
   const renderToken=++currentResultRenderToken;
   if (typeof esconderCracha === 'function') esconderCracha();
   const box = document.getElementById('docs-output-box');
@@ -601,12 +602,8 @@ function setOutput(val, structuredData = null, options = {}) {
   const el = document.getElementById('output-val');
   currentResultText=String(val ?? '');
   renderizarResultadoDocumento(el,currentResultText,structuredData);
-  if(options.resetScroll!==false)restaurarTopoResultadoAposRender(el,renderToken);
+  restaurarTopoResultadoAposRender(el,renderToken);
   el.classList.remove('placeholder');
-  box.classList.remove('is-updated');
-  void box.offsetWidth;
-  box.classList.add('is-updated');
-  setTimeout(() => box.classList.remove('is-updated'), 220);
   const generatorId=currentType==='placa'&&placaTipoAtual==='antiga'?'placa-antiga':currentType;
   document.getElementById('docs-result-label').textContent='Resultado · '+(generatorById(generatorId)?.label || 'Documento');
   document.getElementById('new-doc-btn').style.display = 'inline-block';

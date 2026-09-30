@@ -12,6 +12,7 @@ const tipos = {
 };
 const { createAssistant } = require('./ai.cjs');
 const { createHttpApi } = require('./http-api.cjs');
+const { fiscalValidationRuntime } = require('./fiscal-validation-api.cjs');
 const { randomBytes } = require('node:crypto');
 function createServer(assistant = createAssistant()) {
 let api;
@@ -22,6 +23,7 @@ return http.createServer(async (req, res) => {
     const port = req.socket.localPort;
     if (![`127.0.0.1:${port}`, `localhost:${port}`].includes(req.headers.host)) return json(403,{error:'Host não permitido.'});
     const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    if (pathname === '/api/validate-xml') return fiscalValidationRuntime(req,res);
     if (pathname === '/api/status' || pathname === '/api/chat') {
       api ||= createHttpApi({assistant,secret:cookieSecret,origins:[`http://127.0.0.1:${port}`,`http://localhost:${port}`]});
       return api(req,res,pathname.endsWith('status')?'status':'chat');

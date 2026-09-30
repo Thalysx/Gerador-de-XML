@@ -343,6 +343,47 @@ test('fase 5 usa o espaço do assistente e isola Cadastro Geral de campos portu�
   } finally {dom.window.close();}
 });
 
+test('refinamento de layout integra busca, dropzone e composer sem duplicar containers', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    const docs=w.document.getElementById('tab-docs');
+    const search=docs.querySelector('.docs-search');
+    const workspace=docs.querySelector('.doc-gen-wrapper');
+    assert.equal(search.parentElement,docs);
+    assert.ok(search.compareDocumentPosition(workspace)&w.Node.DOCUMENT_POSITION_FOLLOWING);
+    assert.equal(search.closest('.doc-gen-left'),null);
+    assert.equal(search.querySelector('label[for="docs-search"]').textContent,'Buscar gerador');
+    const clear=w.document.getElementById('docs-search-clear');
+    assert.equal(clear.hidden,true);
+    w.document.getElementById('docs-search').value='CPF';
+    w.document.getElementById('docs-search').dispatchEvent(new w.Event('input',{bubbles:true}));
+    assert.equal(clear.hidden,false);
+    clear.click();
+    assert.equal(clear.hidden,true);
+
+    const editorCss=fs.readFileSync(path.join(root,'assets/css/editor-xml.css'),'utf8');
+    assert.match(editorCss,/\.editor-dropzone\s*\{[^}]*background:\s*transparent/);
+    assert.match(editorCss,/\.editor-dropzone-inner\s*\{[^}]*max-width:\s*680px[^}]*min-height:\s*176px/);
+
+    const chat=w.document.querySelector('.chat-painel');
+    const form=chat.querySelector('.chat-form');
+    assert.ok(form.contains(chat.querySelector('.chat-controls')));
+    assert.equal(chat.querySelector('.chat-privacy-settings'),null);
+    assert.ok(w.document.querySelector('.app-settings-panel .chat-privacy-settings'));
+    assert.ok(chat.querySelector('#chat-sugestoes').compareDocumentPosition(form)&w.Node.DOCUMENT_POSITION_FOLLOWING);
+    const input=w.document.getElementById('chat-pedido');
+    assert.equal(input.tagName,'TEXTAREA');
+    w.document.getElementById('chat-modo').value='local';
+    input.value='Gere um CPF';
+    input.dispatchEvent(new w.Event('input',{bubbles:true}));
+    input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));
+    assert.equal(run('conversasChat.length'),1);
+    input.value='linha um';
+    input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',shiftKey:true,bubbles:true,cancelable:true}));
+    assert.equal(run('conversasChat.length'),1);
+  } finally {dom.window.close();}
+});
+
 test('Cadastro Geral gera ficha somente com os grupos selecionados e restaura histórico legado', async () => {
   const {dom,w,run}=await abrir();
   try {
@@ -990,7 +1031,7 @@ test('painel Resultado apresenta estrutura amigável e preserva texto para açõ
   } finally {dom.window.close();}
 });
 
-test('painel Resultado restaura somente seu scroll quando recebe um novo resultado', async () => {
+test('painel Resultado volta ao topo em toda substituição de conteúdo, sem contorno animado', async () => {
   const {dom,w,run}=await abrir();
   try {
     w.definirAmbiente('port');
@@ -1000,7 +1041,9 @@ test('painel Resultado restaura somente seu scroll quando recebe um novo resulta
     scrollRaiz.scrollTop=320;
     output.scrollTop=240;
     w.generateSelectedDocument();
-    assert.equal(output.scrollTop,240);
+    assert.equal(output.scrollTop,0);
+    assert.notEqual(w.document.activeElement,output);
+    assert.equal(w.document.getElementById('docs-output-box').classList.contains('is-updated'),false);
     await new Promise(resolve=>w.requestAnimationFrame(resolve));
     assert.equal(output.scrollTop,0);
     assert.equal(scrollRaiz.scrollTop,320);
@@ -1014,9 +1057,10 @@ test('painel Resultado restaura somente seu scroll quando recebe um novo resulta
     assert.equal(output.scrollTop,180);
 
     output.scrollTop=150;
-    run("setOutput(currentResultText,currentResultData,{resetScroll:false})");
+    run("setOutput(currentResultText,currentResultData)");
+    assert.equal(output.scrollTop,0);
     await new Promise(resolve=>w.requestAnimationFrame(resolve));
-    assert.equal(output.scrollTop,150);
+    assert.equal(output.scrollTop,0);
 
     w.generateSelectedDocument();
     await new Promise(resolve=>w.requestAnimationFrame(resolve));
@@ -1657,8 +1701,11 @@ test('XML: produtos, cenários, bloqueio, cadastro e cópia isolada no editor', 
     assert.equal(empresa.value, 'Empresa de Teste & Filhos');
     w.document.getElementById('cad_empresa').value = 'Empresa do Cadastro';
     w.document.getElementById('cad_cnpj').value = run('gerarCNPJRawNumerico()');
+    w.document.getElementById('cad-xml-papel').value = 'todos';
     w.usarCadastroNoXml();
     assert.equal(empresa.value, 'Empresa do Cadastro');
+    assert.equal(w.document.getElementById('nfe_nomeDest').value, 'Empresa do Cadastro');
+    assert.equal(w.document.getElementById('nfe_nomeTransp').value, 'Empresa do Cadastro');
     w.abrirXmlGeradoNoEditor();
     assert.equal(run('editorArquivos.length'), 1);
     run("editorArquivos[0].doc.querySelector('emit > xNome').textContent = 'Editado'");

@@ -58,9 +58,25 @@ function atualizarChatPorAmbiente() {
     button.addEventListener('click',()=>sugerirChat(pedido));
     return button;
   }));
-  document.getElementById('chat-pedido').placeholder=ambiente==='general'
-    ? 'Ex.: Gere 3 CPFs e 2 CNPJs'
-    : 'Ex.: Gere 5 contêineres com lacre';
+  document.getElementById('chat-pedido').placeholder='Pergunte ou peça para gerar algo...';
+}
+
+function ajustarAlturaComposerChat() {
+  const input=document.getElementById('chat-pedido');
+  input.style.height='auto';
+  input.style.height=`${Math.min(Math.max(input.scrollHeight,44),140)}px`;
+}
+
+function inicializarComposerChat() {
+  const input=document.getElementById('chat-pedido');
+  input.addEventListener('input',ajustarAlturaComposerChat);
+  input.addEventListener('keydown',event=>{
+    if(event.key!=='Enter' || event.shiftKey || event.isComposing)return;
+    event.preventDefault();
+    if(!input.value.trim()){input.focus();return;}
+    enviarChat(event);
+  });
+  ajustarAlturaComposerChat();
 }
 
 function renderizarChatPreservandoScroll(area, render) {
@@ -111,13 +127,13 @@ function enviarChatLocal(event) {
   // Limita a memória da conversa sem persistir lotes grandes no localStorage.
   if (conversasChat.length > 10) conversasChat.shift();
   input.value = '';
-  renderChat(); input.focus();
+  ajustarAlturaComposerChat(); renderChat(); input.focus();
   return false;
 }
 
 function sugerirChat(pedido) {
   const input=document.getElementById('chat-pedido');
-  input.value=pedido;input.focus();
+  input.value=pedido;ajustarAlturaComposerChat();input.focus();
   document.getElementById('chat-status').textContent='Sugestão preenchida. Revise o pedido e pressione Enviar.';
 }
 function limparChatLocal() { conversasChat = []; renderChat(); document.getElementById('chat-status').textContent = 'Conversa limpa.'; }
@@ -167,6 +183,7 @@ function inicializarGeracao() {
   document.getElementById('gerador-uf').innerHTML = '<option value="">Todas as UFs</option>' + Object.keys(DDD_POR_UF).sort().map(uf => `<option>${uf}</option>`).join('');
   atualizarTiposLotePorAmbiente();
   atualizarChatPorAmbiente();
+  inicializarComposerChat();
   document.getElementById('lote-tipo').addEventListener('change',()=>atualizarOpcoesDocumento(selectedGeneratorId || currentType,document.getElementById('lote-tipo').value));
   atualizarOpcoesDocumento(currentType,document.getElementById('lote-tipo').value);
   renderChat();

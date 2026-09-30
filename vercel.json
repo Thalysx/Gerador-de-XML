@@ -5,7 +5,7 @@
   "functions": {
     "api/*.js": {
       "maxDuration": 120,
-      "includeFiles": "{index.html,assets/js/**}"
+      "includeFiles": "{index.html,assets/js/**,schemas/fiscal/**}"
     }
   }
 }

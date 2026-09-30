@@ -1,0 +1,48 @@
+{
+  "formatVersion": 1,
+  "retrievedAt": "2026-09-30",
+  "documents": {
+    "nfe:4.00": {
+      "document": "NF-e",
+      "model": "55",
+      "version": "4.00",
+      "package": "PL_010f_v1.04",
+      "publishedAt": "2026-08-31",
+      "sourceUrl": "https://www.nfe.fazenda.gov.br/portal/exibirArquivo.aspx?conteudo=8ITFuBLltXs=",
+      "packageSha256": "b8589490a58a09a993a80e6ac4d7ed10f20892061ecfc56719337098d4b95998",
+      "entries": {
+        "NFe": "nfe/4.00/nfe_v4.00.xsd",
+        "nfeProc": "nfe/4.00/procNFe_v4.00.xsd"
+      },
+      "files": [
+        { "path": "nfe/4.00/DFeTiposBasicos_v1.00.xsd", "sha256": "173577a4e3a9dc1d0deced85b89b955b6064bb5a4ae5a96f6727d2da8a694d09", "official": true },
+        { "path": "nfe/4.00/leiauteNFe_v4.00.xsd", "sha256": "2bace939973916d54184ff3e2740041a932de5d79772f3363504504160f22542", "official": true },
+        { "path": "nfe/4.00/nfe_v4.00.xsd", "sha256": "adce3646c13ceb54922ec3142fc1dc45bd4fb839ac35ad583e86c733c07d27df", "official": true },
+        { "path": "nfe/4.00/procNFe_v4.00.xsd", "sha256": "691dd71e42518651971dfcb8a4a2e8c599a41fb1bff1c33d45dfffa78a1e1d02", "official": false, "derivedFrom": "TNfeProc in leiauteNFe_v4.00.xsd" },
+        { "path": "nfe/4.00/tiposBasico_v4.00.xsd", "sha256": "772619c85723e598840667ca66e7298a250442df47eeb94b397d2a333ce62047", "official": true },
+        { "path": "nfe/4.00/xmldsig-core-schema_v1.01.xsd", "sha256": "f56744a5f51c03f027de13f39f869307091781a9ef1d91b1ebe14719ce28e1ac", "official": true }
+      ]
+    },
+    "cte:4.00": {
+      "document": "CT-e",
+      "model": "57",
+      "version": "4.00",
+      "package": "PL_CTe_400_NT2026.002_RTC_1.01_corr",
+      "publishedAt": "2026-08-24",
+      "sourceUrl": "https://www.cte.fazenda.gov.br/portal/exibirArquivo.aspx?conteudo=qGIe20MvWf4=",
+      "packageSha256": "e17c24816d3483e472e5c0750e99fa40d6c17af38f50c153fb79b66cfd79942c",
+      "entries": {
+        "CTe": "cte/4.00/cte_v4.00.xsd",
+        "cteProc": "cte/4.00/procCTe_v4.00.xsd"
+      },
+      "files": [
+        { "path": "cte/4.00/cteTiposBasico_v4.00.xsd", "sha256": "4b7dc4bea836bb5e9d8c6fac68f07748895f560e2a5d13d666c6ca2261c96014", "official": true },
+        { "path": "cte/4.00/cte_v4.00.xsd", "sha256": "39d01ef5afad8a44102871561c92dfc58be9fdd761f320ceb1f8cb136ebff320", "official": true },
+        { "path": "cte/4.00/DFeTiposBasicos_v1.00.xsd", "sha256": "6ed32efbfc9eaeb61ad580e2c4574f6ab5ab42776d00f8f88db40d02d932cc3d", "official": true },
+        { "path": "cte/4.00/procCTe_v4.00.xsd", "sha256": "f8646422637971c40589d78a02e11aa23f5c472a77ad68955809c9ccea61fe5b", "official": true },
+        { "path": "cte/4.00/tiposGeralCTe_v4.00.xsd", "sha256": "c34c9e5a120f528c17153d2224e0452819c50c708d8d96b77dfc505c4f76c201", "official": true },
+        { "path": "cte/4.00/xmldsig-core-schema_v1.01.xsd", "sha256": "8ce2a385b593c85acf09cb03521f9e730dad2b2e6a5d02cc6f5b688ca94ce230", "official": true }
+      ]
+    }
+  }
+}

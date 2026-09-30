@@ -78,7 +78,7 @@ function recuperarPedidoIa(i) {
     document.getElementById('chat-status').textContent='Há uma mensagem em edição. Envie ou apague esse texto antes de recuperar a anterior.';
     input.focus();return;
   }
-  input.value=mensagem.pedido;input.focus();
+  input.value=mensagem.pedido;ajustarAlturaComposerChat();input.focus();
   document.getElementById('chat-status').textContent='Mensagem recuperada. Confira o texto e o anexo antes de enviar novamente.';
 }
 
@@ -101,6 +101,7 @@ async function enviarChatIa() {
   requisicaoIa = controller;
   const mensagem = {pedido,anexo:!!xml,fase:'conectando'}; mensagensIa.push(mensagem);
   input.value = '';
+  ajustarAlturaComposerChat();
   document.getElementById('chat-enviar').disabled = true;
   document.getElementById('chat-enviar').textContent = 'Conectando…';
   document.getElementById('chat-ia-mensagens').setAttribute('aria-busy','true');
@@ -168,7 +169,7 @@ async function limparChat() {
   document.getElementById('chat-anexo-arquivo').value = '';
   anexoIaNome='';
   atualizarStatusAnexoIa();
-  limparChatLocal(); renderChatIa(); atualizarModoChat();
+  ajustarAlturaComposerChat(); limparChatLocal(); renderChatIa(); atualizarModoChat();
 }
 function baixarArtefatoIa(i,j,formato) {
   const a=mensagensIa[i]?.artifacts[j]; if (!a) return;

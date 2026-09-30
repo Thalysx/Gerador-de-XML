@@ -171,11 +171,15 @@ function usarCadastroNoXml() {
     mostrarStatus('Preencha a empresa e um CNPJ numérico consistente. O modelo XML atual usa chave numérica.', 'error'); return;
   }
   const papel = document.getElementById('cad-xml-papel').value;
-  const ids = { emitente:['Emitente_Nota','nfe_nomeEmit'], destinatario:['nfe_cnpjDest','nfe_nomeDest'], transportadora:['nfe_cnpjTransp','nfe_nomeTransp'] }[papel];
-  document.getElementById(ids[0]).value = cnpj;
-  document.getElementById(ids[1]).value = nome;
+  const papeis = { emitente:['Emitente_Nota','nfe_nomeEmit'], destinatario:['nfe_cnpjDest','nfe_nomeDest'], transportadora:['nfe_cnpjTransp','nfe_nomeTransp'] };
+  const selecionados = papel === 'todos' ? Object.values(papeis) : [papeis[papel]];
+  if (!selecionados[0]) { mostrarStatus('Selecione um papel válido para a empresa.', 'error'); return; }
+  for (const ids of selecionados) {
+    document.getElementById(ids[0]).value = cnpj;
+    document.getElementById(ids[1]).value = nome;
+  }
   gerarXMLComCampos(); salvarEstadoXml(); switchTab('xml');
-  mostrarStatus('Empresa do cadastro aplicada à NF-e.');
+  mostrarStatus(papel === 'todos' ? 'Empresa do cadastro aplicada a todos os papéis da NF-e.' : 'Empresa do cadastro aplicada à NF-e.');
 }
 
 function mapearXml(doc) {

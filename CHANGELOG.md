@@ -4,8 +4,15 @@ Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O hist
 
 ## [3.0.0-alpha.3] — 2026-09-30
 
+### Roadmap
+
+- O refinamento consolidado de interface passa a ser FUTURE 12.
+- A validação fiscal foi deslocada para FUTURE 13A/13B/13C, preservando o escopo planejado.
+
 ### Alterado
 
+- Validação XML ganhou XSD first-party para NF-e/CT-e 4.00, schemas oficiais imutáveis, origem dos achados e estados separados de cobertura; CT-e 3.00 permanece local e explicitamente não suportado por XSD.
+- O seletor de papel da empresa na NF-e pode aplicar o cadastro a Emitente, Destinatário e Transportadora de uma vez.
 - Resultados compostos usam uma lista semântica de labels e valores em duas colunas no desktop e uma no mobile, sem aparência de terminal.
 - Chaves técnicas recebem labels amigáveis, enquanto campos extensos usam toda a largura disponível.
 - Texto livre mantém fallback convencional; a projeção visual não altera o texto integral usado por Copiar, Baixar TXT, detalhes e histórico.
@@ -35,7 +42,7 @@ Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O hist
 
 - 105 testes automatizados, build público, auditoria das oito telas em 200% e matriz de 128 combinações aprovados.
 - Auditoria agora reprova foco fora da viewport e navegação vertical sem rolagem acessível.
-- Roadmap consolidado registrado e change da fase 12A aberta somente para especificação da validação fiscal local.
+- Roadmap consolidado registrado e change da fase 13A aberta somente para especificação da validação fiscal local.
 
 ## [3.0.0-alpha.1] — 2026-09-25
 

@@ -5,10 +5,10 @@ const lucide = require('lucide');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'assets', 'js', 'lucide.min.js');
 const names = [
-  'anchor','archive','badge-check','badge-dollar-sign','box','boxes','braces','building-2','calculator','check',
+  'anchor','archive','arrow-up','badge-check','badge-dollar-sign','box','boxes','braces','building-2','calculator','check',
   'circle-help','circle-plus','code-2','contact','copy','download','eye','file-code-2','file-text','file-up','files',
   'fingerprint','globe-2','key-round','layout-grid','lock','lock-open','map-pin','message-circle-more',
-  'message-square-text','moon','package','panel-left-close','panel-left-open','panels-top-left','phone','plus',
+  'message-square-plus','message-square-text','moon','package','panel-left-close','panel-left-open','panels-top-left','phone','plus',
   'refresh-cw','search','shield-check','sliders-horizontal','sparkles','square-pen','sun','trash-2','truck','user',
   'workflow','x'
 ];

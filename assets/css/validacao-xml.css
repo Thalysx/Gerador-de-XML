@@ -19,6 +19,8 @@
 .validacao-resumo-grade div { min-width: 0; }
 .validacao-resumo-grade dt { color: var(--text-muted); font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
 .validacao-resumo-grade dd { margin: .18rem 0 0; overflow-wrap: anywhere; font: .78rem/1.5 'DM Mono',monospace; }
+.validacao-cobertura { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .45rem .75rem; margin-top: 1rem; padding: .75rem; border: 1px solid var(--border); border-radius: var(--ui-radius-sm); background: var(--surface-2); font-size: .75rem; }
+.validacao-cobertura span { overflow-wrap: anywhere; }
 .validacao-intencional { display: grid; gap: .25rem; margin: .75rem 0; padding: .75rem; border-left: 3px solid var(--error); border-radius: 0 var(--ui-radius-sm) var(--ui-radius-sm) 0; background: var(--surface-2); color: var(--text); }
 .validacao-intencional span { font-size: .8rem; line-height: 1.5; }
 .validacao-lista { list-style: none; padding: 0; margin: 1rem 0; }
@@ -40,7 +42,7 @@
 .validacao-layout { grid-template-columns: 1fr; }
 }
 @media (max-width:560px) {
-.validacao-resumo-grade,.validacao-negativa-campos { grid-template-columns: 1fr; }
+.validacao-resumo-grade,.validacao-negativa-campos,.validacao-cobertura { grid-template-columns: 1fr; }
 .validacao-abas { overflow-x: auto; }
 }
 .validacao-dropzone-inner { display: flex; width: 100%; min-height: 190px; padding: 28px; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border: 0; background: transparent; text-align: center; }

@@ -6,7 +6,7 @@ A matriz final capturou **128 combinações**: oito painéis, temas claro/escuro
 
 O auditor de 200% aprovou as oito telas e a busca `Ctrl+K` nos dois ambientes. O diálogo permaneceu nomeado, focado e contido no viewport; a consulta “transportadora” retornou zero resultados em Geradores Gerais e um em QA Portuário. A árvore nativa não encontrou controles ou marcos sem nome, e não houve foco invisível, foco sem contorno, exceção, erro ou aviso de console. A captura do próprio auditor também passou a disparar o evento real de troca de ambiente para impedir evidência visual com projeções desatualizadas.
 
-Os ativos locais medidos totalizaram 336.163 bytes de JavaScript e 107.872 bytes de CSS, com 1.420 nós DOM na amostra. O subset Lucide contém 49 ícones e 11.467 bytes, 97,4% menor que o runtime completo anterior de 433.756 bytes. A suíte terminou com **104 testes aprovados** e o build público foi concluído. A verificação auditiva manual com leitor de tela real continua sendo uma etapa humana separada.
+Os ativos locais medidos totalizaram 336.839 bytes de JavaScript e 107.081 bytes de CSS, com 1.415 nós DOM na amostra. O subset Lucide contém 49 ícones e 11.467 bytes, 97,4% menor que o runtime completo anterior de 433.756 bytes. A suíte terminou com **105 testes aprovados** e o build público foi concluído. A auditoria percorreu 231 passos de teclado sem foco invisível e a matriz de 128 combinações não encontrou falhas. A verificação auditiva manual com leitor de tela real continua sendo uma etapa humana separada.
 
 ---
 

@@ -277,6 +277,8 @@ function gerarXMLComCampos(forcarNovosDadosAleatorios = false) {
 }
 
 function finalizarEGerarXML(xml, hierarquia, forcarNovosDadosAleatorios = false) {
+  const selecionado = document.getElementById('xml-form-tipo').value;
+  const tiposAtivos = selecionado === 'ambos' ? ['nfe', 'cte'] : [selecionado];
   const dadosDinamicos = obterDadosAleatoriosNFe(forcarNovosDadosAleatorios);
   let chaves = {};
   chaves.cte  = { chave: xml.cte.querySelector(hierarquia.cte.chave).textContent.trim() };
@@ -302,12 +304,11 @@ function finalizarEGerarXML(xml, hierarquia, forcarNovosDadosAleatorios = false)
   document.getElementById('cte_chave').value = chaves.cte.chave;
   document.getElementById('nfe_chave').value = chaves.nfes[0].chave;
   apagaDownloadLinks();
-  const arquivos = [
-    geraDownloadLinks(xml.cte, "CTe"),
-    geraDownloadLinks(xml.nfeList[0], "NFe"),
-  ];
+  const arquivos = tiposAtivos.map(tipo => tipo === 'cte'
+    ? geraDownloadLinks(xml.cte, 'CTe')
+    : geraDownloadLinks(xml.nfeList[0], 'NFe'));
   atualizarStatusDownloadsXml(arquivos);
-  guardarXmlsGerados(xml);
+  guardarXmlsGerados(xml, tiposAtivos);
 }
 
 function xmlStringModelToObject() {

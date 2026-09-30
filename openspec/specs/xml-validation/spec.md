@@ -30,9 +30,15 @@ When available, a finding SHALL show tag, value, issue, XML path and syntax line
 ### Requirement: XML result views
 The interface SHALL provide Summary, XML and Validation views. Summary MAY show key, issuer, CNPJ, recipient, products, total value, gross weight and other relevant fields.
 
+For CT-e, recipient fields in the Summary SHALL come from `dest`; `rem` SHALL remain the sender and MUST NOT be labeled as the recipient.
+
 #### Scenario: Review an XML result
 - **WHEN** the user changes between result views
 - **THEN** summary, source XML and validation information remain associated with the same document
+
+#### Scenario: Summarize a CT-e with different sender and recipient
+- **WHEN** a CT-e contains distinct `rem` and `dest` parties
+- **THEN** the recipient name and document shown in Summary come from `dest`
 
 ### Requirement: XML upload interaction
 The XML validation upload area SHALL be operable across its full visible target, support keyboard selection and drag-and-drop, identify selected or dropped filenames, and permit replacement through the same interaction. Selection and drop SHALL use the same validation limits and local processing path.

@@ -17,6 +17,9 @@ function switchTab(tab, btn) {
     p.classList.toggle('active', selected);
     p.hidden = !selected;
   });
+  const scrollRoot = document.scrollingElement || document.documentElement;
+  scrollRoot.scrollTop = 0;
+  document.body.scrollTop = 0;
   atualizarCabecalhoLayout();
   if (window.matchMedia?.('(max-width: 700px)').matches) {
     definirSidebar(true, false);
@@ -141,6 +144,7 @@ document.querySelectorAll('.tab-btn').forEach(tab=>{
   const item=navigationById(tab.id.replace('tab-btn-',''));
   const rotulo=item.label;
   tab.setAttribute('aria-label',rotulo); tab.title=rotulo;
+  tab.dataset.tooltip=rotulo;
   const texto=document.createElement('span'); texto.textContent=rotulo;
   tab.replaceChildren();
   tab.insertAdjacentHTML('beforeend',`<i data-lucide="${item.icon}" aria-hidden="true"></i>`);
@@ -159,6 +163,10 @@ function definirSidebar(collapsed, persist = true) {
   button.dataset.tooltip = label;
   button.innerHTML = `<i data-lucide="${collapsed ? 'panel-left-open' : 'panel-left-close'}" aria-hidden="true"></i>`;
   renderLucideIcons(button);
+  document.querySelectorAll('.workspace-nav [data-tooltip]').forEach(elemento => {
+    if (collapsed) elemento.title = elemento.dataset.tooltip;
+    else elemento.removeAttribute('title');
+  });
   if (persist) storageSet('thegenerator:sidebar-collapsed', collapsed);
 }
 definirSidebar(storageGet('thegenerator:sidebar-collapsed', window.matchMedia?.('(max-width: 700px)').matches || false) === true, false);
@@ -167,8 +175,4 @@ document.addEventListener('keydown', event => {
   if(event.key === 'Escape' && !document.body.classList.contains('sidebar-collapsed')) {
     definirSidebar(true); document.getElementById('sidebar-collapse-btn').focus();
   }
-});
-document.querySelectorAll('.tab-btn').forEach(tab => {
-  tab.dataset.tooltip=tab.getAttribute('aria-label');
-  tab.removeAttribute('title');
 });

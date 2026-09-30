@@ -257,7 +257,10 @@ async function main() {
               if(!el.checkVisibility?.({visibilityProperty:true}))return false;
               const r=el.getBoundingClientRect();return r.width>0&&(r.left < -1 || r.right>innerWidth+1);
             }).map(el=>el.id||el.textContent.trim().slice(0,40));
-            return {panel:'${panel}',dark:${dark},collapsed:${collapsed},width:${width},scrollWidth:document.documentElement.scrollWidth,outside};
+            const nav=document.getElementById('workspace-navigation');
+            const navStyle=getComputedStyle(nav);
+            const inaccessibleNavigation=nav.scrollHeight>nav.clientHeight+1&&!['auto','scroll'].includes(navStyle.overflowY);
+            return {panel:'${panel}',dark:${dark},collapsed:${collapsed},width:${width},scrollWidth:document.documentElement.scrollWidth,outside,inaccessibleNavigation};
           })()`));
           await dormir(250);
           const shot = await cdp.enviar('Page.captureScreenshot',{format:'png'});
@@ -281,7 +284,7 @@ async function main() {
       const collapsed=await cdp.enviar('Page.captureScreenshot',{format:'png'});
       writeFileSync(path.join(baseline,'sidebar-collapsed.png'),Buffer.from(collapsed.data,'base64'));
       writeFileSync(path.join(baseline,'measurements.json'),JSON.stringify({measurements,phone},null,2));
-      const failures=measurements.filter(m=>m.scrollWidth>m.width+1||m.outside.length);
+      const failures=measurements.filter(m=>m.scrollWidth>m.width+1||m.outside.length||m.inaccessibleNavigation);
       console.log(JSON.stringify({captures:measurements.length,failures,phone},null,2));
       if(process.env.AUDIT_MATRIX&&failures.length)process.exitCode=1;
       return;
@@ -305,12 +308,15 @@ async function main() {
           const r = el.getBoundingClientRect();
           return r.left < -1 || r.right > innerWidth + 1;
         }).map(el => ({ elemento: nome(el), esquerda: Math.round(el.getBoundingClientRect().left), direita: Math.round(el.getBoundingClientRect().right) })).slice(0,10);
+        const nav=document.getElementById('workspace-navigation');
+        const navStyle=getComputedStyle(nav);
         resultados.push({
           painel: id,
           larguraViewport: innerWidth,
           larguraDocumento: document.documentElement.scrollWidth,
           rolagemHorizontal: document.documentElement.scrollWidth > innerWidth + 1,
-          elementosExcedentes: excedentes
+          elementosExcedentes: excedentes,
+          navegacaoVerticalInacessivel: nav.scrollHeight > nav.clientHeight + 1 && !['auto','scroll'].includes(navStyle.overflowY)
         });
       }
       switchTab('home', document.getElementById('tab-btn-home'));
@@ -397,7 +403,10 @@ async function main() {
           const el = document.activeElement;
           const label = el.getAttribute('aria-label') || document.querySelector('label[for="' + CSS.escape(el.id || '') + '"]')?.innerText?.trim() || el.innerText?.trim().replace(/\\s+/g,' ').slice(0,100) || el.id || el.tagName;
           const s = getComputedStyle(el);
-          return { tag: el.tagName, id: el.id, nome: label, visivel: !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length), contorno: s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0 };
+          const r=el.getBoundingClientRect();
+          const renderizado=!!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+          const naViewport=r.width>0&&r.height>0&&r.bottom>0&&r.right>0&&r.top<innerHeight&&r.left<innerWidth;
+          return { tag: el.tagName, id: el.id, nome: label, visivel: renderizado&&naViewport, contorno: s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0 };
         })()`);
         if (foco.tag === 'BODY' && itens.length) break;
         const assinatura = `${foco.tag}|${foco.id}|${foco.nome}`;
@@ -529,6 +538,7 @@ async function main() {
         nomesVazios,
         focosInvisiveis,
         focosSemContorno,
+        invisiveis: percursos.flatMap(({ painel, itens }) => itens.filter(item => item.tag !== 'BODY' && !item.visivel).map(item => ({ painel, ...item }))),
         semContorno: controlesPercorridos.filter(item => !item.contorno),
         primeiros: percursos[0].itens.slice(0,12)
       },
@@ -538,7 +548,7 @@ async function main() {
       performance: performanceAudit,
       marca,
       movimentoReduzidoAplicado: movimento,
-      aprovado: paineis.every(item => !item.rolagemHorizontal && item.elementosExcedentes.length === 0) && acessibilidade.every(item => item.controlesSemNome.length === 0 && item.marcosSemNome.length === 0) && nomesVazios === 0 && focosInvisiveis === 0 && focosSemContorno === 0 && movimento && commandPalette.named && commandPalette.focused && commandPalette.generalCount === 0 && commandPalette.portCount > 0 && commandPalette.insideViewport && Object.values(consoleAudit).every(items => items.length === 0) && performanceAudit.lucideBytes <= 20000 && performanceAudit.localJavaScriptBytes <= 600000 && performanceAudit.localCssBytes <= 150000 && performanceAudit.domNodes <= 2500 && marca.nome === 'FUTURE G' && marca.assinatura === 'Geradores Gerais' && marca.imagemCarregada && marca.imagemVisivel && marca.favicon === 'assets/brand/favicon.svg'
+      aprovado: paineis.every(item => !item.rolagemHorizontal && item.elementosExcedentes.length === 0 && !item.navegacaoVerticalInacessivel) && acessibilidade.every(item => item.controlesSemNome.length === 0 && item.marcosSemNome.length === 0) && nomesVazios === 0 && focosInvisiveis === 0 && focosSemContorno === 0 && movimento && commandPalette.named && commandPalette.focused && commandPalette.generalCount === 0 && commandPalette.portCount > 0 && commandPalette.insideViewport && Object.values(consoleAudit).every(items => items.length === 0) && performanceAudit.lucideBytes <= 20000 && performanceAudit.localJavaScriptBytes <= 600000 && performanceAudit.localCssBytes <= 150000 && performanceAudit.domNodes <= 2500 && marca.nome === 'FUTURE G' && marca.assinatura === 'Geradores Gerais' && marca.imagemCarregada && marca.imagemVisivel && marca.favicon === 'assets/brand/favicon.svg'
     };
     writeFileSync(path.join(SAIDA, 'auditoria-200.json'), JSON.stringify(resultado, null, 2));
     console.log(JSON.stringify(resultado, null, 2));

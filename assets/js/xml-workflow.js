@@ -1,8 +1,14 @@
 let xmlsGerados = {};
 let cenariosXml = [];
 
-function guardarXmlsGerados(xml) {
-  xmlsGerados = { nfe: xml.nfeList[0].cloneNode(true), cte: xml.cte.cloneNode(true) };
+function guardarXmlsGerados(xml, tipos = [document.getElementById('xml-form-tipo')?.value]) {
+  const documentos = {
+    nfe: xml.nfeList[0],
+    cte: xml.cte
+  };
+  xmlsGerados = Object.fromEntries(tipos
+    .filter(tipo => documentos[tipo])
+    .map(tipo => [tipo, documentos[tipo].cloneNode(true)]));
   atualizarPreviaXml();
 }
 

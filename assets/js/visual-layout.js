@@ -37,6 +37,7 @@ function atualizarInterfacePorAmbiente() {
     : 'Adicione códigos de 8 dígitos para usar nos geradores de carga do QA Portuário.';
   document.getElementById('ncm-manual-aplicar').hidden=!general;
   selecionarFormularioXml();
+  if (typeof xmlsGerados !== 'undefined' && Object.keys(xmlsGerados).length) gerarXMLComCampos();
 }
 window.addEventListener('futureg:environmentchange',atualizarInterfacePorAmbiente);
 atualizarInterfacePorAmbiente();

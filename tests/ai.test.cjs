@@ -70,6 +70,18 @@ test('servidor restringe origem, corpo, métodos e arquivos internos',async()=>{
   try {
     for(const file of ['/scripts/ai.cjs','/.env','/package.json','/tests/projeto.test.cjs']) assert.equal((await fetch(base+file)).status,404);
     assert.equal((await fetch(base+'/')).status,200);
+    for(const [file,type] of [
+      ['/site.webmanifest','application/manifest+json'],
+      ['/assets/brand/favicon.svg','image/svg+xml'],
+      ['/assets/brand/future-g-mark.svg','image/svg+xml'],
+      ['/assets/brand/future-g-mark-general.svg','image/svg+xml'],
+      ['/assets/brand/favicon-192.png','image/png']
+    ]) {
+      const asset=await fetch(base+file);
+      assert.equal(asset.status,200,file);
+      assert.match(asset.headers.get('content-type') || '',new RegExp('^'+type.replace(/[+]/g,'\\+')),file);
+      assert.ok((await asset.arrayBuffer()).byteLength>0,file);
+    }
     assert.equal((await (await fetch(base+'/api/status')).json()).configured,false);
     assert.equal((await fetch(base+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).status,403);
     const headers={'Content-Type':'application/json',Origin:base};

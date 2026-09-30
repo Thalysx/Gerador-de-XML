@@ -35,7 +35,7 @@ function extrairResumoXml(doc, tipo, inf) {
   if (!doc?.documentElement || !inf) return { tipo };
   const tag = tipo === 'NF-e' ? 'NFe' : 'CTe';
   const emitente = inf.querySelector('emit');
-  const destinatario = inf.querySelector(tipo === 'NF-e' ? 'dest' : 'dest, rem');
+  const destinatario = inf.querySelector('dest');
   const documento = bloco => bloco?.querySelector('CNPJ, CPF')?.textContent.trim() || '';
   const itens = tipo === 'NF-e' ? inf.querySelectorAll('det').length : inf.querySelectorAll('infDoc > infNFe, infDoc > infOutros').length;
   return {

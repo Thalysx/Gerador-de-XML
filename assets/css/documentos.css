@@ -10,14 +10,14 @@
 .output-box.is-updated { animation: resultUpdate var(--motion-fast) ease-out; }
 @keyframes resultUpdate { from { opacity: .72; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 .output-label { font-size: .875rem; color: var(--text-dim); letter-spacing: 0.07em; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; line-height: 1.6; }
-.output-value { white-space:pre-wrap; font-family: 'DM Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; color: var(--text); word-break: break-all; min-height: 32px; line-height: 1.2; }
+.output-value { white-space:pre-wrap; font-family: 'DM Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; color: var(--text); overflow-wrap: anywhere; word-break: normal; min-height: 32px; line-height: 1.2; }
 .output-value:focus { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
 .output-value.placeholder { font-size: 13.5px; font-weight: 400; color: var(--text-dim); font-family: 'Inter', sans-serif; font-style: italic; }
 .copy-row { display: flex; align-items: center; gap: 10px; margin-top: 13px; flex-wrap: wrap; }
 .copied-msg { font-size: 12px; color: var(--success); opacity: 0; transition: opacity 0.3s; font-weight: 500; }
 #copy-btn.is-copied { border-color: var(--accent-green-border); background: var(--accent-green-bg); color: var(--success); }
 #new-doc-btn.is-activating :is(i, svg) { animation: regenerateFeedback var(--motion-fast) ease-out; }
-@keyframes regenerateFeedback { to { transform: rotate(180deg); } }
+@keyframes regenerateFeedback { to { transform: rotate(360deg); } }
 .placa-preview { display: none; justify-content: center; margin-bottom: 1rem; }
 .placa-preview.visible { display: flex; animation: panelFadeIn var(--motion-base) ease-out both; }
 .placa-wrapper { position: relative; width: 230px; }

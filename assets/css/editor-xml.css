@@ -28,7 +28,7 @@
 .editor-field-label { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .editor-field-input { font-family: 'DM Mono', monospace; font-size: 12px; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); width: 100%; transition: border-color 100ms; }
 .editor-field-input:focus { outline: none; border-color: var(--accent); }
-.editor-field-remove { background: none; border: 1px solid var(--border); border-radius: 5px; padding: 2px 7px; font-size: 11px; cursor: pointer; color: var(--text-dim); white-space: nowrap; transition: all 100ms; }
+.editor-field-remove { background: none; border: 1px solid var(--border); border-radius: 5px; padding: 2px 7px; font-size: 11px; cursor: pointer; color: var(--text-dim); white-space: nowrap; transition: background-color var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast); }
 .editor-field-remove:hover { border-color: #e53e3e; color: #e53e3e; }
 .editor-field-remove.confirmar { border-color: #e53e3e; color: #e53e3e; }
 @media (max-width: 860px) {

@@ -2,6 +2,23 @@
 
 Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O histórico detalhado anterior à adoção deste arquivo permanece em `ATUALIZACOES.md`.
 
+## [3.0.0-alpha.2] — 2026-09-30
+
+### Corrigido
+
+- Servidor local entrega manifesto, favicon, SVGs e PNGs públicos com MIME correto sem expor arquivos internos.
+- Geradores Gerais mantém somente NF-e e QA Portuário somente CT-e em prévia, download, validação e estado atual.
+- Resumo de CT-e identifica `dest` como destinatário, sem usar o remetente.
+- Troca de painel retorna ao topo e a sidebar permanece inteiramente alcançível em viewport baixa ou zoom de 200%.
+- Valores longos quebram somente quando necessário, sem fragmentar identificadores arbitrariamente.
+- Link de salto, transições, tooltips e redução de movimento foram harmonizados.
+
+### Verificação
+
+- 105 testes automatizados, build público, auditoria das oito telas em 200% e matriz de 128 combinações aprovados.
+- Auditoria agora reprova foco fora da viewport e navegação vertical sem rolagem acessível.
+- Roadmap consolidado registrado e change da fase 12A aberta somente para especificação da validação fiscal local.
+
 ## [3.0.0-alpha.1] — 2026-09-25
 
 ### Adicionado

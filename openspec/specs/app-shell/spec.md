@@ -15,3 +15,13 @@ Both environments SHALL use a shared application shell and design system while a
 
 ### Responsive behavior
 The shell SHALL support desktop, notebook, tablet and mobile. On mobile the sidebar MAY become a drawer; content MUST not overflow horizontally without an intentional responsive solution.
+
+The fixed navigation SHALL remain vertically reachable when its content exceeds the viewport, including browser zoom and short desktop windows.
+
+### Public development assets
+The local development server SHALL serve the public HTML, CSS, JavaScript, web manifest and referenced SVG/PNG brand assets with appropriate content types while rejecting backend scripts, tests, configuration and secrets.
+
+#### Scenario: Load the application locally
+- **WHEN** the application opens through the local development server
+- **THEN** the manifest, favicon and active environment brand mark load successfully
+- **AND** non-public project files remain unavailable

@@ -492,9 +492,13 @@ test('HTML e todos os scripts inicializam; IDs únicos e arquivos locais existen
     const ids = [...w.document.querySelectorAll('[id]')].map(el => el.id);
     assert.equal(new Set(ids).size, ids.length);
     for (const file of scripts) assert.ok(fs.existsSync(path.join(root, file)));
-    assert.equal(w.document.querySelectorAll('#downloadArea a').length, 2);
+    assert.equal(w.document.querySelectorAll('#downloadArea a').length, 1);
     assert.match(w.document.getElementById('xml-preview-code').textContent, /nfeProc/);
-    assert.equal(run('Object.keys(xmlsGerados).length'), 2);
+    assert.equal(run('JSON.stringify(Object.keys(xmlsGerados))'), '["nfe"]');
+    w.definirAmbiente('port');
+    assert.equal(w.document.querySelectorAll('#downloadArea a').length, 1);
+    assert.match(w.document.getElementById('xml-preview-code').textContent, /cteProc/);
+    assert.equal(run('JSON.stringify(Object.keys(xmlsGerados))'), '["cte"]');
   } finally { dom.window.close(); }
 });
 
@@ -1357,12 +1361,14 @@ test('validação XML: sintaxe, namespaces, protocolo, arquivos e cópia no edit
     assert.equal(w.analisarXml('<outro/>').status,'nao-suportado');
     assert.equal(w.analisarXml('<!DOCTYPE a [<!ENTITY x "abc">]><a>&x;</a>').status,'erro');
     for (const tipo of ['nfe','cte']) {
+      w.definirAmbiente(tipo === 'nfe' ? 'general' : 'port');
       const xml=run(`serializarXml(xmlsGerados.${tipo})`);
       assert.equal(w.analisarXml(xml).status,'sem-erros');
       const prefixed=xml.replace(/(<\/?)([A-Za-z][\w]*)(?=[\s/>])/g,'$1f:$2').replace('xmlns=','xmlns:f=');
       assert.equal(w.analisarXml(prefixed).status,'sem-erros');
       assert.equal(w.analisarXml(xml.replace(/<CNPJ>\d+<\/CNPJ>/,'<CNPJ>00000000000000</CNPJ>')).status,'erro');
     }
+    w.definirAmbiente('general');
     const xml=run('serializarXml(xmlsGerados.nfe)');
     assert.equal(w.analisarXml(xml.replace(/<chNFe>\d+<\/chNFe>/,'<chNFe>1</chNFe>')).status,'erro');
     assert.equal(w.analisarXml(xml.replace(/<vUnCom>[^<]+<\/vUnCom>/,'<vUnCom/>')).status,'erro');
@@ -1377,6 +1383,20 @@ test('validação XML: sintaxe, namespaces, protocolo, arquivos e cópia no edit
     w.limparValidacaoXml();
     assert.equal(run('relatoriosXml.length'),0);
   } finally { dom.window.close(); }
+});
+
+test('resumo do CT-e identifica o destinatário sem confundi-lo com o remetente', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.definirAmbiente('port');
+    const resumo=JSON.parse(run("JSON.stringify(analisarXml(serializarXml(xmlsGerados.cte)).resumo)"));
+    const destinatario=run("xmlsGerados.cte.querySelector('infCte > dest > xNome').textContent.trim()");
+    const documentoDestinatario=run("xmlsGerados.cte.querySelector('infCte > dest > CNPJ, infCte > dest > CPF').textContent.trim()");
+    const remetente=run("xmlsGerados.cte.querySelector('infCte > rem > xNome').textContent.trim()");
+    assert.equal(resumo.destinatario,destinatario);
+    assert.equal(resumo.documentoDestinatario,documentoDestinatario);
+    assert.notEqual(resumo.destinatario,remetente);
+  } finally {dom.window.close();}
 });
 
 test('fase 7 estrutura achados e mantém Resumo, XML e Validação no mesmo relatório', async () => {
@@ -1446,6 +1466,7 @@ test('fase 7 gera variantes XML negativas sem alterar o documento-base', async (
 test('fase 7 exporta relatório estruturado sem incluir o XML-fonte', async () => {
   const {dom,w,run}=await abrir();
   try {
+    w.definirAmbiente('port');
     w.document.getElementById('validacao-texto').value=run('serializarXml(xmlsGerados.cte)');
     w.validarXmlColado();
     run('var downloadRelatorio; baixarTexto=(nome,texto,mime)=>downloadRelatorio={nome,texto,mime};');
@@ -1589,7 +1610,9 @@ test('consistência XML: chave, município, preço unitário e conversão KG/TON
   const { dom, run, w } = await abrir();
   try {
     assert.equal(run('verificarConsistenciaXml(xmlsGerados.nfe).length'), 0);
+    w.definirAmbiente('port');
     assert.equal(run('verificarConsistenciaXml(xmlsGerados.cte).length'), 0);
+    w.definirAmbiente('general');
     const peso = run("xmlsGerados.nfe.querySelector('vol > pesoL').textContent");
     w.setUnidade(0, 'TON'); w.gerarXMLComCampos();
     assert.equal(run("xmlsGerados.nfe.querySelector('vol > pesoL').textContent"), peso);

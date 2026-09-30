@@ -1,3 +1,14 @@
+# FUTURE G 3.0.0-alpha.2 — 30/09/2026
+
+- Corrigidos os ativos de marca e PWA no servidor local, mantendo a lista pública restrita.
+- NF-e e CT-e passaram a existir no estado, prévia e downloads somente em seus ambientes correspondentes.
+- O resumo de CT-e usa o destinatário real; testes distinguem explicitamente `dest` de `rem`.
+- Trocas de tela retornam ao topo e a sidebar possui rolagem vertical em zoom ou viewport baixa.
+- Movimento, transições, tooltips, link de salto e quebra de identificadores receberam correções de robustez.
+- A auditoria passou a verificar foco dentro da viewport e alcance vertical da navegação.
+- A suíte passou a 105 testes; build, auditoria de 200% e matriz de 128 combinações foram aprovados.
+- O roadmap consolidado foi incorporado e a fase 12A foi aberta apenas para especificar validação fiscal local determinística.
+
 # FUTURE G 3.0.0-alpha.1 — 25/09/2026
 
 - A fonte ativa foi consolidada em um único repositório; cópias antigas passaram a ser preservadas por tags e pacotes versionados para Releases.

@@ -52,3 +52,14 @@ If the current workspace or selected generator is unavailable in the newly selec
 #### Scenario: Switch while using a shared destination
 - **WHEN** the active destination is supported by both environments
 - **THEN** the destination remains active and its available generator choices are refreshed for the selected environment
+
+### Requirement: Reachable navigation and predictable panel position
+Every visible navigation destination SHALL remain reachable by keyboard and scrolling when the sidebar is taller than the viewport. Opening another primary panel SHALL place the document at the top instead of preserving an unrelated scroll position from the previous panel.
+
+#### Scenario: Navigate in a short viewport
+- **WHEN** zoom or viewport height makes the sidebar taller than the visible area
+- **THEN** the user can scroll the navigation to every available destination
+
+#### Scenario: Change primary panel after scrolling
+- **WHEN** the user scrolls one panel and opens another primary panel
+- **THEN** the new panel starts at the top of the document

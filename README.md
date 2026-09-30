@@ -10,6 +10,8 @@ Bootstrap e fontes continuam sendo carregados de serviços externos e precisam d
 
 Veja [ATUALIZACOES.md](ATUALIZACOES.md) para as funcionalidades adicionadas, exemplos do chat, verificações e limitações. O andamento da revisão de interface está em [PLANO-VISUAL.md](PLANO-VISUAL.md), com as evidências em [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md) e o roteiro final em [CHECKLIST-LEITOR-TELA.md](CHECKLIST-LEITOR-TELA.md).
 
+O estado das fases concluídas e a preparação incremental da validação fiscal estão em [Roadmap consolidado](docs/roadmap-consolidado.md).
+
 A identidade, os arquivos de logo, as regras de uso e a triagem pública do nome estão documentados em [IDENTIDADE.md](IDENTIDADE.md).
 
 ## Organização
@@ -129,4 +131,4 @@ O ambiente **QA Portuário** possui uma biblioteca de dez fluxos operacionais, d
 
 Os testes automatizados da IA usam um provedor simulado para manter a suíte determinística e verificam a execução real das ferramentas. A integração pública com Groq também foi exercitada no site implantado.
 
-Os 104 testes abrangem geração geral e portuária, ficha seletiva do Cadastro Geral, crachá sintético, cenários operacionais coerentes, busca global, dashboards, privacidade da atividade, home, favoritos e recentes, atalhos, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API, relatórios XML estruturados, variantes negativas e o estado de processamento do upload. A atualização também foi conferida em Chromium em escala de 200% e numa matriz de 128 combinações de painel, tema, largura e sidebar. Consulte [FUTURE G 11 — Polimento e robustez](docs/future-g-11-polish.md).
+Os 105 testes abrangem geração geral e portuária, ficha seletiva do Cadastro Geral, crachá sintético, cenários operacionais coerentes, busca global, dashboards, privacidade da atividade, home, favoritos e recentes, atalhos, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API, ativos PWA no servidor local, relatórios XML estruturados, destinatário de CT-e, variantes negativas e o estado de processamento do upload. A atualização também foi conferida em Chromium em escala de 200% e numa matriz de 128 combinações de painel, tema, largura e sidebar. Consulte [FUTURE G 11 — Polimento e robustez](docs/future-g-11-polish.md).

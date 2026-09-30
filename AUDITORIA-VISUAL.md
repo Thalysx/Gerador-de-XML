@@ -1,5 +1,15 @@
 # Evidências de acessibilidade e revisão visual
 
+## Resultado estruturado e rolagem — 30/09/2026
+
+O painel compartilhado de Dados cadastrais foi conferido com um perfil de Motorista de 16 campos. Em 1440 px, o resultado usa duas colunas; em 360 px, passa a uma coluna sem rolagem horizontal. Labels técnicos como `categoria_cnh`, `validade_cnh`, `funcao` e `endereco` não aparecem na projeção visual, e o painel não contém `pre`, `code` ou `textarea` para os dados estruturados. Copiar, Baixar TXT e Gerar novamente permaneceram ativos.
+
+O conteúdo longo possui rolagem interna. Depois de posicioná-lo em 264 px e gerar outro Motorista, o painel retornou a 0 no frame posterior à renderização, enquanto o documento permaneceu em 80 px. A auditoria também confirmou que cópia, download, resize e atualização sem novo resultado não reposicionam a leitura.
+
+As capturas `future-g-structured-result-desktop.png` e `future-g-structured-result-mobile.png` foram inspecionadas. O auditor percorreu 231 passos de teclado, sem foco invisível, controle sem nome, falta de contorno, exceção, erro ou aviso de console. A suíte passou com **107 testes**, o build foi aprovado e a matriz de **128 combinações** terminou sem falhas.
+
+---
+
 ## Polimento e robustez — 28/09/2026
 
 A matriz final capturou **128 combinações**: oito painéis, temas claro/escuro, larguras CSS de 360, 768, 1280 e 1920 px e sidebar expandida/recolhida. A primeira rodada encontrou somente o botão “Gerar XML intencionalmente inválido” excedendo o viewport de 360 px; após permitir quebra de linha, a repetição terminou sem falhas ou overflow horizontal.

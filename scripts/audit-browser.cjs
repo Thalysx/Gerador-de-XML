@@ -470,6 +470,56 @@ async function main() {
         titulo: document.title
       };
     })()`);
+    const resultadoEstruturado = await avaliar(cdp, `(async () => {
+      definirAmbiente('port',false);
+      openGenerator('motorista');
+      generateSelectedDocument();
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      const output=document.getElementById('output-val');
+      const grid=output.querySelector('.structured-result-grid');
+      const labels=[...output.querySelectorAll('dt')].map(item=>item.textContent.trim());
+      const scrollRoot=document.scrollingElement||document.documentElement;
+      scrollRoot.scrollTop=80;
+      const paginaAntes=scrollRoot.scrollTop;
+      output.scrollTop=output.scrollHeight;
+      const painelAntes=output.scrollTop;
+      generateSelectedDocument();
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      const gridAtual=output.querySelector('.structured-result-grid');
+      const estilo=getComputedStyle(gridAtual);
+      return {
+        estruturado:output.classList.contains('is-structured'),
+        campos:output.querySelectorAll('.structured-result-field').length,
+        colunasDesktop:estilo.gridTemplateColumns.trim().split(/\\s+/).filter(Boolean).length,
+        labels,
+        identificadoresTecnicosVisiveis:/categoria_cnh|validade_cnh|funcao:|endereco:/i.test(output.innerText),
+        blocosTecnicos:output.querySelectorAll('pre,code,textarea').length,
+        painelRolavel:output.scrollHeight>output.clientHeight,
+        painelAntes,
+        painelDepois:output.scrollTop,
+        paginaAntes,
+        paginaDepois:scrollRoot.scrollTop,
+        acoesAtivas:['new-doc-btn','copy-btn','download-doc-btn'].every(id=>!document.getElementById(id).disabled)
+      };
+    })()`);
+    await avaliar(cdp, `document.getElementById('docs-output-box').scrollIntoView({block:'center'})`);
+    const capturaResultadoEstruturado = await cdp.enviar('Page.captureScreenshot', { format:'png', captureBeyondViewport:false });
+    writeFileSync(path.join(SAIDA,'future-g-structured-result-desktop.png'),Buffer.from(capturaResultadoEstruturado.data,'base64'));
+    await cdp.enviar('Emulation.setDeviceMetricsOverride', {width:360,height:800,deviceScaleFactor:1,mobile:false,screenWidth:360,screenHeight:800});
+    const resultadoEstruturadoMobile = await avaliar(cdp, `new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const output=document.getElementById('output-val');
+      const grid=output.querySelector('.structured-result-grid');
+      output.scrollIntoView({block:'start'});
+      const rect=output.getBoundingClientRect();
+      resolve({
+        colunas:getComputedStyle(grid).gridTemplateColumns.trim().split(/\\s+/).filter(Boolean).length,
+        dentroDaViewport:rect.left>=-1&&rect.right<=innerWidth+1,
+        rolagemHorizontal:document.documentElement.scrollWidth>innerWidth+1
+      });
+    })))`);
+    const capturaResultadoEstruturadoMobile = await cdp.enviar('Page.captureScreenshot', { format:'png', captureBeyondViewport:false });
+    writeFileSync(path.join(SAIDA,'future-g-structured-result-mobile.png'),Buffer.from(capturaResultadoEstruturadoMobile.data,'base64'));
+    await cdp.enviar('Emulation.setDeviceMetricsOverride', {width:1440,height:900,deviceScaleFactor:1,mobile:false,screenWidth:1440,screenHeight:900});
     await dormir(100);
     const capturaMarcaEscura = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     writeFileSync(path.join(SAIDA, 'future-g-home-dark.png'), Buffer.from(capturaMarcaEscura.data, 'base64'));
@@ -547,8 +597,10 @@ async function main() {
       console: consoleAudit,
       performance: performanceAudit,
       marca,
+      resultadoEstruturado,
+      resultadoEstruturadoMobile,
       movimentoReduzidoAplicado: movimento,
-      aprovado: paineis.every(item => !item.rolagemHorizontal && item.elementosExcedentes.length === 0 && !item.navegacaoVerticalInacessivel) && acessibilidade.every(item => item.controlesSemNome.length === 0 && item.marcosSemNome.length === 0) && nomesVazios === 0 && focosInvisiveis === 0 && focosSemContorno === 0 && movimento && commandPalette.named && commandPalette.focused && commandPalette.generalCount === 0 && commandPalette.portCount > 0 && commandPalette.insideViewport && Object.values(consoleAudit).every(items => items.length === 0) && performanceAudit.lucideBytes <= 20000 && performanceAudit.localJavaScriptBytes <= 600000 && performanceAudit.localCssBytes <= 150000 && performanceAudit.domNodes <= 2500 && marca.nome === 'FUTURE G' && marca.assinatura === 'Geradores Gerais' && marca.imagemCarregada && marca.imagemVisivel && marca.favicon === 'assets/brand/favicon.svg'
+      aprovado: paineis.every(item => !item.rolagemHorizontal && item.elementosExcedentes.length === 0 && !item.navegacaoVerticalInacessivel) && acessibilidade.every(item => item.controlesSemNome.length === 0 && item.marcosSemNome.length === 0) && nomesVazios === 0 && focosInvisiveis === 0 && focosSemContorno === 0 && movimento && commandPalette.named && commandPalette.focused && commandPalette.generalCount === 0 && commandPalette.portCount > 0 && commandPalette.insideViewport && Object.values(consoleAudit).every(items => items.length === 0) && performanceAudit.lucideBytes <= 20000 && performanceAudit.localJavaScriptBytes <= 600000 && performanceAudit.localCssBytes <= 150000 && performanceAudit.domNodes <= 2500 && marca.nome === 'FUTURE G' && marca.assinatura === 'Geradores Gerais' && marca.imagemCarregada && marca.imagemVisivel && marca.favicon === 'assets/brand/favicon.svg' && resultadoEstruturado.estruturado && resultadoEstruturado.campos >= 10 && resultadoEstruturado.colunasDesktop === 2 && ['Categoria CNH','Validade da CNH','Função','Endereço'].every(label=>resultadoEstruturado.labels.includes(label)) && !resultadoEstruturado.identificadoresTecnicosVisiveis && resultadoEstruturado.blocosTecnicos === 0 && resultadoEstruturado.painelRolavel && resultadoEstruturado.painelAntes > 0 && resultadoEstruturado.painelDepois === 0 && resultadoEstruturado.paginaAntes === resultadoEstruturado.paginaDepois && resultadoEstruturado.acoesAtivas && resultadoEstruturadoMobile.colunas === 1 && resultadoEstruturadoMobile.dentroDaViewport && !resultadoEstruturadoMobile.rolagemHorizontal
     };
     writeFileSync(path.join(SAIDA, 'auditoria-200.json'), JSON.stringify(resultado, null, 2));
     console.log(JSON.stringify(resultado, null, 2));

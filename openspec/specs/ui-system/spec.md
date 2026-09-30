@@ -24,6 +24,33 @@ The result area SHALL be present before and after generation.
 - THEN an empty state is visible
 - AND the main layout remains stable.
 
+### Requirement: Structured result presentation
+The shared document result area SHALL present structured generator data as semantic field labels and values instead of a raw code, terminal, JSON or TXT block. Technical keys SHALL receive user-facing labels, larger fields MAY span the full result width, and the layout SHALL use two columns when space permits and one column on narrow screens without horizontal overflow. Text that cannot be safely interpreted as structured data SHALL retain a conventional text fallback.
+
+The visual projection SHALL remain independent from the complete text representation used by Copy, TXT download, details and history restoration.
+
+#### Scenario: Render a structured port profile
+- GIVEN a port generator returns an object with profile, identity and access fields
+- WHEN the result is rendered
+- THEN each property is exposed as a semantic label and value
+- AND internal underscores are not displayed
+- AND the complete textual representation remains available to result actions.
+
+#### Scenario: Render free text
+- GIVEN a result does not contain a safely identifiable structured object or field pairs
+- WHEN the result is rendered
+- THEN it remains readable as conventional text
+- AND arbitrary content is not coerced into fields.
+
+### Requirement: Result scroll lifecycle
+When a new document result replaces the previous result, the internal result content SHALL return to its top after the new DOM has rendered. Reading, manual scrolling, selecting, copying, downloading, resizing or changing only the presentation of the current value SHALL NOT continuously reset that position. If the result has its own scroll container, this reset SHALL NOT move the document scroll.
+
+#### Scenario: Generate two long results
+- GIVEN the user has scrolled inside a long result
+- WHEN another result is generated
+- THEN the internal result position returns to zero after rendering
+- AND the page position remains unchanged.
+
 ### Requirement: Search placement
 Search SHALL appear before the generator collection and SHALL respect the active environment.
 

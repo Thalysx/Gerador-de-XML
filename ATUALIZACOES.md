@@ -1,3 +1,10 @@
+# FUTURE G 3.0.0-alpha.3 — 30/09/2026
+
+- O painel Resultado passou a apresentar objetos estruturados em grid semântico, com labels amigáveis e fallback seguro para texto livre.
+- A interface mantém o texto completo separado da projeção visual para Copiar, Baixar TXT, detalhes e restauração do histórico.
+- Resultados extensos possuem rolagem interna; cada nova geração retorna ao topo após renderizar sem deslocar a página.
+- A suíte passou a 107 testes; build, auditoria real do resultado e matriz de 128 combinações foram aprovados.
+
 # FUTURE G 3.0.0-alpha.2 — 30/09/2026
 
 - Corrigidos os ativos de marca e PWA no servidor local, mantendo a lista pública restrita.

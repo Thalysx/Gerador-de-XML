@@ -2,6 +2,24 @@
 
 Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O histórico detalhado anterior à adoção deste arquivo permanece em `ATUALIZACOES.md`.
 
+## [3.0.0-alpha.3] — 2026-09-30
+
+### Alterado
+
+- Resultados compostos usam uma lista semântica de labels e valores em duas colunas no desktop e uma no mobile, sem aparência de terminal.
+- Chaves técnicas recebem labels amigáveis, enquanto campos extensos usam toda a largura disponível.
+- Texto livre mantém fallback convencional; a projeção visual não altera o texto integral usado por Copiar, Baixar TXT, detalhes e histórico.
+
+### Corrigido
+
+- Um novo resultado restaura o topo do próprio painel somente depois da renderização, sem mover a página ou interferir com leitura, cópia, download, resize e rolagem manual.
+
+### Verificação
+
+- 107 testes automatizados e build aprovados.
+- Auditoria em Chrome aprovou 16 campos do Motorista, labels amigáveis, duas/uma colunas, scroll interno `264 → 0`, página `80 → 80`, console limpo e 231 passos de teclado.
+- Matriz responsiva de 128 combinações aprovada sem falhas.
+
 ## [3.0.0-alpha.2] — 2026-09-30
 
 ### Corrigido

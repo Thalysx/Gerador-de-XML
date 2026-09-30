@@ -20,7 +20,17 @@
 
 ## Parte 3 — Validação final
 
-- [ ] Validar desktop, mobile, claro, escuro e movimento reduzido
-- [ ] Executar suíte completa, build e auditoria pertinente
-- [ ] Atualizar documentação e especificação canônica
-- [ ] Arquivar a change somente após todos os critérios de aceite
+- [x] Validar desktop, mobile, claro, escuro e movimento reduzido
+- [x] Executar suíte completa, build e auditoria pertinente
+- [x] Atualizar documentação e especificação canônica
+- [x] Arquivar a change somente após todos os critérios de aceite
+
+## Completion report
+
+- [x] 107 testes automatizados aprovados
+- [x] Build público aprovado
+- [x] Auditoria do resultado estruturado aprovada em desktop e mobile
+- [x] Scroll interno confirmado de 264 para 0 sem alterar o scroll 80 da página
+- [x] 231 passos de teclado sem falhas de foco, nome ou contorno
+- [x] Console sem exceções, erros ou avisos
+- [x] Matriz de 128 combinações sem falhas

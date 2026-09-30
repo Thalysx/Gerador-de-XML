@@ -37,3 +37,15 @@ Não tratar os itens restantes como concluídos com base apenas no sucesso da ge
 Executar `node scripts/verify-redis.cjs .env.netlify` na pasta `projeto`. O arquivo informado deve conter URL e token REST atuais. O script não imprime credenciais e não chama a IA. Usa um prefixo aleatório exclusivo, verifica oito reservas concorrentes para uma cota de dois pedidos, TTL configurado, posse do bloqueio, persistência, isolamento, expiração abreviada na chave de teste e preservação da cota após exclusão. Remove apenas as chaves criadas pelo teste.
 
 Tentativa em 20/09/2026: interrompida antes de acessar Redis, pois `.env` e `.env.netlify` locais não continham URL/token preenchidos. Portanto, esse teste ainda não constitui evidência de aprovação em Redis real.
+
+## Publicação 3.0.0-alpha.3
+
+Em 30/09/2026, a versão `3.0.0-alpha.3` foi publicada no Netlify pelo deploy `6abc9919df467f40fcba949b`.
+
+- URL de produção: https://gerador-all.netlify.app
+- Preview validado antes da promoção: https://6abc987b86f11b1e0bbb75ec--gerador-all.netlify.app
+- A página inicial, `site.webmanifest`, `favicon.svg`, `future-g-mark-general.svg` e `/api/status` responderam HTTP 200.
+- `/api/status` confirmou `configured: true`, provedor `groq` e retenção de 30 minutos.
+- A validação em Chrome confirmou o painel `RESULTADO · MOTORISTA` como uma lista semântica de 16 campos com rótulos amigáveis, sem apresentar identificadores técnicos crus.
+- Os controles para gerar novamente, copiar, baixar TXT, ver detalhes e limpar ficaram disponíveis após a geração.
+- A suíte local passou com 107 testes, o build foi concluído, a auditoria principal do Chromium foi aprovada e a matriz responsiva concluiu 128 capturas sem falhas.

@@ -172,7 +172,7 @@ function gerarDocumentoComposto(tipo) {
   const texto=textoRegistro(registro);
   currentType=tipo;currentValue=texto;nomeAtualDoc='';
   document.getElementById('nome-box').classList.remove('visible');
-  setOutput(texto);esconderPlaca();esconderConteiner();
+  setOutput(texto,registro.valor);esconderPlaca();esconderConteiner();
   registrarHistoricoDocs(registro.rotulo,texto,{estrutura:registro.valor});
 }
 

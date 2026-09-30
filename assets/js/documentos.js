@@ -2,6 +2,7 @@
 //  CPF / CNPJ / PLACA / CONTÊINER / NOMES
 // ══════════════════════════════════════════════════════════
 let currentValue = '', currentType = '', nomeAtualDoc = '';
+let currentResultText = '', currentResultData = null;
 let placaTipoAtual = 'mercosul';
 
 
@@ -505,12 +506,90 @@ function gerarCPFComToggle()              { gerarCPF(document.getElementById('to
 function gerarCNPJComToggle()             { gerarCNPJ(document.getElementById('toggle-mascara').checked); }
 function gerarCNPJAlfanumericoComToggle() { gerarCNPJAlfanumerico(document.getElementById('toggle-mascara').checked); }
 
-function setOutput(val) {
+const RESULT_FIELD_LABELS = Object.freeze({
+  acesso:'Acesso',atividade:'Atividade',booking:'Booking',capacidade_carga_kg:'Capacidade de carga (kg)',
+  capacidade_tracao_kg:'Capacidade de tração (kg)',categoria_cnh:'Categoria CNH',cep:'CEP',cnh:'CNH',
+  cnpj:'CNPJ',contato:'Contato',cpf:'CPF',cracha:'Crachá',descricao:'Descrição',documento:'Documento',
+  email:'E-mail',empresa:'Empresa',empresa_origem:'Empresa de origem',endereco:'Endereço',entidade:'Entidade',
+  funcao:'Função',ie:'IE',matricula:'Matrícula',ncm:'NCM',nome:'Nome',nome_fantasia:'Nome fantasia',
+  observacoes:'Observações',perfil:'Perfil',placa:'Placa',razao_social:'Razão social',recinto_teste:'Recinto de teste',
+  renavam:'RENAVAM',rg:'RG',status:'Status',telefone:'Telefone',treinamento_nr29:'Treinamento NR-29',
+  validade_acesso:'Validade do acesso',validade_cnh:'Validade da CNH'
+});
+const RESULT_FIELD_ACRONYMS = Object.freeze({cnh:'CNH',cnpj:'CNPJ',cpf:'CPF',ie:'IE',imo:'IMO',kg:'kg',ncm:'NCM',nr29:'NR-29',renavam:'RENAVAM',rg:'RG',uf:'UF'});
+const RESULT_FULL_WIDTH_FIELDS = new Set(['acesso','descricao','email','empresa','empresa_origem','endereco','motivo','nome_fantasia','observacoes','razao_social']);
+
+function normalizarChaveResultado(chave) {
+  return String(chave || '').trim().toLowerCase().replace(/[\s-]+/g,'_');
+}
+
+function rotuloCampoResultado(chave) {
+  const normalizada=normalizarChaveResultado(chave);
+  if(RESULT_FIELD_LABELS[normalizada])return RESULT_FIELD_LABELS[normalizada];
+  return normalizada.split('_').filter(Boolean).map((parte,indice)=>{
+    const sigla=RESULT_FIELD_ACRONYMS[parte];
+    if(sigla)return sigla;
+    return indice===0?parte.charAt(0).toUpperCase()+parte.slice(1):parte;
+  }).join(' ');
+}
+
+function interpretarResultadoEstruturado(texto) {
+  const linhas=String(texto || '').split(/\r?\n/).map(linha=>linha.trim()).filter(Boolean);
+  if(linhas.length<2)return null;
+  const entradas=[];
+  const chaves=new Set();
+  for(const linha of linhas) {
+    const correspondencia=linha.match(/^([\p{L}][\p{L}\p{N}_ -]*):\s*(.+)$/u);
+    if(!correspondencia)return null;
+    const chave=normalizarChaveResultado(correspondencia[1]);
+    if(!chave||chaves.has(chave))return null;
+    chaves.add(chave);
+    entradas.push([chave,correspondencia[2]]);
+  }
+  return Object.fromEntries(entradas);
+}
+
+function normalizarDadosResultado(dados,texto) {
+  if(dados && typeof dados==='object' && !Array.isArray(dados)) {
+    const entradas=Object.entries(dados).filter(([,valor])=>valor!==undefined&&valor!==null);
+    return entradas.length?Object.fromEntries(entradas):null;
+  }
+  return interpretarResultadoEstruturado(texto);
+}
+
+function renderizarResultadoDocumento(elemento,texto,dados) {
+  const estrutura=normalizarDadosResultado(dados,texto);
+  currentResultData=estrutura;
+  elemento.replaceChildren();
+  elemento.classList.toggle('is-structured',!!estrutura);
+  if(!estrutura) {
+    elemento.textContent=texto;
+    return;
+  }
+  const lista=document.createElement('dl');
+  lista.className='structured-result-grid';
+  for(const [chave,valorOriginal] of Object.entries(estrutura)) {
+    const valor=typeof valorOriginal==='object'?JSON.stringify(valorOriginal):String(valorOriginal);
+    const campo=document.createElement('div');
+    campo.className='structured-result-field';
+    if(RESULT_FULL_WIDTH_FIELDS.has(normalizarChaveResultado(chave))||valor.length>80)campo.classList.add('is-wide');
+    const termo=document.createElement('dt');
+    termo.textContent=rotuloCampoResultado(chave);
+    const descricao=document.createElement('dd');
+    descricao.textContent=valor;
+    campo.append(termo,descricao);
+    lista.append(campo);
+  }
+  elemento.append(lista);
+}
+
+function setOutput(val, structuredData = null) {
   if (typeof esconderCracha === 'function') esconderCracha();
   const box = document.getElementById('docs-output-box');
   if (box) box.style.display = '';
   const el = document.getElementById('output-val');
-  el.textContent = val;
+  currentResultText=String(val ?? '');
+  renderizarResultadoDocumento(el,currentResultText,structuredData);
   el.classList.remove('placeholder');
   box.classList.remove('is-updated');
   void box.offsetWidth;
@@ -543,7 +622,7 @@ function atualizarOpcoesDocumento(tipoAtual = currentType, tipoLote = document.g
 }
 
 function copyResult() {
-  const val = document.getElementById('output-val').textContent;
+  const val = currentResultText || document.getElementById('output-val').textContent;
   copiarTexto(val, 'Resultado copiado.').then((ok) => {
     if (!ok) return;
     const button = document.getElementById('copy-btn');
@@ -565,7 +644,7 @@ function copyResult() {
 }
 
 function baixarResultadoDocumento() {
-  const valorExibido = document.getElementById('output-val').textContent;
+  const valorExibido = currentResultText || document.getElementById('output-val').textContent;
   if (!currentType || !valorExibido) { mostrarStatus('Gere um documento antes de baixar.', 'error'); return; }
   if (currentType === 'cracha' && typeof formatarCrachaTexto === 'function' && crachaAtual) {
     baixarTexto('cracha-sintetico.txt', formatarCrachaTexto(crachaAtual));

@@ -47,11 +47,11 @@ function generateSelectedDocument() {
   finally {button.disabled=false;result.setAttribute('aria-busy','false');}
 }
 function clearDocumentResult() {
-  currentType='';currentValue='';nomeAtualDoc='';
+  currentType='';currentValue='';nomeAtualDoc='';currentResultText='';currentResultData=null;
   if(typeof limparCrachaAtual==='function')limparCrachaAtual();
   document.getElementById('docs-result-label').textContent='Resultado';
   esconderPlaca();esconderConteiner();document.getElementById('nome-box').classList.remove('visible');
-  const output=document.getElementById('output-val');output.textContent='Escolha um gerador. Opções simples geram o resultado imediatamente.';output.classList.add('placeholder');
+  const output=document.getElementById('output-val');output.replaceChildren('Escolha um gerador. Opções simples geram o resultado imediatamente.');output.classList.add('placeholder');output.classList.remove('is-structured');
   for(const id of ['new-doc-btn','copy-btn','download-doc-btn','docs-expand-btn','docs-clear-btn'])document.getElementById(id).disabled=true;
   document.getElementById('docs-result-details').hidden=true;
   document.getElementById('docs-result-details').textContent='';
@@ -65,7 +65,7 @@ function toggleDocumentDetails() {
   const open=details.hidden;
   details.textContent=currentType==='cracha'&&typeof formatarCrachaTexto==='function'
     ? formatarCrachaTexto(crachaAtual)
-    : [getNomeDocsAtual(),document.getElementById('output-val').textContent].filter(Boolean).join('\n');
+    : [getNomeDocsAtual(),currentResultText || document.getElementById('output-val').textContent].filter(Boolean).join('\n');
   details.hidden=!open;button.setAttribute('aria-expanded',String(open));button.textContent=open?'Ocultar detalhes':'Ver detalhes';
 }
 function renderDocumentGenerators() {

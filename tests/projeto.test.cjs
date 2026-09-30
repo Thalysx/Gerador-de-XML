@@ -934,12 +934,59 @@ test('fase 8 integra todos os novos geradores portuários ao registry, lote e ex
     }
     w.openGenerator('transportadora');w.generateSelectedDocument();
     assert.equal(run('currentType'),'transportadora');
-    assert.match(w.document.getElementById('output-val').textContent,/entidade: Transportadora/);
+    const output=w.document.getElementById('output-val');
+    assert.equal(output.classList.contains('is-structured'),true);
+    assert.equal(output.querySelector('.structured-result-field dt').textContent,'Entidade');
+    assert.equal(output.querySelector('.structured-result-field dd').textContent,'Transportadora');
+    assert.doesNotMatch(output.textContent,/entidade:/i);
     const pedidos=ids.map(tipo=>({tipo,quantidade:2}));
     run(`var lotePortuario=gerarLoteDados(${JSON.stringify(pedidos)});var downloadsPortuarios=[];baixarTexto=(nome,texto,mime)=>downloadsPortuarios.push({nome,texto,mime});exportarRegistros(lotePortuario,'json');exportarRegistros(lotePortuario,'csv')`);
     assert.equal(run('lotePortuario.length'),ids.length*2);
     assert.equal(JSON.parse(run('downloadsPortuarios[0].texto')).length,ids.length*2);
     assert.equal(run("downloadsPortuarios[1].texto.split('\\r\\n').length"),ids.length*2+1);
+  } finally {dom.window.close();}
+});
+
+test('painel Resultado apresenta estrutura amigável e preserva texto para ações e histórico', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.definirAmbiente('port');
+    w.openGenerator('motorista');
+    w.generateSelectedDocument();
+    const output=w.document.getElementById('output-val');
+    const labels=[...output.querySelectorAll('.structured-result-field dt')].map(item=>item.textContent);
+    assert.equal(output.classList.contains('is-structured'),true);
+    assert.ok(labels.includes('Perfil'));
+    assert.ok(labels.includes('Categoria CNH'));
+    assert.ok(labels.includes('Validade da CNH'));
+    assert.ok(labels.includes('Função'));
+    assert.ok(labels.includes('Endereço'));
+    assert.equal(output.querySelectorAll('pre,code,textarea').length,0);
+    assert.equal([...output.querySelectorAll('.structured-result-field')].find(item=>item.querySelector('dt').textContent==='Acesso').classList.contains('is-wide'),true);
+    assert.doesNotMatch(output.textContent,/categoria_cnh|validade_cnh|funcao:|endereco:/i);
+
+    const textoOriginal=run('currentResultText');
+    assert.match(textoOriginal,/^perfil: Motorista/m);
+    assert.match(textoOriginal,/^categoria_cnh: [CDE]$/m);
+    let copiado='';
+    Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async valor=>{copiado=valor;}},configurable:true});
+    w.copyResult();
+    await new Promise(resolve=>w.setTimeout(resolve,0));
+    assert.equal(copiado,textoOriginal);
+
+    run('var downloadResultadoEstruturado; baixarTexto=(nome,texto,mime)=>downloadResultadoEstruturado={nome,texto,mime};');
+    w.baixarResultadoDocumento();
+    assert.match(run('downloadResultadoEstruturado.texto'),/^Motorista: perfil: Motorista/m);
+
+    assert.ok(run('historicoDocsList[0].dados.estrutura.categoria_cnh'));
+    w.clearDocumentResult();
+    w.restaurarHistoricoDocs(0);
+    assert.equal(output.classList.contains('is-structured'),true);
+    assert.ok([...output.querySelectorAll('dt')].some(item=>item.textContent==='Categoria CNH'));
+
+    run("currentType='nome';currentValue='Texto livre';setOutput('Texto livre sem pares seguros')");
+    assert.equal(output.classList.contains('is-structured'),false);
+    assert.equal(output.textContent,'Texto livre sem pares seguros');
   } finally {dom.window.close();}
 });
 

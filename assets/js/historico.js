@@ -111,14 +111,14 @@ function restaurarHistoricoDocs(idx) {
   nomeAtualDoc = '';
 
   if (d.tipo === 'Contêiner e lacre') {
-    setOutput(d.valor);
+    setOutput(d.valor,d.estrutura);
     document.getElementById('container-num-val').textContent = d.conteiner || '';
     document.getElementById('lacre-val').textContent = d.lacre || '';
     document.getElementById('container-num-card').style.display = '';
     document.getElementById('lacre-card').style.display = 'block';
     document.getElementById('container-preview').classList.add('visible');
   } else {
-    setOutput(d.valor);
+    setOutput(d.valor,d.estrutura);
     if (d.currentType === 'cracha' && d.cracha && typeof mostrarCracha === 'function') mostrarCracha(d.cracha);
     if (d.tipo === 'Placa') mostrarPlacaVisual(d.valor, d.subtipo || 'mercosul');
     if (d.tipo === 'Contêiner') {

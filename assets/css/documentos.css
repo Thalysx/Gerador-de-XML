@@ -10,9 +10,9 @@
 .output-box.is-updated { animation: resultUpdate var(--motion-fast) ease-out; }
 @keyframes resultUpdate { from { opacity: .72; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 .output-label { font-size: .875rem; color: var(--text-dim); letter-spacing: 0.07em; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; line-height: 1.6; }
-.output-value { white-space:pre-wrap; font-family: 'DM Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; color: var(--text); overflow-wrap: anywhere; word-break: normal; min-height: 32px; line-height: 1.2; }
+.output-value { max-height:min(56dvh,560px); padding-right:4px; overflow-y:auto; overscroll-behavior:contain; scrollbar-gutter:stable; white-space:pre-wrap; font-family: 'DM Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; color: var(--text); overflow-wrap: anywhere; word-break: normal; min-height: 32px; line-height: 1.2; }
 .output-value:focus { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
-.output-value.placeholder { font-size: 13.5px; font-weight: 400; color: var(--text-dim); font-family: 'Inter', sans-serif; font-style: italic; }
+.output-value.placeholder { max-height:none; padding-right:0; overflow:visible; font-size: 13.5px; font-weight: 400; color: var(--text-dim); font-family: 'Inter', sans-serif; font-style: italic; }
 .output-value.is-structured { white-space:normal; font-family:'Inter',sans-serif; font-size:1rem; font-weight:400; line-height:1.5; }
 .structured-result-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 24px; margin:0; }
 .structured-result-field { min-width:0; padding:12px 0; border-top:1px solid var(--border); }
@@ -90,7 +90,7 @@
 .input-row input:focus { border-color: var(--border-strong); }
 .docs-history-wrapper { margin-top: 1.5rem; padding: 0; overflow: hidden; }
 @media (max-width: 600px) {
-.output-value { font-size: 19px; }
+.output-value { max-height:min(52dvh,480px); font-size:19px; }
 .structured-result-grid { grid-template-columns:minmax(0,1fr); }
 .structured-result-field.is-wide { grid-column:auto; }
 }

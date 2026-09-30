@@ -3,6 +3,7 @@
 // ══════════════════════════════════════════════════════════
 let currentValue = '', currentType = '', nomeAtualDoc = '';
 let currentResultText = '', currentResultData = null;
+let currentResultRenderToken = 0;
 let placaTipoAtual = 'mercosul';
 
 
@@ -480,20 +481,20 @@ function gerarNovoDocumentoAtual() {
 function removerMascara() {
   if (!currentValue || ['placa','conteiner','conteiner-lacre','lacre','email','nome','empresa','nome-fantasia','endereco','renavam','booking'].includes(currentType)) return;
   currentValue = currentValue.replace(/[^0-9A-Za-z]/g, '');
-  setOutput(currentValue);
+  setOutput(currentValue,null,{resetScroll:false});
 }
 
 function aplicarMascara() {
   if (!currentValue || ['placa','conteiner','conteiner-lacre','lacre','email','nome','empresa','nome-fantasia','endereco','renavam','booking'].includes(currentType)) return;
   const raw = currentValue.replace(/[^0-9A-Za-z]/g, '');
-  if (currentType === 'rg') { setOutput(formatRG(raw)); return; }
-  if (currentType === 'cep') { setOutput(formatCEP(raw)); return; }
-  if (currentType === 'due') { setOutput(raw.slice(0,-1) + '-' + raw.slice(-1)); return; }
-  if (currentType === 'cpf' && raw.length === 11) setOutput(`${raw.slice(0,3)}.${raw.slice(3,6)}.${raw.slice(6,9)}-${raw.slice(9)}`);
-  else if ((currentType === 'cnpj' || currentType === 'cnpj-alfa') && raw.length === 14) setOutput(formatCNPJ(raw));
+  if (currentType === 'rg') { setOutput(formatRG(raw),null,{resetScroll:false}); return; }
+  if (currentType === 'cep') { setOutput(formatCEP(raw),null,{resetScroll:false}); return; }
+  if (currentType === 'due') { setOutput(raw.slice(0,-1) + '-' + raw.slice(-1),null,{resetScroll:false}); return; }
+  if (currentType === 'cpf' && raw.length === 11) setOutput(`${raw.slice(0,3)}.${raw.slice(3,6)}.${raw.slice(6,9)}-${raw.slice(9)}`,null,{resetScroll:false});
+  else if ((currentType === 'cnpj' || currentType === 'cnpj-alfa') && raw.length === 14) setOutput(formatCNPJ(raw),null,{resetScroll:false});
   else if (currentType === 'telefone') {
-    if (raw.length === 10 || raw.length === 11) { const ddd = raw.slice(0,2), num = raw.slice(2); setOutput(`(${ddd}) ${num.slice(0,-4)}-${num.slice(-4)}`); }
-    else setOutput(raw);
+    if (raw.length === 10 || raw.length === 11) { const ddd = raw.slice(0,2), num = raw.slice(2); setOutput(`(${ddd}) ${num.slice(0,-4)}-${num.slice(-4)}`,null,{resetScroll:false}); }
+    else setOutput(raw,null,{resetScroll:false});
   }
 }
 
@@ -583,13 +584,24 @@ function renderizarResultadoDocumento(elemento,texto,dados) {
   elemento.append(lista);
 }
 
-function setOutput(val, structuredData = null) {
+function restaurarTopoResultadoAposRender(elemento,renderToken) {
+  const aplicar=()=>{
+    if(renderToken!==currentResultRenderToken)return;
+    elemento.scrollTop=0;
+  };
+  if(typeof requestAnimationFrame==='function')requestAnimationFrame(aplicar);
+  else setTimeout(aplicar,0);
+}
+
+function setOutput(val, structuredData = null, options = {}) {
+  const renderToken=++currentResultRenderToken;
   if (typeof esconderCracha === 'function') esconderCracha();
   const box = document.getElementById('docs-output-box');
   if (box) box.style.display = '';
   const el = document.getElementById('output-val');
   currentResultText=String(val ?? '');
   renderizarResultadoDocumento(el,currentResultText,structuredData);
+  if(options.resetScroll!==false)restaurarTopoResultadoAposRender(el,renderToken);
   el.classList.remove('placeholder');
   box.classList.remove('is-updated');
   void box.offsetWidth;

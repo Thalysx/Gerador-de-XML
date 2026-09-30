@@ -990,6 +990,41 @@ test('painel Resultado apresenta estrutura amigável e preserva texto para açõ
   } finally {dom.window.close();}
 });
 
+test('painel Resultado restaura somente seu scroll quando recebe um novo resultado', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.definirAmbiente('port');
+    w.openGenerator('motorista');
+    const output=w.document.getElementById('output-val');
+    const scrollRaiz=w.document.scrollingElement || w.document.documentElement;
+    scrollRaiz.scrollTop=320;
+    output.scrollTop=240;
+    w.generateSelectedDocument();
+    assert.equal(output.scrollTop,240);
+    await new Promise(resolve=>w.requestAnimationFrame(resolve));
+    assert.equal(output.scrollTop,0);
+    assert.equal(scrollRaiz.scrollTop,320);
+
+    output.scrollTop=180;
+    run("baixarTexto=()=>{}");
+    w.copyResult();
+    w.baixarResultadoDocumento();
+    w.dispatchEvent(new w.Event('resize'));
+    await new Promise(resolve=>w.requestAnimationFrame(resolve));
+    assert.equal(output.scrollTop,180);
+
+    output.scrollTop=150;
+    run("setOutput(currentResultText,currentResultData,{resetScroll:false})");
+    await new Promise(resolve=>w.requestAnimationFrame(resolve));
+    assert.equal(output.scrollTop,150);
+
+    w.generateSelectedDocument();
+    await new Promise(resolve=>w.requestAnimationFrame(resolve));
+    assert.equal(output.scrollTop,0);
+    assert.equal(scrollRaiz.scrollTop,320);
+  } finally {dom.window.close();}
+});
+
 test('fase 9 oferece a biblioteca inicial somente no QA Portuário', async () => {
   const {dom,w,run}=await abrir();
   try {

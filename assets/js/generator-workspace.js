@@ -42,12 +42,11 @@ function generateSelectedDocument() {
   try {
     item.run();
     document.getElementById('output-val').focus({preventScroll:true});
-    rolarParaElemento(document.getElementById('output-val'));
   } catch(error) {mostrarStatus('Não foi possível gerar. Confira as opções e tente novamente.','error');}
   finally {button.disabled=false;result.setAttribute('aria-busy','false');}
 }
 function clearDocumentResult() {
-  currentType='';currentValue='';nomeAtualDoc='';currentResultText='';currentResultData=null;
+  currentType='';currentValue='';nomeAtualDoc='';currentResultText='';currentResultData=null;currentResultRenderToken++;
   if(typeof limparCrachaAtual==='function')limparCrachaAtual();
   document.getElementById('docs-result-label').textContent='Resultado';
   esconderPlaca();esconderConteiner();document.getElementById('nome-box').classList.remove('visible');

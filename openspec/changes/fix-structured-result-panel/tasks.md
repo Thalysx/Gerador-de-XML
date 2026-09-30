@@ -13,10 +13,10 @@
 
 ## Parte 2 — Rolagem por novo resultado
 
-- [ ] Identificar e delimitar o container rolável do resultado
-- [ ] Restaurar o topo após a renderização de um novo resultado
-- [ ] Não interferir com leitura, cópia, seleção, resize ou rolagem manual
-- [ ] Testar dois resultados grandes consecutivos
+- [x] Identificar e delimitar o container rolável do resultado
+- [x] Restaurar o topo após a renderização de um novo resultado
+- [x] Não interferir com leitura, cópia, seleção, resize ou rolagem manual
+- [x] Testar dois resultados grandes consecutivos
 
 ## Parte 3 — Validação final
 

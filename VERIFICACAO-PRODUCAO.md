@@ -16,6 +16,9 @@ Testes HTTP reais com Groq e armazenamento configurado na aplicação:
 - Em 23/09/2026, a identidade TheGenerator foi publicada pelo commit `e6856b9`. O HTML, `thegenerator-mark.svg` e `site.webmanifest` responderam HTTP 200 e tiveram SHA-256 idêntico ao build local.
 - O endpoint `/api/status` continuou retornando `configured: true`, provedor `groq` e retenção de 30 minutos após essa publicação.
 - A auditoria local em Chromium confirmou o nome, a assinatura, o símbolo e o favicon nos temas claro e escuro, sem rolagem horizontal nas seis telas em zoom simulado de 200%.
+- Em 30/09/2026, a versão `3.0.0-alpha.2` foi publicada no Netlify pelo deploy `6abc8f0d382a431e3b017626`.
+- Na produção, a página inicial, `site.webmanifest`, `favicon.svg`, `future-g-mark-general.svg` e `/api/status` responderam HTTP 200.
+- A verificação em Chrome confirmou que Geradores Gerais disponibiliza somente NF-e, QA Portuário disponibiliza somente CT-e e o resumo do CT-e exibe como destinatário a empresa presente em `<dest>`, não o remetente presente em `<rem>`.
 
 O modelo configurado pelo usuário após a falha do Llama foi `openai/gpt-oss-120b`, hospedado pela Groq. O endpoint de status não expõe o nome do modelo; essa configuração foi informada na conversa, não inspecionada pelo painel Netlify.
 

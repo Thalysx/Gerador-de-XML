@@ -12,6 +12,7 @@
     "brand:export": "node scripts/export-brand.cjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "jsdom": "^26.1.0",
     "lucide": "1.44.0",

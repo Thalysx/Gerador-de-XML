@@ -192,7 +192,9 @@ function renderHistorico() {
   const container = document.getElementById('historico-items');
   container.innerHTML = historicoList.map((entry, idx) => {
     const d = entry.dados;
-    const chips = [
+    const chips = d.tipo_cadastro==='portuario' && d.estrutura_portuaria
+      ? Object.entries(d.estrutura_portuaria).slice(0,4).map(([campo,value])=>({label:rotuloCampoResultado(campo),value:valorCadastroPortuario(value)}))
+      : [
       { label: 'CPF', value: d.cpf },
       { label: 'RG',  value: d.rg  },
       { label: 'CNH', value: d.cnh },
@@ -240,6 +242,17 @@ function restaurarDoHistorico(idx) {
   const entry = historicoList[idx];
   if (!entry) return;
   const d = entry.dados;
+  if(d.tipo_cadastro==='portuario'&&d.estrutura_portuaria) {
+    if(activeEnvironmentId()!=='port')definirAmbiente('port');
+    document.getElementById('cad-port-tipo').value=d.tipo_portuario;
+    cadastroPortuarioAtual={tipo:d.tipo_portuario,rotulo:d.rotulo_portuario||rotuloCadastroPortuario(d.tipo_portuario),dados:d.estrutura_portuaria};
+    renderizarCadastroPortuario();
+    document.getElementById('cad-port-status').textContent=`Ficha completa de ${cadastroPortuarioAtual.rotulo} restaurada.`;
+    atualizarStatusResultadoCadastro(`Ficha completa de ${cadastroPortuarioAtual.rotulo} restaurada.`);
+    mostrarStatus(`Cadastro de ${cadastroPortuarioAtual.rotulo} restaurado.`);
+    return;
+  }
+  if(activeEnvironmentId()!=='general')definirAmbiente('general');
   document.getElementById('cad_doc_pessoa_tipo').value = valorDocumentoEstrangeiro(d.documento_estrangeiro_pessoa_tipo);
   document.getElementById('cad_cnpj_tipo').value = valorTipoCNPJ(d.cnpj_tipo);
   document.getElementById('cad_doc_empresa_tipo').value = valorDocumentoEstrangeiro(d.documento_estrangeiro_empresa_tipo);
@@ -262,7 +275,6 @@ function restaurarDoHistorico(idx) {
   aplicarGruposCadastro(gruposRestaurados);
   cadAtualizarResultado();
   atualizarStatusResultadoCadastro(`Cadastro de ${d.nome || 'registro'} restaurado no resultado.`);
-  rolarParaElemento(document.getElementById('cadastro-result'));
   mostrarStatus(`Cadastro de ${d.nome || 'registro'} restaurado.`);
 }
 

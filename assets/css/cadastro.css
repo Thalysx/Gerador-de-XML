@@ -62,11 +62,14 @@
 .cadastro-result.visible { display: block; animation: panelFadeIn var(--motion-base) ease-out both; }
 .cadastro-col-right:has(.cadastro-result.visible) .cadastro-empty { display:none; }
 .cadastro-col-right .result-grid { grid-template-columns: 1fr; }
-.cadastro-col-right .result-item { border-right: none; }
+.cadastro-col-right .result-item { border:1px solid var(--border); border-radius:var(--ui-radius-sm); background:var(--surface-2); }
 .result-sheet { display: grid; gap: var(--ui-space-3); padding: var(--ui-space-3); }
 .result-sheet-section { overflow: hidden; border: 1px solid var(--border); border-radius: var(--ui-radius-sm); background: var(--surface); }
 .result-sheet-title { padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-family: 'Syne', sans-serif; font-size: .8125rem; font-weight: 700; }
-.result-sheet-section .result-grid { padding: 0; }
+.result-sheet-section .result-grid { padding: 12px; gap: 10px; }
+.field-copy-action { flex-shrink: 0; }
+.field-copy-action.is-copied { border-color:var(--accent-green-border); background:var(--accent-green-bg); color:var(--success); }
+.field-copy-action :is(i,svg) { width:14px; height:14px; }
 @media (max-width: 600px) {
 .cad-input-wrap.with-select { grid-template-columns: 1fr; }
 }

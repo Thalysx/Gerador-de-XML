@@ -52,7 +52,7 @@ test('IA limita dados e XML ao ambiente ativo mesmo se o provedor pedir outra fe
   let round=0;
   const ai=createAssistant({apiKey:'test',fetchImpl:async(_,options)=>{
     const body=JSON.parse(options.body);
-    assert.deepEqual(body.tools[0].parameters.properties.pedidos.items.properties.tipo.enum,['conteiner','conteiner-lacre','conteiner-detalhado','lacre','imo','booking','due','motorista','operador-portuario','visitante-portuario','pessoa-portuaria','transportadora','cliente-portuario','depositante','importador','exportador','cavalo-mecanico','carreta','conjunto-veicular','carga-solta','granel-solido','granel-liquido','carga-conteinerizada','chave-cte','di','duimp','documento-carga']);
+    assert.deepEqual(body.tools[0].parameters.properties.pedidos.items.properties.tipo.enum,['conteiner','conteiner-lacre','lacre','imo','booking','due','motorista','operador-portuario','visitante-portuario','pessoa-portuaria','transportadora','cliente-portuario','depositante','importador','exportador','cavalo-mecanico','carreta','conjunto-veicular','carga-solta','granel-solido','granel-liquido','carga-conteinerizada','chave-cte','di','duimp','documento-carga']);
     assert.deepEqual(body.tools[1].parameters.properties.tipo.enum,['cte']);
     if(round===0){round++;return {ok:true,json:async()=>({output:[call('gerar_dados',{pedidos:[{tipo:'cpf',quantidade:1}],mascara:true,uf:null})]})};}
     if(round===1){assert.match(JSON.parse(body.input.at(-1).output).erro,/indisponível/);round++;return {ok:true,json:async()=>({output:[call('gerar_xml',{tipo:'nfe',itens:1},'call2')]})};}
@@ -72,6 +72,7 @@ test('servidor restringe origem, corpo, métodos e arquivos internos',async()=>{
     assert.equal((await fetch(base+'/')).status,200);
     for(const [file,type] of [
       ['/site.webmanifest','application/manifest+json'],
+      ['/assets/vendor/vercel-speed-insights.mjs','text/javascript'],
       ['/assets/brand/favicon.svg','image/svg+xml'],
       ['/assets/brand/future-g-mark.svg','image/svg+xml'],
       ['/assets/brand/future-g-mark-general.svg','image/svg+xml'],

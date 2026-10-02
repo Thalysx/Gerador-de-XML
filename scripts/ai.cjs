@@ -2,10 +2,10 @@ const { randomUUID } = require('node:crypto');
 const { createEngine } = require('./engine.cjs');
 const { createProvider } = require('./provider.cjs');
 const { createMemoryStore } = require('./session-store.cjs');
-const TYPES = ['cpf','cnpj','cnpj-alfa','nome','empresa','cnh','rg','telefone','email','placa','conteiner','conteiner-lacre','conteiner-detalhado','lacre','imo','booking','due','cadastro','motorista','operador-portuario','visitante-portuario','pessoa-portuaria','transportadora','cliente-portuario','depositante','importador','exportador','cavalo-mecanico','carreta','conjunto-veicular','carga-solta','granel-solido','granel-liquido','carga-conteinerizada','chave-cte','di','duimp','documento-carga'];
+const TYPES = ['cpf','cnpj','cnpj-alfa','nome','empresa','cnh','rg','telefone','email','placa','conteiner','conteiner-lacre','lacre','imo','booking','due','cadastro','motorista','operador-portuario','visitante-portuario','pessoa-portuaria','transportadora','cliente-portuario','depositante','importador','exportador','cavalo-mecanico','carreta','conjunto-veicular','carga-solta','granel-solido','granel-liquido','carga-conteinerizada','chave-cte','di','duimp','documento-carga'];
 const ENVIRONMENT_TYPES = Object.freeze({
   general: Object.freeze(['cpf','cnpj','cnpj-alfa','nome','empresa','cnh','rg','telefone','email','placa','cadastro']),
-  port: Object.freeze(['conteiner','conteiner-lacre','conteiner-detalhado','lacre','imo','booking','due','motorista','operador-portuario','visitante-portuario','pessoa-portuaria','transportadora','cliente-portuario','depositante','importador','exportador','cavalo-mecanico','carreta','conjunto-veicular','carga-solta','granel-solido','granel-liquido','carga-conteinerizada','chave-cte','di','duimp','documento-carga'])
+  port: Object.freeze(['conteiner','conteiner-lacre','lacre','imo','booking','due','motorista','operador-portuario','visitante-portuario','pessoa-portuaria','transportadora','cliente-portuario','depositante','importador','exportador','cavalo-mecanico','carreta','conjunto-veicular','carga-solta','granel-solido','granel-liquido','carga-conteinerizada','chave-cte','di','duimp','documento-carga'])
 });
 const ENVIRONMENT_XML = Object.freeze({general:'nfe',port:'cte'});
 const object = properties => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });

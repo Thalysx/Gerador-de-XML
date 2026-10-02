@@ -33,6 +33,56 @@ const PORT_CARGO_TYPES = Object.freeze({
 
 const PORT_NCMS_PADRAO = Object.freeze(['09011110','10059010','12019000','17019900','26011100','27101921','39011010','44071100','72083990','84713012']);
 
+const PORT_CADASTRO_TIPOS = Object.freeze([
+  {id:'motorista',label:'Motorista',grupo:'Pessoas'},
+  {id:'operador-portuario',label:'Operador portuário',grupo:'Pessoas'},
+  {id:'visitante-portuario',label:'Visitante portuário',grupo:'Pessoas'},
+  {id:'pessoa-portuaria',label:'Pessoa portuária',grupo:'Pessoas'},
+  {id:'transportadora',label:'Transportadora',grupo:'Empresas'},
+  {id:'cliente-portuario',label:'Cliente portuário',grupo:'Empresas'},
+  {id:'depositante',label:'Depositante',grupo:'Empresas'},
+  {id:'importador',label:'Importador',grupo:'Empresas'},
+  {id:'exportador',label:'Exportador',grupo:'Empresas'},
+  {id:'cavalo-mecanico',label:'Cavalo mecânico',grupo:'Veículos'},
+  {id:'carreta',label:'Carreta',grupo:'Veículos'},
+  {id:'conjunto-veicular',label:'Conjunto veicular',grupo:'Veículos'},
+  {id:'conteiner-detalhado',label:'Contêiner detalhado',grupo:'Logística'},
+  {id:'carga-solta',label:'Carga solta',grupo:'Cargas'},
+  {id:'granel-solido',label:'Granel sólido',grupo:'Cargas'},
+  {id:'granel-liquido',label:'Granel líquido',grupo:'Cargas'},
+  {id:'carga-conteinerizada',label:'Carga conteinerizada',grupo:'Cargas'},
+  {id:'documento-carga',label:'Documentos de carga',grupo:'Documentos'}
+]);
+
+function gerarCadastroPortuarioPorTipo(tipo) {
+  if(['motorista','operador-portuario','visitante-portuario','pessoa-portuaria'].includes(tipo)) {
+    return gerarPerfilPortuario({motorista:'motorista','operador-portuario':'operador','visitante-portuario':'visitante','pessoa-portuaria':'pessoa'}[tipo]);
+  }
+  if(['transportadora','cliente-portuario','depositante','importador','exportador'].includes(tipo)) {
+    return gerarEmpresaPortuaria({transportadora:'transportadora','cliente-portuario':'cliente',depositante:'depositante',importador:'importador',exportador:'exportador'}[tipo]);
+  }
+  if(['cavalo-mecanico','carreta','conjunto-veicular'].includes(tipo)) {
+    return gerarVeiculoPortuario({ 'cavalo-mecanico':'cavalo',carreta:'carreta','conjunto-veicular':'conjunto'}[tipo]);
+  }
+  if(tipo==='conteiner-detalhado')return gerarConteinerDetalhado();
+  if(['carga-solta','granel-solido','granel-liquido','carga-conteinerizada'].includes(tipo))return gerarCargaPortuaria(tipo);
+  if(tipo==='documento-carga')return gerarDocumentoPortuario(tipo);
+  throw new Error('Tipo de cadastro portuário não reconhecido.');
+}
+
+function gerarDadoPortuarioEssencial(tipo) {
+  const completo=gerarCadastroPortuarioPorTipo(tipo);
+  if(['motorista','operador-portuario','visitante-portuario','pessoa-portuaria'].includes(tipo))return {nome:completo.nome,cpf:completo.cpf};
+  if(['transportadora','cliente-portuario','depositante','importador','exportador'].includes(tipo))return {razao_social:completo.razao_social,cnpj:completo.cnpj};
+  if(['cavalo-mecanico','carreta'].includes(tipo))return {placa:completo.placa,renavam:completo.renavam};
+  if(tipo==='conjunto-veicular')return {placa_cavalo:completo.placa_cavalo,placa_carreta:completo.placa_carreta};
+  if(tipo==='conteiner-detalhado')return {conteiner:completo.conteiner,lacre:completo.lacre};
+  if(['carga-solta','granel-solido','granel-liquido'].includes(tipo))return {descricao:completo.descricao,ncm:completo.ncm,referencia:`CARGA-${randomDigits(10).join('')}`};
+  if(tipo==='carga-conteinerizada')return {descricao:completo.descricao,conteiner:completo.conteiner};
+  if(tipo==='documento-carga')return {manifesto:completo.manifesto,booking:completo.booking};
+  return completo;
+}
+
 function dataPortuariaFutura(diasMinimos=30,diasAdicionais=330) {
   const data=new Date();data.setDate(data.getDate()+diasMinimos+rand(diasAdicionais));
   return data.toISOString().slice(0,10);

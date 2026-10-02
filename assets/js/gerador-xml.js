@@ -277,8 +277,7 @@ function gerarXMLComCampos(forcarNovosDadosAleatorios = false) {
 }
 
 function finalizarEGerarXML(xml, hierarquia, forcarNovosDadosAleatorios = false) {
-  const selecionado = document.getElementById('xml-form-tipo').value;
-  const tiposAtivos = selecionado === 'ambos' ? ['nfe', 'cte'] : [selecionado];
+  const tiposAtivos = ['nfe', 'cte'];
   const dadosDinamicos = obterDadosAleatoriosNFe(forcarNovosDadosAleatorios);
   let chaves = {};
   chaves.cte  = { chave: xml.cte.querySelector(hierarquia.cte.chave).textContent.trim() };

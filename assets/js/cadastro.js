@@ -8,6 +8,79 @@ const CADASTRO_GRUPOS = [
   { id: 'endereco', label: 'Endereço', fields: ['endereco'], inputIds: ['cad_endereco'] },
   { id: 'profissionais', label: 'Dados profissionais', fields: ['cracha', 'empresa', 'cnpj', 'documento_estrangeiro_empresa', 'placa'], inputIds: ['cad_cracha', 'cad_empresa', 'cad_cnpj', 'cad_doc_empresa', 'cad_placa'] },
 ];
+let cadastroPortuarioAtual = null;
+
+function cadastroPortuarioAtivo() { return activeEnvironmentId()==='port'; }
+
+function rotuloCadastroPortuario(tipo) {
+  return PORT_CADASTRO_TIPOS.find(item=>item.id===tipo)?.label || generatorById(tipo)?.label || 'Cadastro portuário';
+}
+
+function valorCadastroPortuario(valor) {
+  return typeof valor==='object' ? JSON.stringify(valor) : String(valor ?? '');
+}
+
+function renderizarCadastroPortuario() {
+  const atual=cadastroPortuarioAtual;
+  const result=document.getElementById('cadastro-result');
+  if(!atual?.dados) {
+    result.classList.remove('visible');
+    atualizarStatusResultadoCadastro('Resultado do cadastro portuário vazio.');
+    return;
+  }
+  const dados=atual.dados;
+  const titulo=dados.nome || dados.razao_social || dados.conteiner || dados.descricao || atual.rotulo;
+  const identificador=dados.cpf || dados.cnpj || dados.placa || dados.placa_cavalo || dados.ncm || dados.manifesto || '';
+  result.classList.add('visible');
+  document.getElementById('cadastro-result-badge').textContent='QA Portuário';
+  document.getElementById('res-nome-title').textContent=titulo;
+  document.getElementById('res-nome').textContent=titulo;
+  document.getElementById('res-empresa-sub').textContent=atual.rotulo;
+  document.getElementById('res-empresa').textContent=identificador;
+  document.getElementById('result-grid-items').innerHTML=`
+    <section class="result-sheet-section" data-result-group="portuario" aria-labelledby="result-group-portuario">
+      <h3 class="result-sheet-title" id="result-group-portuario">Dados completos</h3>
+      <div class="result-grid">
+        ${Object.entries(dados).map(([campo,valor])=>{
+          const texto=valorCadastroPortuario(valor);
+          const label=rotuloCampoResultado(campo);
+          return `<div class="result-item"><div class="result-item-label">${escapeHtml(label)}</div><div class="result-item-value"><span>${escapeHtml(texto)}</span><button type="button" class="btn-sm field-copy-action" data-copy-value="${escapeAttr(texto)}" data-copy-label="${escapeAttr(label)}" aria-label="Copiar ${escapeAttr(label)}"><i data-lucide="copy" aria-hidden="true"></i> Copiar</button></div></div>`;
+        }).join('')}
+      </div>
+    </section>`;
+  atualizarStatusResultadoCadastro(`Ficha completa de ${atual.rotulo} atualizada.`);
+}
+
+function gerarCadastroPortuarioCompleto() {
+  const tipo=document.getElementById('cad-port-tipo').value;
+  const rotulo=rotuloCadastroPortuario(tipo);
+  const dados=gerarCadastroPortuarioPorTipo(tipo);
+  cadastroPortuarioAtual={tipo,rotulo,dados};
+  renderizarCadastroPortuario();
+  document.getElementById('cad-port-status').textContent=`Ficha completa de ${rotulo} gerada.`;
+  adicionarAoHistorico({
+    tipo_cadastro:'portuario',tipo_portuario:tipo,rotulo_portuario:rotulo,estrutura_portuaria:dados,
+    nome:dados.nome || dados.razao_social || dados.conteiner || dados.descricao || rotulo,
+    empresa:rotulo,cpf:dados.cpf || '',cnpj:dados.cnpj || '',placa:dados.placa || dados.placa_cavalo || ''
+  });
+  registerGeneratorUse('cadastro');
+}
+
+function atualizarCadastroPorAmbiente() {
+  const port=cadastroPortuarioAtivo();
+  document.getElementById('cadastro-general-selector').hidden=port;
+  document.getElementById('cadastro-general-form').hidden=port;
+  document.getElementById('cadastro-portuario-form').hidden=!port;
+  document.getElementById('cadastro-empty-title').textContent=port?'Sua ficha portuária aparece aqui':'Seu cadastro aparece aqui';
+  document.getElementById('cadastro-empty-description').textContent=port
+    ? 'Escolha uma entidade para gerar todos os dados cadastrais e operacionais em uma ficha completa.'
+    : 'Gere um perfil completo ou preencha os campos para conferir o resultado. Você poderá copiar os dados e restaurá-los pelo histórico.';
+  if(port)renderizarCadastroPortuario();
+  else {
+    document.getElementById('cadastro-result-badge').textContent='Perfil';
+    cadAtualizarResultado();
+  }
+}
 
 function getCadastroGruposSelecionados() {
   return [...document.querySelectorAll('input[name="cadastro-grupo"]:checked')].map(input => input.value);
@@ -147,6 +220,7 @@ function cadGerar(campo) {
 }
 
 function gerarCadastroCompleto() {
+  if(cadastroPortuarioAtivo())return gerarCadastroPortuarioCompleto();
   const grupos = getCadastroGruposSelecionados();
   if (!grupos.length) {
     atualizarStatusResultadoCadastro('Selecione ao menos um grupo antes de gerar a ficha.');
@@ -189,9 +263,6 @@ function gerarCadastroCompleto() {
   atualizarStatusResultadoCadastro(`${grupos.length} ${grupos.length === 1 ? 'grupo gerado' : 'grupos gerados'} na ficha${dados.nome ? ` de ${dados.nome}` : ''}.`);
   adicionarAoHistorico(dados);
   registerGeneratorUse('cadastro');
-  const result = document.getElementById('cadastro-result');
-  rolarParaElemento(result);
-  result.focus({ preventScroll: true });
 }
 
 function getCadastroDados() {
@@ -259,6 +330,7 @@ function atualizarStatusResultadoCadastro(mensagem) {
 }
 
 function cadAtualizarResultado() {
+  document.getElementById('cadastro-result-badge').textContent = 'Perfil';
   const dados = getCadastroDados();
   if (!cadastroTemDados(dados)) {
     document.getElementById('cadastro-result').classList.remove('visible');
@@ -286,7 +358,7 @@ function cadAtualizarResultado() {
               <div class="result-item-label">${escapeHtml(item.label)}</div>
               <div class="result-item-value">
                 <span>${escapeHtml(item.value)}</span>
-                <button type="button" class="copy-mini" onclick="copyMini(this, '${escapeInlineValue(item.value)}')" aria-label="Copiar ${escapeAttr(item.label)}">Copiar</button>
+                <button type="button" class="btn-sm field-copy-action" data-copy-value="${escapeAttr(item.value)}" data-copy-label="${escapeAttr(item.label)}" aria-label="Copiar ${escapeAttr(item.label)}"><i data-lucide="copy" aria-hidden="true"></i> Copiar</button>
               </div>
             </div>`).join('')}
         </div>
@@ -299,18 +371,7 @@ function cadAtualizarResultado() {
 }
 
 function copyMini(btn, val) {
-  copiarTexto(val, 'Valor copiado.').then((ok) => {
-    if (!ok) return;
-    const originalLabel = btn.getAttribute('aria-label') || 'Copiar valor';
-    btn.textContent = 'Copiado';
-    btn.setAttribute('aria-label', 'Valor copiado');
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = 'Copiar';
-      btn.setAttribute('aria-label', originalLabel);
-      btn.classList.remove('copied');
-    }, 1500);
-  });
+  return copiarCampoResultado(btn, val, 'Valor');
 }
 
 async function cadCopiarCampo(id, btn) {
@@ -368,6 +429,15 @@ async function cadCopiarCampo(id, btn) {
 }
 
 function limparCadastro() {
+  if(cadastroPortuarioAtivo()) {
+    cadastroPortuarioAtual=null;
+    document.getElementById('cadastro-result').classList.remove('visible');
+    document.getElementById('result-grid-items').innerHTML='';
+    document.getElementById('cad-port-status').textContent='Escolha um tipo para gerar a ficha completa.';
+    atualizarStatusResultadoCadastro('Resultado do cadastro portuário vazio.');
+    mostrarStatus('Cadastro portuário limpo.');
+    return;
+  }
   ['cad_nome','cad_tel','cad_email','cad_endereco','cad_cpf','cad_rg','cad_cnh','cad_cracha','cad_doc_pessoa','cad_empresa','cad_cnpj','cad_doc_empresa','cad_placa'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('cad_cnpj_tipo').value = 'normal';
   document.getElementById('cad_doc_pessoa_tipo').value = 'passaporte';
@@ -389,6 +459,9 @@ function mostrarFeedbackCadastroCopiado() {
 }
 
 function formatarCadastroTexto(dados) {
+  if(cadastroPortuarioAtivo() && cadastroPortuarioAtual) {
+    return `[${cadastroPortuarioAtual.rotulo}]\n`+Object.entries(cadastroPortuarioAtual.dados).map(([campo,valor])=>`${rotuloCampoResultado(campo)}: ${valorCadastroPortuario(valor)}`).join('\n');
+  }
   return getCadastroGruposComDados(dados)
     .map(grupo => {
       const linhas = cadastroItensGrupo(grupo.id, dados).map(item => `${item.label}: ${item.value}`);
@@ -398,6 +471,7 @@ function formatarCadastroTexto(dados) {
 }
 
 function copiarCadastroTexto() {
+  if(cadastroPortuarioAtivo()&&!cadastroPortuarioAtual){mostrarStatus('Gere uma ficha portuária antes de copiar.','error');return;}
   const texto = formatarCadastroTexto(getCadastroDados());
   copiarTexto(texto, 'Cadastro copiado.').then((ok) => {
     if (ok) mostrarFeedbackCadastroCopiado();
@@ -405,8 +479,19 @@ function copiarCadastroTexto() {
 }
 
 function copiarCadastroJSON() {
-  const dados = getCadastroDados();
+  if(cadastroPortuarioAtivo()&&!cadastroPortuarioAtual){mostrarStatus('Gere uma ficha portuária antes de copiar.','error');return;}
+  const dados = cadastroPortuarioAtivo()
+    ? {tipo:cadastroPortuarioAtual.tipo,rotulo:cadastroPortuarioAtual.rotulo,...cadastroPortuarioAtual.dados}
+    : getCadastroDados();
   copiarTexto(JSON.stringify(dados, null, 2), 'Cadastro copiado como JSON.').then((ok) => {
     if (ok) mostrarFeedbackCadastroCopiado();
   });
 }
+
+window.addEventListener('futureg:environmentchange',atualizarCadastroPorAmbiente);
+document.getElementById('result-grid-items').addEventListener('click',(event)=>{
+  const botao=event.target.closest('.field-copy-action');
+  if(!botao)return;
+  copiarCampoResultado(botao,botao.dataset.copyValue,botao.dataset.copyLabel || 'Valor');
+});
+atualizarCadastroPorAmbiente();

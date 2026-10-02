@@ -5,6 +5,7 @@ const root = path.resolve(__dirname, '..');
 const tipos = {
   '.html':'text/html; charset=utf-8',
   '.js':'text/javascript; charset=utf-8',
+  '.mjs':'text/javascript; charset=utf-8',
   '.css':'text/css; charset=utf-8',
   '.svg':'image/svg+xml',
   '.png':'image/png',
@@ -29,10 +30,14 @@ return http.createServer(async (req, res) => {
       return api(req,res,pathname.endsWith('status')?'status':'chat');
     }
     if (req.method !== 'GET' && req.method !== 'HEAD') return json(405,{error:'Método não permitido.'});
-    const publicAsset = /^\/assets\/[a-zA-Z0-9_./-]+\.(css|js|svg|png)$/.test(pathname);
+    const speedInsightsAsset = pathname === '/assets/vendor/vercel-speed-insights.mjs';
+    const publicAsset = /^\/assets\/[a-zA-Z0-9_./-]+\.(css|js|svg|png)$/.test(pathname) || speedInsightsAsset;
     if (pathname !== '/' && pathname !== '/index.html' && pathname !== '/site.webmanifest' && !publicAsset) { res.writeHead(404).end(); return; }
-    const file = path.resolve(root, '.' + (pathname === '/' ? '/index.html' : pathname));
-    if (!file.startsWith(root + path.sep) || (pathname.startsWith('/assets/') && !file.startsWith(path.join(root,'assets') + path.sep)) || !tipos[path.extname(file)] || !fs.existsSync(file)) { res.writeHead(404).end(); return; }
+    const file = speedInsightsAsset
+      ? path.join(root,'node_modules','@vercel','speed-insights','dist','index.mjs')
+      : path.resolve(root, '.' + (pathname === '/' ? '/index.html' : pathname));
+    const validPublicLocation = speedInsightsAsset || !pathname.startsWith('/assets/') || file.startsWith(path.join(root,'assets') + path.sep);
+    if (!file.startsWith(root + path.sep) || !validPublicLocation || !tipos[path.extname(file)] || !fs.existsSync(file)) { res.writeHead(404).end(); return; }
     res.setHeader('Content-Type', tipos[path.extname(file)]);
     res.setHeader('Cache-Control', 'no-store');
     fs.createReadStream(file).pipe(res);

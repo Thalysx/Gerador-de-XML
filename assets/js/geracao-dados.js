@@ -69,21 +69,12 @@ function gerarRegistro(tipo, opcoes = {}) {
     case 'imo': { const base = randomDigits(6).join(''); valor = (mascara ? 'IMO ' : '') + base + calcDVIMO(base); break; }
     case 'booking': valor = gerarBooking(); break;
     case 'due': { const raw = gerarDUEExemplo(); valor = mascara ? raw.slice(0,-1) + '-' + raw.slice(-1) : raw; break; }
-    case 'motorista': valor = gerarPerfilPortuario('motorista'); break;
-    case 'operador-portuario': valor = gerarPerfilPortuario('operador'); break;
-    case 'visitante-portuario': valor = gerarPerfilPortuario('visitante'); break;
-    case 'pessoa-portuaria': valor = gerarPerfilPortuario('pessoa'); break;
-    case 'transportadora': valor = gerarEmpresaPortuaria('transportadora'); break;
-    case 'cliente-portuario': valor = gerarEmpresaPortuaria('cliente'); break;
-    case 'depositante': valor = gerarEmpresaPortuaria('depositante'); break;
-    case 'importador': valor = gerarEmpresaPortuaria('importador'); break;
-    case 'exportador': valor = gerarEmpresaPortuaria('exportador'); break;
-    case 'cavalo-mecanico': valor = gerarVeiculoPortuario('cavalo'); break;
-    case 'carreta': valor = gerarVeiculoPortuario('carreta'); break;
-    case 'conjunto-veicular': valor = gerarVeiculoPortuario('conjunto'); break;
-    case 'conteiner-detalhado': valor = gerarConteinerDetalhado(); break;
-    case 'carga-solta': case 'granel-solido': case 'granel-liquido': case 'carga-conteinerizada': valor = gerarCargaPortuaria(tipo); break;
-    case 'chave-cte': case 'di': case 'duimp': case 'documento-carga': valor = gerarDocumentoPortuario(tipo); break;
+    case 'motorista': case 'operador-portuario': case 'visitante-portuario': case 'pessoa-portuaria':
+    case 'transportadora': case 'cliente-portuario': case 'depositante': case 'importador': case 'exportador':
+    case 'cavalo-mecanico': case 'carreta': case 'conjunto-veicular': case 'conteiner-detalhado':
+    case 'carga-solta': case 'granel-solido': case 'granel-liquido': case 'carga-conteinerizada':
+    case 'documento-carga': valor = gerarDadoPortuarioEssencial(tipo); break;
+    case 'chave-cte': case 'di': case 'duimp': valor = gerarDocumentoPortuario(tipo); break;
     case 'cadastro': {
       const nome = gerarNomePessoa();
       valor = {

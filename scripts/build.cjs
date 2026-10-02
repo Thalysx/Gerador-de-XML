@@ -16,4 +16,9 @@ for(const [type,extensions] of Object.entries(publicAssets)) {
     if(entry.isFile()&&extensions.has(path.extname(entry.name).toLowerCase()))fs.copyFileSync(path.join(source,entry.name),path.join(destination,entry.name));
   }
 }
+const speedInsightsSource=path.join(root,'node_modules','@vercel','speed-insights','dist','index.mjs');
+const speedInsightsDestination=path.join(output,'assets','vendor','vercel-speed-insights.mjs');
+if(!fs.existsSync(speedInsightsSource))throw Error('Execute npm install antes do build: @vercel/speed-insights não encontrado');
+fs.mkdirSync(path.dirname(speedInsightsDestination),{recursive:true});
+fs.copyFileSync(speedInsightsSource,speedInsightsDestination);
 console.log('Arquivos públicos preparados em .generated-public');

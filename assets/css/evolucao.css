@@ -126,28 +126,6 @@
 .xml-scenarios .cenario-form { margin-top: 0; }
 
 /* Cenários operacionais do QA Portuário */
-.scenario-layout { display: grid; grid-template-columns: minmax(250px, 330px) minmax(0, 1fr); gap: var(--ui-space-5); align-items: start; }
-.scenario-controls { display: grid; gap: var(--ui-space-4); }
-.scenario-controls h3, .scenario-output h3, .scenario-output h4 { margin: 0; }
-.scenario-output { min-width: 0; }
-.scenario-result-header { display: flex; justify-content: space-between; gap: var(--ui-space-4); align-items: flex-start; margin-bottom: var(--ui-space-4); }
-.scenario-result-header p { margin: .3rem 0 0; color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: .78rem; overflow-wrap: anywhere; }
-.scenario-mode, .scenario-consistency { display: inline-flex; padding: .25rem .55rem; border: 1px solid var(--border); border-radius: 999px; font-size: .72rem; font-weight: 700; text-transform: uppercase; }
-.scenario-mode.valido, .scenario-consistency.ok { color: var(--success); background: var(--accent-green-bg); border-color: var(--accent-green-border); }
-.scenario-mode.invalido, .scenario-consistency.error { color: var(--error); background: var(--accent-red-bg); border-color: var(--accent-red-border); }
-.scenario-grid { display: grid; grid-template-columns: minmax(210px, .8fr) minmax(280px, 1.2fr); gap: var(--ui-space-5); }
-.scenario-grid > section, .scenario-warning, .scenario-output details { padding: var(--ui-space-4); border: 1px solid var(--border); border-radius: var(--ui-radius); background: var(--surface); }
-.scenario-entities, .scenario-steps { display: grid; gap: .55rem; margin: var(--ui-space-3) 0 0; padding: 0; list-style: none; }
-.scenario-entities li { display: grid; gap: .15rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
-.scenario-entities span, .scenario-steps small { color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: .72rem; overflow-wrap: anywhere; }
-.scenario-steps li { display: flex; gap: .7rem; align-items: flex-start; }
-.scenario-steps li div { display: grid; gap: .1rem; }
-.scenario-step-order { display: grid; flex: 0 0 1.8rem; width: 1.8rem; height: 1.8rem; place-items: center; border-radius: 50%; color: var(--accent-contrast); background: var(--accent); font-size: .75rem; font-weight: 700; }
-.scenario-warning { margin-bottom: var(--ui-space-4); color: var(--error); border-color: var(--accent-red-border); background: var(--accent-red-bg); }
-.scenario-warning ul { margin: .5rem 0 0; }
-.scenario-output details { margin-top: var(--ui-space-5); }
-.scenario-output pre { max-height: 420px; margin: var(--ui-space-3) 0 0; padding: var(--ui-space-4); overflow: auto; border-radius: var(--ui-radius-sm); background: var(--surface-raised); color: var(--text); font-size: .75rem; }
-@media (max-width: 900px) { .scenario-layout, .scenario-grid { grid-template-columns: 1fr; } }
 .nfe-identificacao-completa { display: grid; gap: 12px; margin-top: 12px; }
 .produto-detalhes { display: grid; gap: 12px; margin-top: 12px; }
 .chat-controls { display: flex; min-width: 0; align-items: center; gap: 8px; padding: 4px 0 0 52px; border-top: 1px solid var(--border); }

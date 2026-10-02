@@ -1,7 +1,7 @@
 let xmlsGerados = {};
 let cenariosXml = [];
 
-function guardarXmlsGerados(xml, tipos = [document.getElementById('xml-form-tipo')?.value]) {
+function guardarXmlsGerados(xml, tipos = ['nfe','cte']) {
   const documentos = {
     nfe: xml.nfeList[0],
     cte: xml.cte

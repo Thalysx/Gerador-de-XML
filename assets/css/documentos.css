@@ -11,11 +11,15 @@
 .output-value { max-height:min(56dvh,560px); padding-right:4px; overflow-y:auto; overscroll-behavior:contain; scrollbar-gutter:stable; white-space:pre-wrap; font-family: 'DM Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; color: var(--text); overflow-wrap: anywhere; word-break: normal; min-height: 32px; line-height: 1.2; }
 .output-value.placeholder { max-height:none; padding-right:0; overflow:visible; font-size: 13.5px; font-weight: 400; color: var(--text-dim); font-family: 'Inter', sans-serif; font-style: italic; }
 .output-value.is-structured { white-space:normal; font-family:'Inter',sans-serif; font-size:1rem; font-weight:400; line-height:1.5; }
-.structured-result-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 24px; margin:0; }
-.structured-result-field { min-width:0; padding:12px 0; border-top:1px solid var(--border); }
+.structured-result-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:0; }
+.structured-result-field { min-width:0; padding:14px; border:1px solid var(--border); border-radius:var(--ui-radius-sm); background:var(--surface-2); }
 .structured-result-field.is-wide { grid-column:1/-1; }
 .structured-result-field dt { margin:0 0 4px; color:var(--text-muted); font-size:.75rem; font-weight:650; letter-spacing:.04em; line-height:1.4; text-transform:uppercase; }
+.structured-result-field-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .structured-result-field dd { min-width:0; margin:0; color:var(--text); font-size:1rem; font-weight:550; line-height:1.5; overflow-wrap:anywhere; word-break:normal; }
+.structured-result-copy { flex-shrink:0; }
+.structured-result-copy.is-copied { border-color:var(--accent-green-border); background:var(--accent-green-bg); color:var(--success); }
+.structured-result-copy :is(i,svg) { width:14px; height:14px; }
 .copy-row { display: flex; align-items: center; gap: 10px; margin-top: 13px; flex-wrap: wrap; }
 .copied-msg { font-size: 12px; color: var(--success); opacity: 0; transition: opacity 0.3s; font-weight: 500; }
 #copy-btn.is-copied { border-color: var(--accent-green-border); background: var(--accent-green-bg); color: var(--success); }
@@ -90,6 +94,8 @@
 .output-value { max-height:min(52dvh,480px); font-size:19px; }
 .structured-result-grid { grid-template-columns:minmax(0,1fr); }
 .structured-result-field.is-wide { grid-column:auto; }
+.structured-result-field-row { align-items:stretch; flex-direction:column; }
+.structured-result-copy { width:100%; }
 }
 @media (max-width: 600px) {
 .btn-grid button { min-width: 0; }

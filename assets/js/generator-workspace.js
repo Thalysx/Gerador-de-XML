@@ -4,6 +4,7 @@ function openGenerator(id) {
   const item=generatorById(id);
   if(!item){mostrarStatus('Esta ferramenta não está disponível. Escolha outra opção.','error');return false;}
   if(!generatorSupportsEnvironment(item)){mostrarStatus(`${item.label} não está disponível em ${APP_ENVIRONMENTS[activeEnvironmentId()].label}.`,'error');return false;}
+  const workspaceWasActive=document.getElementById('tab-'+item.tool)?.classList.contains('active');
   switchTab(item.tool);
   if(item.tool==='docs') {
     const selectedId=item.variantOf||id;
@@ -20,11 +21,11 @@ function openGenerator(id) {
     atualizarOpcoesDocumento(selectedItem.domainType,document.getElementById('lote-tipo').value);
     document.querySelectorAll('[data-generator-id]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.generatorId===selectedId)));
     if(item.batchOnly){document.querySelector('.docs-batch').open=true;document.getElementById('lote-tipo').value=id;}
-    document.getElementById('docs-selected-title').focus();
+    if(!workspaceWasActive)document.getElementById('docs-selected-title').focus({preventScroll:true});
   } else if(item.tool==='xml') {
     const type=document.getElementById('xml-form-tipo');type.value=id;type.dispatchEvent(new Event('change'));
-    type.focus();
-  } else document.getElementById('tab-'+item.tool).focus();
+    if(!workspaceWasActive)type.focus({preventScroll:true});
+  } else if(!workspaceWasActive)document.getElementById('tab-'+item.tool).focus({preventScroll:true});
   return true;
 }
 function activateGenerator(id) {
@@ -64,7 +65,7 @@ function toggleDocumentDetails() {
   details.textContent=currentType==='cracha'&&typeof formatarCrachaTexto==='function'
     ? formatarCrachaTexto(crachaAtual)
     : [getNomeDocsAtual(),currentResultText || document.getElementById('output-val').textContent].filter(Boolean).join('\n');
-  details.hidden=!open;button.setAttribute('aria-expanded',String(open));button.textContent=open?'Ocultar detalhes':'Ver detalhes';
+  details.hidden=!open;button.setAttribute('aria-expanded',String(open));button.textContent=rotuloDetalhesResultado(open);
 }
 function renderDocumentGenerators() {
   const list=document.getElementById('docs-generator-list');

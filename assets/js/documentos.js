@@ -562,6 +562,7 @@ function renderizarResultadoDocumento(elemento,texto,dados) {
   const estrutura=normalizarDadosResultado(dados,texto);
   currentResultData=estrutura;
   elemento.replaceChildren();
+  delete elemento.dataset.totalFields;
   elemento.classList.toggle('is-structured',!!estrutura);
   if(!estrutura) {
     elemento.textContent=texto;
@@ -569,19 +570,39 @@ function renderizarResultadoDocumento(elemento,texto,dados) {
   }
   const lista=document.createElement('dl');
   lista.className='structured-result-grid';
-  for(const [chave,valorOriginal] of Object.entries(estrutura)) {
+  const entradas=Object.entries(estrutura);
+  const entradasVisiveis=entradas.slice(0,4);
+  elemento.dataset.totalFields=String(entradas.length);
+  for(const [chave,valorOriginal] of entradasVisiveis) {
     const valor=typeof valorOriginal==='object'?JSON.stringify(valorOriginal):String(valorOriginal);
     const campo=document.createElement('div');
     campo.className='structured-result-field';
     if(RESULT_FULL_WIDTH_FIELDS.has(normalizarChaveResultado(chave))||valor.length>80)campo.classList.add('is-wide');
     const termo=document.createElement('dt');
-    termo.textContent=rotuloCampoResultado(chave);
+    const rotulo=rotuloCampoResultado(chave);
+    termo.textContent=rotulo;
+    const linha=document.createElement('div');
+    linha.className='structured-result-field-row';
     const descricao=document.createElement('dd');
     descricao.textContent=valor;
-    campo.append(termo,descricao);
+    const copiar=document.createElement('button');
+    copiar.type='button';
+    copiar.className='btn-sm structured-result-copy';
+    copiar.setAttribute('aria-label',`Copiar ${rotulo}`);
+    copiar.innerHTML='<i data-lucide="copy" aria-hidden="true"></i> Copiar';
+    copiar.addEventListener('click',()=>copiarCampoResultado(copiar,valor,rotulo));
+    linha.append(descricao,copiar);
+    campo.append(termo,linha);
     lista.append(campo);
   }
   elemento.append(lista);
+  renderLucideIcons(lista);
+}
+
+function rotuloDetalhesResultado(aberto=false) {
+  const total=Number(document.getElementById('output-val')?.dataset.totalFields || 0);
+  if(aberto)return 'Ocultar detalhes';
+  return total>4?'Ver todos os dados':'Ver detalhes';
 }
 
 function restaurarTopoResultadoAposRender(elemento,renderToken) {
@@ -613,7 +634,7 @@ function setOutput(val, structuredData = null) {
   for (const id of ['new-doc-btn','copy-btn','download-doc-btn','docs-expand-btn','docs-clear-btn']) document.getElementById(id).disabled=false;
   document.getElementById('docs-result-details').hidden=true;
   document.getElementById('docs-expand-btn').setAttribute('aria-expanded','false');
-  document.getElementById('docs-expand-btn').textContent='Ver detalhes';
+  document.getElementById('docs-expand-btn').textContent=rotuloDetalhesResultado();
 }
 
 function atualizarOpcoesDocumento(tipoAtual = currentType, tipoLote = document.getElementById('lote-tipo')?.value || '') {

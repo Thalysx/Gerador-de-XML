@@ -46,7 +46,7 @@ Every available generator SHALL have one unique registry entry containing its st
 - **THEN** Home discovery, the destination workspace and batch selection expose it according to its declared capabilities without maintaining a second generator catalog
 
 ### Requirement: Environment-aware catalog projections
-The registry SHALL expose generators and categories for the active `general` or `port` environment. Every generator SHALL belong to exactly one environment and SHALL NOT appear in the other environment's discovery, workspace, batch, XML or assistant choices.
+The registry SHALL expose generators and categories for the active `general` or `port` environment. Domain-specific generators SHALL belong to exactly one environment and SHALL NOT appear in the other environment's discovery, workspace, batch or assistant choices. NF-e, CT-e and General Registration SHALL be explicit shared capabilities.
 
 #### Scenario: General environment projection
 - **WHEN** the user selects Geradores Gerais
@@ -58,7 +58,11 @@ The registry SHALL expose generators and categories for the active `general` or 
 
 #### Scenario: Environment-specific fiscal document
 - **WHEN** the active environment changes
-- **THEN** Geradores Gerais exposes NF-e and QA Portuário exposes CT-e without offering both documents together
+- **THEN** both environments expose NF-e and CT-e together in the shared XML workspace
+
+#### Scenario: Environment-specific complete registration
+- **WHEN** the user opens General Registration in either environment
+- **THEN** the shared route presents the complete form appropriate to that environment
 
 ### Requirement: Generator behavior remains compatible
 Environment classification and shared presentation patterns SHALL NOT duplicate or alter the existing generation, validation, formatting, history or export rules. Opening a registered generator by identifier SHALL continue to reach its declared workspace and variant.

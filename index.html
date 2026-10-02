@@ -90,7 +90,6 @@
       <button type="button" class="tab-btn" id="tab-btn-xml" role="tab" aria-selected="false" aria-controls="tab-xml" tabindex="-1" onclick="switchTab('xml', this)"><i data-lucide="file-code-2" aria-hidden="true"></i> XML fiscal</button>
       <button type="button" class="tab-btn" id="tab-btn-docs" role="tab" aria-selected="false" aria-controls="tab-docs" tabindex="-1" onclick="switchTab('docs', this)"><i data-lucide="contact" aria-hidden="true"></i> Dados cadastrais</button>
       <button type="button" class="tab-btn" id="tab-btn-cadastro" role="tab" aria-selected="false" aria-controls="tab-cadastro" tabindex="-1" onclick="switchTab('cadastro', this)"><i data-lucide="panels-top-left" aria-hidden="true"></i> Cadastro geral</button>
-      <button type="button" class="tab-btn" id="tab-btn-scenarios" role="tab" aria-selected="false" aria-controls="tab-scenarios" tabindex="-1" onclick="switchTab('scenarios', this)"><i data-lucide="workflow" aria-hidden="true"></i> Cenários de teste</button>
       <button type="button" class="tab-btn" id="tab-btn-editor" role="tab" aria-selected="false" aria-controls="tab-editor" tabindex="-1" onclick="switchTab('editor', this)"><i data-lucide="square-pen" aria-hidden="true"></i> Editor XML</button>
       <button type="button" class="tab-btn" id="tab-btn-chat" role="tab" aria-selected="false" aria-controls="tab-chat" tabindex="-1" onclick="switchTab('chat', this)"><i data-lucide="message-circle-more" aria-hidden="true"></i> Assistente de geração</button>
       <button type="button" class="tab-btn" id="tab-btn-validacao" role="tab" aria-selected="false" aria-controls="tab-validacao" tabindex="-1" onclick="switchTab('validacao', this)">Validação XML</button>
@@ -143,7 +142,7 @@
     </div>
 
     <div class="xml-setup-row">
-    <div class="xml-form-selector campo-novo"><label for="xml-form-tipo">Documento</label><select id="xml-form-tipo" aria-controls="xml-form-cte xml-form-nfe" aria-describedby="xml-form-help"><option value="nfe">NF-e — Nota fiscal</option></select><p class="texto-apoio" id="xml-form-help">Este ambiente trabalha somente com NF-e.</p></div>
+    <div class="xml-form-selector campo-novo"><label for="xml-form-tipo">Documento</label><select id="xml-form-tipo" aria-controls="xml-form-cte xml-form-nfe" aria-describedby="xml-form-help"><option value="nfe">NF-e — Nota fiscal</option><option value="cte">CT-e — Conhecimento de transporte</option><option value="ambos" selected>Mostrar os dois formulários</option></select><p class="texto-apoio" id="xml-form-help">NF-e e CT-e são gerados juntos; este seletor altera apenas os formulários visíveis.</p></div>
     <section class="painel-novo xml-scenarios" aria-labelledby="xml-scenarios-title">
       <div class="xml-scenarios-title" id="xml-scenarios-title">Cenários salvos</div>
       <div class="cenario-form">
@@ -239,7 +238,7 @@
       </section>
     </div>
       <aside class="painel-novo xml-preview" aria-labelledby="xml-preview-title" tabindex="0">
-        <div class="painel-cabecalho"><h2 id="xml-preview-title">NF-e gerada</h2><select id="xml-preview-tipo" aria-label="XML para visualizar" onchange="atualizarPreviaXml()"><option value="nfe">NF-e</option></select></div>
+        <div class="painel-cabecalho"><h2 id="xml-preview-title">XMLs gerados</h2><select id="xml-preview-tipo" aria-label="XML para visualizar" onchange="atualizarPreviaXml()"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select></div>
         <div class="acoes-inline" role="group" aria-label="Ações do XML exibido"><button type="button" onclick="copiarXmlGerado()">Copiar XML</button><button type="button" onclick="baixarXmlGeradoAtual()">Baixar XML</button><button type="button" onclick="validarXmlGeradoAtual()">Validar XML</button><button type="button" class="btn-accent ui-primary" onclick="abrirXmlGeradoNoEditor()">Abrir no editor</button></div>
         <pre id="xml-preview-code" tabindex="0" aria-label="Prévia do XML gerado"></pre>
         <p id="xml-preview-status" class="texto-apoio" role="status"></p><ul id="xml-checks" class="xml-checks"></ul>
@@ -428,7 +427,7 @@
   <div class="tab-panel" id="tab-cadastro" role="tabpanel" aria-labelledby="tab-btn-cadastro" tabindex="0" hidden>
     <div class="cadastro-wrapper">
 
-      <section class="cadastro-group-selector" aria-labelledby="cadastro-group-title">
+      <section class="cadastro-group-selector" id="cadastro-general-selector" aria-labelledby="cadastro-group-title">
         <div class="cadastro-group-header">
           <div>
             <h2 id="cadastro-group-title">Grupos da ficha</h2>
@@ -456,7 +455,52 @@
 
         <!-- ── Coluna esquerda: formulário ── -->
         <div class="cadastro-col-left">
-          <div class="cadastro-form shadow-sm">
+          <section class="cadastro-form shadow-sm cadastro-portuario-form" id="cadastro-portuario-form" aria-labelledby="cadastro-portuario-title" hidden>
+            <div class="cadastro-section">
+              <div class="cadastro-section-title" id="cadastro-portuario-title"><span class="section-dot" aria-hidden="true"></span>Ficha portuária completa</div>
+              <p class="texto-apoio">Escolha a entidade que deseja cadastrar. Aqui ficam contato, endereço e atributos operacionais; os geradores individuais entregam somente os identificadores principais.</p>
+              <div class="campo-novo">
+                <label for="cad-port-tipo">Tipo de cadastro</label>
+                <select id="cad-port-tipo">
+                  <optgroup label="Pessoas">
+                    <option value="motorista">Motorista</option>
+                    <option value="operador-portuario">Operador portuário</option>
+                    <option value="visitante-portuario">Visitante portuário</option>
+                    <option value="pessoa-portuaria">Pessoa portuária</option>
+                  </optgroup>
+                  <optgroup label="Empresas">
+                    <option value="transportadora">Transportadora</option>
+                    <option value="cliente-portuario">Cliente portuário</option>
+                    <option value="depositante">Depositante</option>
+                    <option value="importador">Importador</option>
+                    <option value="exportador">Exportador</option>
+                  </optgroup>
+                  <optgroup label="Veículos">
+                    <option value="cavalo-mecanico">Cavalo mecânico</option>
+                    <option value="carreta">Carreta</option>
+                    <option value="conjunto-veicular">Conjunto veicular</option>
+                  </optgroup>
+                  <optgroup label="Logística e cargas">
+                    <option value="conteiner-detalhado">Contêiner detalhado</option>
+                    <option value="carga-solta">Carga solta</option>
+                    <option value="granel-solido">Granel sólido</option>
+                    <option value="granel-liquido">Granel líquido</option>
+                    <option value="carga-conteinerizada">Carga conteinerizada</option>
+                    <option value="documento-carga">Documentos de carga</option>
+                  </optgroup>
+                </select>
+              </div>
+              <button type="button" class="btn-accent ui-primary" onclick="gerarCadastroCompleto()"><i data-lucide="sparkles" aria-hidden="true"></i> Gerar ficha completa</button>
+              <p id="cad-port-status" class="texto-apoio" role="status" aria-live="polite">Escolha um tipo para gerar a ficha completa.</p>
+            </div>
+            <div class="cadastro-actions" role="group" aria-label="Ações do cadastro portuário">
+              <button type="button" class="btn-primary ui-secondary" onclick="copiarCadastroTexto()"><i data-lucide="copy" aria-hidden="true"></i> Copiar cadastro</button>
+              <button type="button" onclick="copiarCadastroJSON()"><i data-lucide="braces" aria-hidden="true"></i> Copiar JSON</button>
+              <button type="button" class="ui-danger" onclick="limparCadastro()"><i data-lucide="trash-2" aria-hidden="true"></i> Limpar</button>
+            </div>
+          </section>
+
+          <div class="cadastro-form shadow-sm" id="cadastro-general-form">
 
             <!-- Identificação pessoal -->
             <div class="cadastro-section" role="group" aria-labelledby="cad-identificacao-title">
@@ -613,8 +657,8 @@
         <div class="cadastro-col-right" role="region" aria-label="Resultados e histórico de cadastros" tabindex="0">
 
           <section class="painel-novo cadastro-empty" aria-label="Resultado do cadastro">
-            <h2>Seu cadastro aparece aqui</h2>
-            <p class="texto-apoio">Gere um perfil completo ou preencha os campos para conferir o resultado. Você poderá copiar os dados e restaurá-los pelo histórico.</p>
+            <h2 id="cadastro-empty-title">Seu cadastro aparece aqui</h2>
+            <p class="texto-apoio" id="cadastro-empty-description">Gere um perfil completo ou preencha os campos para conferir o resultado. Você poderá copiar os dados e restaurá-los pelo histórico.</p>
           </section>
 
           <!-- Resultado visual -->
@@ -623,7 +667,7 @@
             <div class="sr-only" id="cadastro-result-title">Resultado do cadastro geral</div>
             <div class="result-header">
               <div class="result-header-left">
-                <div class="doc-badge result-profile-badge">Perfil</div>
+                <div class="doc-badge result-profile-badge" id="cadastro-result-badge">Perfil</div>
                 <div>
                   <div class="result-title" id="res-nome-title">—</div>
                   <div class="result-subtitle" id="res-empresa-sub">—</div>
@@ -666,27 +710,6 @@
         </div>
       </div><!-- /.cadastro-layout -->
 
-    </div>
-  </div>
-
-  <!-- ══ TAB: EDITOR XML ══ -->
-  <div class="tab-panel" id="tab-scenarios" role="tabpanel" aria-labelledby="tab-btn-scenarios" tabindex="0" hidden>
-    <div class="screen-toolbar"><p class="texto-apoio">Massas sintéticas com as mesmas entidades referenciadas em todas as etapas.</p><div class="acoes-inline"><button type="button" id="scenario-copy" onclick="copiarCenarioTeste()" disabled>Copiar JSON</button><button type="button" id="scenario-download" onclick="baixarCenarioTeste()" disabled>Baixar JSON</button></div></div>
-    <div class="scenario-layout">
-      <section class="painel-novo scenario-controls" aria-labelledby="scenario-controls-title">
-        <h3 id="scenario-controls-title">Biblioteca de cenários</h3>
-        <p class="texto-apoio">Escolha o fluxo e o modo. No modo inválido, somente uma regra é quebrada e a inconsistência fica identificada.</p>
-        <div class="campo-novo"><label for="scenario-template">Fluxo operacional</label><select id="scenario-template"></select></div>
-        <div class="campo-novo"><label for="scenario-mode">Modo dos dados</label><select id="scenario-mode"><option value="valido">Válido</option><option value="invalido">Inválido intencional</option><option value="aleatorio">Aleatório</option></select></div>
-        <button type="button" class="btn-accent ui-primary" onclick="gerarCenarioTesteInterface()">Gerar cenário</button>
-        <hr class="divider">
-        <div class="campo-novo"><label for="scenario-history">Massas recentes deste navegador</label><select id="scenario-history"></select></div>
-        <div class="acoes-inline"><button type="button" id="scenario-history-load" onclick="carregarCenarioTesteHistorico()" disabled>Restaurar</button><button type="button" id="scenario-history-clear" class="ui-danger" onclick="limparHistoricoCenariosTeste()" disabled>Limpar massas</button></div>
-      </section>
-      <section class="scenario-output" aria-live="polite" aria-label="Resultado do cenário de teste">
-        <div id="scenario-empty" class="estado-vazio"><i data-lucide="workflow" aria-hidden="true"></i><strong>Nenhum cenário gerado</strong><span>Escolha um fluxo para criar entidades e etapas relacionadas.</span></div>
-        <div id="scenario-result" hidden></div>
-      </section>
     </div>
   </div>
 
@@ -753,7 +776,7 @@
         <form class="chat-form" onsubmit="return enviarChat(event)">
           <div class="chat-compose-main">
             <div id="chat-anexo-fluxo" class="chat-attachment-tools">
-              <details id="chat-anexo-area" class="chat-attachment-menu"><summary aria-label="Adicionar anexo" data-tooltip="Adicionar anexo"><i data-lucide="plus" aria-hidden="true"></i></summary><div class="chat-attachment-popover"><strong>Adicionar anexo</strong><p class="texto-apoio">O XML será enviado à IA somente com a próxima mensagem. Até 100 KB.</p><div class="acoes-inline"><label class="btn" for="chat-anexo-arquivo">Adicionar arquivo</label><input class="sr-only" type="file" id="chat-anexo-arquivo" accept=".xml,text/xml,application/xml"><select id="chat-anexo-tipo" aria-label="Tipo de XML atual"><option value="nfe">NF-e atual</option></select><button type="button" onclick="anexarXmlAtualIa()">Adicionar XML atual</button></div><label for="chat-anexo">Ou cole o conteúdo XML</label><textarea id="chat-anexo" spellcheck="false" placeholder="Cole o XML que deseja discutir" aria-describedby="chat-anexo-status"></textarea><p id="chat-anexo-status" class="texto-apoio" role="status">Nenhum anexo pendente.</p></div></details>
+              <details id="chat-anexo-area" class="chat-attachment-menu"><summary aria-label="Adicionar anexo" data-tooltip="Adicionar anexo"><i data-lucide="plus" aria-hidden="true"></i></summary><div class="chat-attachment-popover"><strong>Adicionar anexo</strong><p class="texto-apoio">O XML será enviado à IA somente com a próxima mensagem. Até 100 KB.</p><div class="acoes-inline"><label class="btn" for="chat-anexo-arquivo">Adicionar arquivo</label><input class="sr-only" type="file" id="chat-anexo-arquivo" accept=".xml,text/xml,application/xml"><select id="chat-anexo-tipo" aria-label="Tipo de XML atual"><option value="nfe">NF-e atual</option><option value="cte">CT-e atual</option></select><button type="button" onclick="anexarXmlAtualIa()">Adicionar XML atual</button></div><label for="chat-anexo">Ou cole o conteúdo XML</label><textarea id="chat-anexo" spellcheck="false" placeholder="Cole o XML que deseja discutir" aria-describedby="chat-anexo-status"></textarea><p id="chat-anexo-status" class="texto-apoio" role="status">Nenhum anexo pendente.</p></div></details>
               <div id="chat-anexo-pendente" class="chat-attachment-chip" hidden><span id="chat-anexo-nome">XML pendente</span><button type="button" id="chat-anexo-limpar" onclick="limparAnexoIa()" aria-label="Remover anexo">×</button></div>
             </div>
             <label class="sr-only" for="chat-pedido">Mensagem</label><textarea id="chat-pedido" rows="1" maxlength="6000" autocomplete="off" placeholder="Pergunte ou peça para gerar algo..." aria-describedby="chat-status" required></textarea>
@@ -783,12 +806,12 @@
           </button>
         </div>
         <form onsubmit="return validarXmlColado(event)"><label for="validacao-texto">Ou cole o conteúdo XML</label><textarea id="validacao-texto" spellcheck="false" placeholder="Cole aqui o conteúdo de um arquivo XML"></textarea><button type="submit" class="btn-accent ui-primary">Validar conteúdo</button></form>
-        <hr class="divider"><div class="campo-novo"><label for="validacao-gerado-tipo">Documento atual do gerador</label><select id="validacao-gerado-tipo"><option value="nfe">NF-e</option></select></div><button type="button" onclick="validarXmlDoGerador()">Validar XML do gerador</button>
+        <hr class="divider"><div class="campo-novo"><label for="validacao-gerado-tipo">Documento atual do gerador</label><select id="validacao-gerado-tipo"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select></div><button type="button" onclick="validarXmlDoGerador()">Validar XML do gerador</button>
         <section class="validacao-negativa" aria-labelledby="validacao-negativa-title">
           <h4 id="validacao-negativa-title">Criar teste negativo</h4>
           <p class="texto-apoio">Gera uma cópia sintética intencionalmente inválida. O XML fiscal atual permanece inalterado.</p>
           <div class="validacao-negativa-campos">
-            <div class="campo-novo"><label for="validacao-negativa-tipo">Documento-base</label><select id="validacao-negativa-tipo"><option value="nfe">NF-e</option></select></div>
+            <div class="campo-novo"><label for="validacao-negativa-tipo">Documento-base</label><select id="validacao-negativa-tipo"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select></div>
             <div class="campo-novo"><label for="validacao-negativa-variante">Inconsistência intencional</label><select id="validacao-negativa-variante"><option value="cpf-invalido">CPF inválido</option><option value="cnpj-invalido">CNPJ inválido</option><option value="chave-invalida">Chave inválida</option><option value="campo-ausente">Campo obrigatório ausente</option><option value="formato-invalido">Formato inválido</option><option value="tag-invalida">Tag inválida</option><option value="xml-malformado">XML malformado</option></select></div>
           </div>
           <button type="button" class="ui-danger" onclick="gerarXmlNegativo()">Gerar XML intencionalmente inválido</button>
@@ -822,7 +845,6 @@
 <script src="assets/js/finance-generators.js"></script>
 <script src="assets/js/badge-generators.js"></script>
 <script src="assets/js/port-generators.js"></script>
-<script src="assets/js/test-scenarios.js"></script>
 <script src="assets/js/historico.js"></script>
 <script src="assets/js/editor-xml.js"></script>
 <script src="assets/js/geracao-dados.js"></script>
@@ -836,5 +858,6 @@
 <script src="assets/js/visual-layout.js"></script>
 <script src="assets/js/home-dashboard.js"></script>
 <script src="assets/js/productivity.js"></script>
+<script type="module" src="assets/js/speed-insights.js"></script>
 </body>
 </html>

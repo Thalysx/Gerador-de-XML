@@ -66,6 +66,24 @@ async function copiarTexto(texto, mensagemSucesso = 'Copiado para a área de tra
   }
 }
 
+async function copiarCampoResultado(botao, valor, rotulo = 'Valor') {
+  const ok = await copiarTexto(valor, `${rotulo} copiado.`);
+  if (!ok || !botao) return ok;
+  const conteudoOriginal = botao.innerHTML;
+  const nomeOriginal = botao.getAttribute('aria-label') || `Copiar ${rotulo}`;
+  botao.innerHTML = '<i data-lucide="check" aria-hidden="true"></i> Copiado';
+  botao.setAttribute('aria-label', `${rotulo} copiado`);
+  botao.classList.add('copied', 'is-copied');
+  renderLucideIcons(botao);
+  setTimeout(() => {
+    botao.innerHTML = conteudoOriginal;
+    botao.setAttribute('aria-label', nomeOriginal);
+    botao.classList.remove('copied', 'is-copied');
+    renderLucideIcons(botao);
+  }, 1500);
+  return true;
+}
+
 function rolarParaElemento(el) {
   if (!el) return;
   const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;

@@ -1,7 +1,7 @@
 // Busca global, painel por ambiente e histórico operacional sem resultados gerados.
 const PRODUCTIVITY_ACTIVITY_KEY = 'futureg:activity-v1';
 const PRODUCTIVITY_ACTIVITY_LIMIT = 50;
-const PRODUCTIVITY_ACTIVITY_KINDS = Object.freeze(['single','xml','batch','scenario','export']);
+const PRODUCTIVITY_ACTIVITY_KINDS = Object.freeze(['single','xml','batch','export']);
 let productivityActivity = [];
 let commandPaletteItems = [];
 let commandPaletteIndex = 0;
@@ -50,7 +50,7 @@ function recordProductivityActivity(target, options = {}) {
 }
 
 function productivityKindLabel(entry) {
-  const labels = {single:'Geração individual',xml:'XML gerado',batch:'Lote gerado',scenario:'Massa de cenário',export:'Lote exportado'};
+  const labels = {single:'Geração individual',xml:'XML gerado',batch:'Lote gerado',export:'Lote exportado'};
   return `${labels[entry.kind]}${entry.quantity > 1 ? ` · ${entry.quantity} itens` : ''}`;
 }
 
@@ -66,12 +66,10 @@ function renderProductivityDashboard() {
   const available = generatorsForEnvironment(environment).filter(item => item.discoverable !== false);
   const favorites = generatorIdsForEnvironment(readGeneratorIds(FAVORITES_KEY), environment);
   const activity = productivityActivity.filter(item => item.environment === environment);
-  const specialized = environment === 'port'
-    ? {label:'Massas de cenário',value:activity.filter(item => item.kind === 'scenario').length}
-    : {label:'Lotes recentes',value:activity.filter(item => item.kind === 'batch').length};
+  const specialized = {label:'Lotes recentes',value:activity.filter(item => item.kind === 'batch').length};
   document.getElementById('productivity-dashboard-title').textContent = `Resumo de ${environmentConfig.label}`;
   document.getElementById('productivity-dashboard-description').textContent = environment === 'port'
-    ? 'Ferramentas, massas e operações recentes do contexto portuário.'
+    ? 'Ferramentas e operações recentes do contexto portuário.'
     : 'Ferramentas e gerações recentes do contexto de dados gerais.';
   metrics.innerHTML = [
     ['Ferramentas disponíveis',available.length],

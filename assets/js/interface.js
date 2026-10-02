@@ -4,6 +4,7 @@
 function switchTab(tab, btn) {
   const panelId = 'tab-' + tab;
   const selectedBtn = btn || document.querySelector(`.tab-btn[aria-controls="${panelId}"]`);
+  const panelWasActive = document.getElementById(panelId)?.classList.contains('active');
 
   document.querySelectorAll('.tab-btn').forEach(b => {
     const selected = b === selectedBtn;
@@ -17,9 +18,11 @@ function switchTab(tab, btn) {
     p.classList.toggle('active', selected);
     p.hidden = !selected;
   });
-  const scrollRoot = document.scrollingElement || document.documentElement;
-  scrollRoot.scrollTop = 0;
-  document.body.scrollTop = 0;
+  if (!panelWasActive) {
+    const scrollRoot = document.scrollingElement || document.documentElement;
+    scrollRoot.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }
   atualizarCabecalhoLayout();
   if (window.matchMedia?.('(max-width: 700px)').matches) {
     definirSidebar(true, false);

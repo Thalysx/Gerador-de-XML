@@ -24,6 +24,20 @@ QA Portuário SHALL support synthetic Driver, Operator, Visitor and Person profi
 - **WHEN** a supported Driver, Operator, Visitor or Person profile is generated
 - **THEN** it contains the applicable listed identity, contact, badge and qualification data
 
+### Requirement: Concise generators and complete registration
+
+Individual QA Portuário generators SHALL show only the essential identifiers needed for quick use. General Registration SHALL remain available in QA Portuário and SHALL contain the complete profile, company, vehicle, container, cargo or cargo-document data produced by the same domain engines.
+
+#### Scenario: Generate a carrier from the individual generator
+
+- **WHEN** a user activates Carrier in the data-generator workspace
+- **THEN** the result contains only legal name and CNPJ
+
+#### Scenario: Generate a complete carrier registration
+
+- **WHEN** a user selects Carrier in General Registration while QA Portuário is active
+- **THEN** the registration includes legal and trade names, CNPJ, IE, activity, contact, phone, e-mail, address and test attributes
+
 ### Requirement: Companies
 
 QA Portuário SHALL support Carrier, Client, Depositor, Importer and Exporter with CNPJ, IE, legal/trade names, contacts, address and test attributes.
@@ -52,6 +66,12 @@ Support container number/check digit, type, ISO, seal, tare, gross weight and ot
 - **THEN** its number, check digit, type, ISO, seal, tare, gross weight and applicable properties are available
 - **AND** its number is consistent with ISO 6346 and check digit validation when applicable
 
+#### Scenario: Avoid duplicate container generators
+
+- **WHEN** the user browses the individual QA Portuário generators
+- **THEN** Container, Container and seal, and Seal are available without a duplicate Detailed container option
+- **AND** the complete container attributes remain available from General Registration
+
 ### Requirement: Cargo
 
 QA Portuário SHALL support Loose Cargo, Solid Bulk, Liquid Bulk and Containerized Cargo with description, quantity, package type, net/gross weight, unit and NCM.
@@ -72,13 +92,13 @@ Users SHALL be able to manually add multiple NCMs, remove individual entries, va
 
 ### Requirement: Port documents
 
-Centralize CT-e/XML, CT-e key, Booking, DI, DUIMP, DU-E, seal and cargo documents. Existing CT-e XML generation SHALL migrate without functional loss. NF-e and its access key SHALL remain exclusive to General Generators.
+Centralize CT-e/XML, CT-e key, Booking, DI, DUIMP, DU-E, seal and cargo documents. Existing CT-e XML generation SHALL remain available without functional loss. NF-e and CT-e XML forms SHALL remain together and SHALL NOT be divided by the active environment switch.
 
 #### Scenario: Access documents in each environment
 
 - **WHEN** a user accesses the centralized port-document tools
 - **THEN** CT-e/XML, CT-e key, Booking, DI, DUIMP, DU-E, seal and cargo documents are available without loss of existing CT-e generation
-- **AND** NF-e and its access key remain exclusive to General Generators
+- **AND** NF-e and CT-e remain available together in the XML workspace in either environment
 
 ### Requirement: Environment boundary
 

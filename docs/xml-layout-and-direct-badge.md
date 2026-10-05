@@ -17,3 +17,7 @@ A paleta compartilhada da alpha.4 permanece. Os motores, contratos de dados, arm
 - Evidências locais: `artifacts/visual-review/auditoria-200.json` e `../artifacts/refactor-the-generator-ui/final/measurements.json`, com capturas dos respectivos layouts.
 
 As verificações cobrem Chromium automatizado. Dispositivo físico, outros navegadores e leitor de tela permanecem verificações manuais. A IA pública da Vercel continua dependente da configuração da hospedagem, fora desta correção.
+
+## Publicação
+
+Enviada para `main` no commit `18df014` e publicada na Vercel em 05/10/2026. Deploy `dpl_Ae9rNg9ptJMZhuXPMVpidXpcmJ9Z`: Ready, Production, 16 segundos. Os 17 ativos públicos conferidos correspondem ao commit/build; crachá automático e XML restaurado foram confirmados no navegador de produção. Registro em `VERIFICACAO-PRODUCAO.md`.

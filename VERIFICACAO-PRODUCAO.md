@@ -66,3 +66,17 @@ Em 05/10/2026, o commit `b004d04c6ad36598fd449284cf79b65783471eee` foi enviado �
 **Limitação observada:** `/api/status` nessa Vercel retornou HTTP 503 e `configured: false`, informando que a IA pública ainda não está configurada. A publicação confirma a interface e os geradores locais; não certifica IA externa nem Redis nessa hospedagem. Nenhuma credencial foi criada, copiada ou alterada para esta entrega.
 
 Evidência HTTP local: `artifacts/visual-system-refresh/alpha4-production-http.json`. Permanecem as conferências manuais de outros navegadores, dispositivo real e leitor de tela descritas em `docs/visual-system-refresh.md`.
+
+## Publicação 3.0.0-alpha.5 — Vercel
+
+Em 05/10/2026, a correção do crachá e do XML Fiscal foi enviada para `main` pelo commit `18df014932f455b5dd79333c94e559815efc02a8`.
+
+- Produção: https://gerador-de-xml.vercel.app/
+- Deploy da implementação: `dpl_Ae9rNg9ptJMZhuXPMVpidXpcmJ9Z`, Ready, Production, build de 16 segundos.
+- URL do deploy: https://gerador-de-4l4fwyj3o-thalys-fef7.vercel.app/
+- Check Vercel no GitHub: success.
+- Os 17 arquivos públicos conferidos retornaram HTTP 200 e SHA-256 idêntico ao commit/build local, incluindo registry, fluxo XML e seis folhas CSS.
+- No navegador de produção, selecionar Crachá gerou o cartão imediatamente. XML Fiscal apresentou campos, cenários, NCMs e quatro ações de resultado diretamente visíveis.
+- `/api/status` continuou respondendo HTTP 503, `configured:false`; a configuração da IA pública permanece fora desta correção.
+
+Evidência HTTP: `artifacts/xml-layout-and-direct-badge/production-http.json`. Comportamento e validação local em `docs/xml-layout-and-direct-badge.md`.

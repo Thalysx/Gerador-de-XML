@@ -4,6 +4,12 @@ Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O hist
 
 ## [Não publicado]
 
+## [3.0.0-alpha.5] — 2026-10-05
+
+- Crachá passa a gerar imediatamente ao ativar a opção, inclusive pela Home e busca global, usando as opções atuais. Gerar e Ctrl+Enter permanecem disponíveis para regeneração.
+- XML Fiscal recupera a organização anterior à revisão visual, com campos, cenários, NCMs, configuração e ações diretamente disponíveis. Preservados o padrão de cores e o foco ao abrir uma cópia no Editor.
+- Verificação: 118 testes, build e auditoria Chromium aprovados; 280 estados responsivos sem overflow. Relatório em `docs/xml-layout-and-direct-badge.md`.
+
 ## [3.0.0-alpha.4] — 2026-10-05
 
 ### Interface — 2026-10-05

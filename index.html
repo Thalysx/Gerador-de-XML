@@ -138,33 +138,35 @@
     <div class="toolbar shadow-sm">
       <span class="toolbar-label" id="xml-actions-label">Gerar</span>
       <div class="toolbar-actions" role="group" aria-labelledby="xml-actions-label">
-        <button type="button" class="btn btn-primary ui-primary" onclick="processarXML(acao.regenerar)"><i data-lucide="refresh-cw" aria-hidden="true"></i> Gerar XML</button>
-
-
+        <button type="button" class="btn btn-primary ui-primary" onclick="processarXML(acao.regenerar)"><i data-lucide="refresh-cw" aria-hidden="true"></i> Gerar novos dados</button>
+        <button type="button" onclick="gerarXMLComCampos(true)"><i data-lucide="square-pen" aria-hidden="true"></i> Usar campos atuais</button>
+        <button type="button" class="lock-badge" id="lock-btn" onclick="toggleLock()" aria-pressed="false" aria-label="Preservar os campos XML ao gerar novamente" data-bs-toggle="tooltip" data-bs-title="Manter os dados editados ao gerar novamente"><i data-lucide="lock-open" aria-hidden="true"></i> Preservar campos</button>
       </div>
-      <details class="action-disclosure "><summary aria-label="Opções de geração"><i data-lucide="ellipsis" aria-hidden="true"></i><span>Opções de geração</span></summary><div class="action-disclosure-content">        <button type="button" onclick="gerarXMLComCampos(true)"><i data-lucide="square-pen" aria-hidden="true"></i> Usar campos atuais</button>        <button type="button" class="lock-badge" id="lock-btn" onclick="toggleLock()" aria-pressed="false" aria-label="Preservar os campos XML ao gerar novamente" data-bs-toggle="tooltip" data-bs-title="Manter os dados editados ao gerar novamente"><i data-lucide="lock-open" aria-hidden="true"></i> Preservar campos</button>
       <div class="sr-only" id="xml-download-title">Arquivos XML gerados para download</div>
       <div class="download-area" id="downloadArea" role="group" aria-labelledby="xml-download-title"></div>
       <div class="sr-only" id="xml-download-status" role="status" aria-live="polite" aria-atomic="true">Nenhum arquivo XML gerado ainda.</div>
-</div></details>
-
     </div>
 
     <div class="xml-setup-row">
     <div class="xml-form-selector campo-novo"><label for="xml-form-tipo">Documento</label><select id="xml-form-tipo" aria-controls="xml-form-cte xml-form-nfe" aria-describedby="xml-form-help"><option value="nfe">NF-e — Nota fiscal</option><option value="cte">CT-e — Conhecimento de transporte</option><option value="ambos" selected>Mostrar os dois formulários</option></select><p class="texto-apoio" id="xml-form-help">NF-e e CT-e são gerados juntos; este seletor altera apenas os formulários visíveis.</p></div>
-
+    <section class="painel-novo xml-scenarios" aria-labelledby="xml-scenarios-title">
+      <div class="xml-scenarios-title" id="xml-scenarios-title">Cenários salvos</div>
+      <div class="cenario-form">
+        <div class="campo-novo"><label for="cenario-nome">Nome do novo cenário</label><input id="cenario-nome" maxlength="80" placeholder="Ex.: carga em toneladas"></div>
+        <button type="button" onclick="salvarCenarioXml()">Salvar cenário atual</button>
+        <div class="campo-novo"><label for="cenario-lista">Cenários deste navegador</label><select id="cenario-lista"></select></div>
+        <button type="button" onclick="carregarCenarioXml()">Carregar</button><button type="button" onclick="excluirCenarioXml()">Excluir</button>
+      </div>
+    </section>
     </div>
-
-    <div class="xml-workbench">
-      <aside class="painel-novo xml-preview" aria-labelledby="xml-preview-title" tabindex="0">
-        <div class="painel-cabecalho"><h2 id="xml-preview-title">XMLs gerados</h2><select id="xml-preview-tipo" aria-label="XML para visualizar" onchange="atualizarPreviaXml()"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select></div>
-        <div class="acoes-inline" role="group" aria-label="Ações do XML exibido"><button type="button" class="ui-ghost" onclick="copiarXmlGerado()">Copiar XML</button><button type="button" class="ui-ghost" onclick="baixarXmlGeradoAtual()">Baixar XML</button><button type="button" class="ui-secondary" onclick="validarXmlGeradoAtual()">Validar XML</button><details class="action-disclosure "><summary aria-label="Mais ações"><i data-lucide="ellipsis" aria-hidden="true"></i><span>Mais ações</span></summary><div class="action-disclosure-content"><button type="button" class="ui-ghost" onclick="abrirXmlGeradoNoEditor()">Abrir no editor</button><button type="button" class="ui-ghost" data-open-disclosure="xml-advanced">Editar campos</button></div></details></div>
-        <pre id="xml-preview-code" tabindex="0" aria-label="Prévia do XML gerado"></pre>
-        <p id="xml-preview-status" class="texto-apoio" role="status"></p><ul id="xml-checks" class="xml-checks"></ul>
-        <details class="ui-disclosure"><summary>Sobre a validação</summary><p class="texto-apoio">XML sintético para testes. A validação local e XSD não confere assinatura digital nem autorização SEFAZ.</p></details>
-      </aside>
-      <details class="ui-disclosure xml-fields" id="xml-advanced"><summary>Editar campos e opções avançadas</summary><div class="xml-advanced-content">
-<div class="xml-grid-2">
+    <section class="painel-novo ncm-manual" aria-labelledby="ncm-manual-title">
+      <div><strong id="ncm-manual-title">NCMs manuais</strong><p class="texto-apoio" id="ncm-manual-help">Adicione códigos de 8 dígitos separados por espaço, vírgula ou linha. Ao aplicar, eles seguem a ordem dos produtos atuais.</p></div>
+      <form class="ncm-manual-form" onsubmit="return adicionarNcmsManuais(event)"><label class="sr-only" for="ncm-manual-input">NCMs manuais</label><input id="ncm-manual-input" inputmode="numeric" autocomplete="off" placeholder="Ex.: 17019900, 12019000" aria-describedby="ncm-manual-status"><button type="submit">Adicionar NCMs</button></form>
+      <div id="ncm-manual-lista" class="ncm-manual-lista" aria-label="NCMs manuais adicionados"></div>
+      <div class="acoes-inline"><button type="button" id="ncm-manual-aplicar" onclick="aplicarNcmsManuais()" disabled>Aplicar aos produtos</button><button type="button" id="ncm-manual-limpar" onclick="limparNcmsManuais()" disabled>Limpar lista</button></div>
+      <p id="ncm-manual-status" class="texto-apoio" role="status" aria-live="polite">Nenhum NCM manual adicionado.</p>
+    </section>
+    <div class="xml-workbench"><div class="xml-grid-2">
       <!-- CTe Card -->
       <section class="doc-card shadow-sm" id="xml-form-cte" aria-labelledby="cte-card-title" hidden>
         <div class="doc-card-header">
@@ -241,24 +243,13 @@
         </div>
       </section>
     </div>
-
-        <details class="ui-disclosure"><summary>Cenários salvos</summary>    <section class="painel-novo xml-scenarios" aria-labelledby="xml-scenarios-title">
-      <div class="xml-scenarios-title" id="xml-scenarios-title">Cenários salvos</div>
-      <div class="cenario-form">
-        <div class="campo-novo"><label for="cenario-nome">Nome do novo cenário</label><input id="cenario-nome" maxlength="80" placeholder="Ex.: carga em toneladas"></div>
-        <button type="button" onclick="salvarCenarioXml()">Salvar cenário atual</button>
-        <div class="campo-novo"><label for="cenario-lista">Cenários deste navegador</label><select id="cenario-lista"></select></div>
-        <button type="button" onclick="carregarCenarioXml()">Carregar</button><button type="button" onclick="excluirCenarioXml()">Excluir</button>
-      </div>
-    </section></details>
-        <details class="ui-disclosure"><summary>NCMs manuais</summary>    <section class="painel-novo ncm-manual" aria-labelledby="ncm-manual-title">
-      <div><strong id="ncm-manual-title">NCMs manuais</strong><p class="texto-apoio" id="ncm-manual-help">Adicione códigos de 8 dígitos separados por espaço, vírgula ou linha. Ao aplicar, eles seguem a ordem dos produtos atuais.</p></div>
-      <form class="ncm-manual-form" onsubmit="return adicionarNcmsManuais(event)"><label class="sr-only" for="ncm-manual-input">NCMs manuais</label><input id="ncm-manual-input" inputmode="numeric" autocomplete="off" placeholder="Ex.: 17019900, 12019000" aria-describedby="ncm-manual-status"><button type="submit">Adicionar NCMs</button></form>
-      <div id="ncm-manual-lista" class="ncm-manual-lista" aria-label="NCMs manuais adicionados"></div>
-      <div class="acoes-inline"><button type="button" id="ncm-manual-aplicar" onclick="aplicarNcmsManuais()" disabled>Aplicar aos produtos</button><button type="button" id="ncm-manual-limpar" onclick="limparNcmsManuais()" disabled>Limpar lista</button></div>
-      <p id="ncm-manual-status" class="texto-apoio" role="status" aria-live="polite">Nenhum NCM manual adicionado.</p>
-    </section></details>
-      </div></details>
+      <aside class="painel-novo xml-preview" aria-labelledby="xml-preview-title" tabindex="0">
+        <div class="painel-cabecalho"><h2 id="xml-preview-title">XMLs gerados</h2><select id="xml-preview-tipo" aria-label="XML para visualizar" onchange="atualizarPreviaXml()"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select></div>
+        <div class="acoes-inline" role="group" aria-label="Ações do XML exibido"><button type="button" onclick="copiarXmlGerado()">Copiar XML</button><button type="button" onclick="baixarXmlGeradoAtual()">Baixar XML</button><button type="button" onclick="validarXmlGeradoAtual()">Validar XML</button><button type="button" class="btn-accent ui-primary" onclick="abrirXmlGeradoNoEditor()">Abrir no editor</button></div>
+        <pre id="xml-preview-code" tabindex="0" aria-label="Prévia do XML gerado"></pre>
+        <p id="xml-preview-status" class="texto-apoio" role="status"></p><ul id="xml-checks" class="xml-checks"></ul>
+        <p class="texto-apoio">XML para testes. As verificações básicas não conferem schema, regras fiscais nem assinatura digital.</p>
+      </aside>
     </div>
   </div>
 

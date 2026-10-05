@@ -30,7 +30,7 @@ const GENERATORS = Object.freeze([
   {id:'cadastro',label:'Cadastro completo',description:'Ficha sintética completa do ambiente atual',category:'pessoa',environments:SHARED_ENVIRONMENTS,route:'cadastro',priority:true},
   {id:'rg',label:'RG',description:'Registro de identidade no padrão de São Paulo',category:'pessoa',environments:GENERAL_ENVIRONMENT,run:()=>gerarDocumentoExtra('rg'),mask:true,validate:true},
   {id:'cnh',label:'CNH',description:'Número de registro nacional com dois dígitos verificadores',category:'pessoa',environments:GENERAL_ENVIRONMENT,run:()=>gerarCNH(),validate:true},
-  {id:'cracha',label:'Crachá',description:'Identificação funcional sintética com avatar e validade',category:'pessoa',environments:GENERAL_ENVIRONMENT,keywords:['badge','funcionario','identificacao funcional'],run:()=>gerarCrachaIndividual(),requiresConfiguration:true},
+  {id:'cracha',label:'Crachá',description:'Identificação funcional sintética com avatar e validade',category:'pessoa',environments:GENERAL_ENVIRONMENT,keywords:['badge','funcionario','identificacao funcional'],run:()=>gerarCrachaIndividual()},
   {id:'cnpj-alfa',label:'CNPJ alfanumérico',description:'Cadastro empresarial alfanumérico',category:'empresa',environments:GENERAL_ENVIRONMENT,run:()=>gerarCNPJAlfanumericoComToggle(),name:true,mask:true,validate:true},
   {id:'nome-fantasia',label:'Nome fantasia',description:'Marca empresarial fictícia',category:'empresa',environments:GENERAL_ENVIRONMENT,run:()=>gerarDocumentoExtra('nome-fantasia')},
   {id:'email',label:'E-mail',description:'Endereço baseado em nome',category:'contato',environments:GENERAL_ENVIRONMENT,keywords:['email'],run:()=>gerarEmailDocs()},

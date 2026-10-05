@@ -1,6 +1,6 @@
 {
   "name": "future-g",
-  "version": "3.0.0-alpha.4",
+  "version": "3.0.0-alpha.5",
   "private": true,
   "description": "FUTURE G: plataforma de dados sintéticos para desenvolvimento e QA",
   "scripts": {

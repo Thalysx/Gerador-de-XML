@@ -737,7 +737,10 @@ test('fase 6 adiciona crachá sintético visual, restaurável e exportável', as
     w.openGenerator('cracha');
     assert.equal(w.document.getElementById('docs-badge-options').hidden,false);
     assert.equal(w.document.getElementById('docs-generate-btn').hidden,false);
-    w.generateSelectedDocument();
+    assert.equal(run('historicoDocsList.length'),0);
+    const option=w.document.querySelector('[data-generator-id="cracha"]');
+    assert.equal(option.dataset.directGeneration,'true');
+    option.click();
     const primeiro=JSON.parse(run('JSON.stringify(crachaAtual)'));
     assert.match(primeiro.codigo,/^CR-\d{6}$/);
     assert.match(primeiro.matricula,/^MAT-\d{4}-\d{6}$/);
@@ -776,6 +779,31 @@ test('fase 6 adiciona crachá sintético visual, restaurável e exportável', as
     assert.match(run('downloadsCracha[0].texto.split("\\r\\n")[0]'),/modelo.*codigo.*validade.*codigo_barras/);
     assert.equal(run('downloadsCracha[0].texto.split("\\r\\n").length'),501);
   } finally { dom.window.close(); }
+});
+
+test('crachá gera automaticamente pela Home e busca, respeitando opções e regeneração', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.document.getElementById('gerador-cracha-codigo-barras').checked=false;
+    const homeSearch=w.document.getElementById('home-generator-search');
+    homeSearch.value='crachá';homeSearch.dispatchEvent(new w.Event('input',{bubbles:true}));
+    w.document.querySelector('[data-home-select="cracha"]').click();
+    assert.equal(run('historicoDocsList.length'),1);
+    assert.equal(run('crachaAtual.codigo_barras'),'');
+    assert.equal(w.document.getElementById('badge-preview').hidden,false);
+    w.document.getElementById('docs-generate-btn').click();
+    assert.equal(run('historicoDocsList.length'),2);
+    w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',ctrlKey:true,bubbles:true}));
+    assert.equal(run('historicoDocsList.length'),3);
+    w.document.getElementById('gerador-cracha-codigo-barras').checked=true;
+    w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true}));
+    const input=w.document.getElementById('command-palette-input');
+    input.value='crachá';input.dispatchEvent(new w.Event('input',{bubbles:true}));
+    input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
+    assert.equal(w.document.getElementById('command-palette').hidden,true);
+    assert.equal(run('historicoDocsList.length'),4);
+    assert.match(run('crachaAtual.codigo_barras'),/^TESTE-CR\d{6}$/);
+  } finally {dom.window.close();}
 });
 
 test('fase 6 registra todos os novos geradores para busca, favoritos e recentes', async () => {
@@ -1451,25 +1479,28 @@ test('divulgação progressiva preserva preferências, edição e resultados exi
   } finally {dom.window.close();}
 });
 
-test('campos XML recolhidos continuam disponíveis para geração e edição contextual', async () => {
+test('XML restaura campos, cenários, NCM e ações diretamente disponíveis', async () => {
   const {dom,w,run}=await abrir();
   try {
     w.switchTab('xml');
-    const advanced=w.document.getElementById('xml-advanced');
-    assert.equal(advanced.open,false);
+    assert.equal(w.document.getElementById('xml-advanced'),null);
+    for(const id of ['xml-form-tipo','cenario-nome','cenario-lista','ncm-manual-input','nfe_nomeEmit','cte_nomeEmit']) {
+      assert.equal(w.document.getElementById(id).closest('details'),null,id);
+    }
+    const workspace=w.document.querySelector('.xml-workbench');
+    assert.equal(workspace.firstElementChild.classList.contains('xml-grid-2'),true);
+    assert.equal(workspace.lastElementChild.classList.contains('xml-preview'),true);
+    const buttons=w.document.querySelectorAll('.xml-preview .acoes-inline button');
+    assert.equal(buttons.length,4);
+    buttons.forEach(button=>assert.equal(button.closest('details'),null));
     w.document.getElementById('nfe_nomeEmit').value='Empresa sintética para QA';
     w.gerarXMLComCampos(true);
     assert.match(run('serializarXml(xmlsGerados.nfe)'),/Empresa sintética para QA/);
-    const button=w.document.querySelector('[data-open-disclosure="xml-advanced"]');
-    const actions=button.closest('details');actions.open=true;button.click();
-    assert.equal(advanced.open,true);
-    assert.equal(actions.open,false);
     assert.equal(w.document.getElementById('nfe_nomeEmit').value,'Empresa sintética para QA');
-    assert.ok(advanced.contains(w.document.activeElement));
   } finally {dom.window.close();}
 });
 
-test('abrir o Editor por ações contextuais mantém foco visível e o XML original', async () => {
+test('abrir o Editor pela ação XML direta mantém foco visível e o XML original', async () => {
   const {dom,w,run}=await abrir();
   try {
     w.switchTab('xml');
@@ -1479,8 +1510,8 @@ test('abrir o Editor por ações contextuais mantém foco visível e o XML origi
     const button=w.document.querySelector('button[onclick="abrirXmlGeradoNoEditor()"]');
     // The outside-only harness does not execute HTML inline handlers.
     button.onclick=w.abrirXmlGeradoNoEditor;
-    const actions=button.closest('details');actions.open=true;button.focus();button.click();
-    assert.equal(actions.open,false);
+    assert.equal(button.closest('details'),null);
+    button.focus();button.click();
     assert.equal(w.document.activeElement,w.document.getElementById('tab-editor'));
     assert.equal(w.document.activeElement.hidden,false);
     assert.equal(run('serializarXml(xmlsGerados.cte)'),original);

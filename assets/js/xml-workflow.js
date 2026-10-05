@@ -110,6 +110,7 @@ function abrirXmlGeradoNoEditor() {
   editorSubTabAtual = tipo === 'nfe' ? 'produtos' : 'estrutura';
   editorPosCarga(id);
   switchTab('editor');
+  document.getElementById('tab-editor').focus({preventScroll:true});
   mostrarStatus('Cópia do XML aberta no editor.');
 }
 

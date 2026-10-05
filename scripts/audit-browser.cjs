@@ -634,19 +634,19 @@ async function main() {
     writeFileSync(path.join(SAIDA, 'future-g-desktop-light.png'), Buffer.from(capturaMarcaClara.data, 'base64'));
     console.error('[auditoria] identidade capturada nos dois temas');
 
-    const editorContextual = await avaliar(cdp, `(() => {
+    const editorDireto = await avaliar(cdp, `(() => {
       switchTab('xml');
       document.getElementById('xml-preview-tipo').value='cte';
       gerarXMLComCampos();
       const original=serializarXml(xmlsGerados.cte);
       const button=document.querySelector('button[onclick="abrirXmlGeradoNoEditor()"]');
-      const menu=button.closest('details');menu.open=true;button.focus();button.click();
+      const acaoDireta=button.closest('details')===null;button.focus();button.click();
       const panel=document.getElementById('tab-editor');
       const rect=panel.getBoundingClientRect();
       return {
         focoNoPainel:document.activeElement===panel,
         painelVisivel:!panel.hidden&&rect.width>0&&rect.height>0,
-        menuFechado:!menu.open,
+        acaoDireta,
         fontePreservada:serializarXml(xmlsGerados.cte)===original,
         copiaIntegral:editorArquivos.at(-1).original===original,
         nomeArquivo:document.getElementById('editor-nome-arquivo').value,
@@ -655,8 +655,8 @@ async function main() {
     })()`);
     await avaliar(cdp, `new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
     await cdp.enviar('Page.captureScreenshot', {format:'png',captureBeyondViewport:false});
-    const capturaEditorContextual=await cdp.enviar('Page.captureScreenshot', {format:'png',captureBeyondViewport:false});
-    writeFileSync(path.join(SAIDA,'future-g-contextual-editor.png'),Buffer.from(capturaEditorContextual.data,'base64'));
+    const capturaEditorDireto=await cdp.enviar('Page.captureScreenshot', {format:'png',captureBeyondViewport:false});
+    writeFileSync(path.join(SAIDA,'future-g-direct-editor.png'),Buffer.from(capturaEditorDireto.data,'base64'));
 
     const editorCarregadoResponsivo=[];
     await cdp.enviar('Emulation.setDeviceMetricsOverride', {width:360,height:800,deviceScaleFactor:1,mobile:false});
@@ -665,7 +665,7 @@ async function main() {
         if(document.body.classList.contains('dark')!==${dark})toggleTheme();
         switchTab('xml');document.getElementById('xml-preview-tipo').value='${tipo}';
         const button=document.querySelector('button[onclick="abrirXmlGeradoNoEditor()"]');
-        button.closest('details').open=true;button.click();scrollTo(0,0);
+        button.click();scrollTo(0,0);
       })()`);
       await avaliar(cdp, `new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
       editorCarregadoResponsivo.push(await avaliar(cdp, `(() => {
@@ -705,12 +705,12 @@ async function main() {
       marca,
       resultadoEstruturado,
       resultadoEstruturadoMobile,
-      editorContextual,
+      editorDireto,
       editorCarregadoResponsivo,
       movimentoReduzidoAplicado: movimento,
       aprovado: paineis.every(item => !item.rolagemHorizontal && item.elementosExcedentes.length === 0 && !item.navegacaoVerticalInacessivel) && acessibilidade.every(item => item.controlesSemNome.length === 0 && item.marcosSemNome.length === 0) && nomesVazios === 0 && focosInvisiveis === 0 && focosSemContorno === 0 && movimento && commandPalette.named && commandPalette.focused && commandPalette.generalCount === 0 && commandPalette.portCount > 0 && commandPalette.insideViewport && Object.values(consoleAudit).every(items => items.length === 0) && performanceAudit.lucideBytes <= 20000 && performanceAudit.localJavaScriptBytes <= 600000 && performanceAudit.localCssBytes <= 150000 && performanceAudit.domNodes <= 2500 && marca.nome === 'FUTURE G' && marca.assinatura === 'Geradores Gerais' && marca.imagemCarregada && marca.imagemVisivel && marca.favicon === 'assets/brand/favicon.svg' && resultadoEstruturado.estruturado && resultadoEstruturado.campos === 4 && resultadoEstruturado.totalFields >= 10 && resultadoEstruturado.fullTextIncludesFields && resultadoEstruturado.individualFields === 2 && resultadoEstruturado.colunasDesktop === 2 && ['Nome','CPF'].every(label=>resultadoEstruturado.labels.includes(label)) && !resultadoEstruturado.identificadoresTecnicosVisiveis && resultadoEstruturado.blocosTecnicos === 0 && resultadoEstruturado.painelRolavel && resultadoEstruturado.painelAntes > 0 && resultadoEstruturado.painelDepois === 0 && resultadoEstruturado.paginaAntes === resultadoEstruturado.paginaDepois && resultadoEstruturado.acoesAtivas && resultadoEstruturadoMobile.colunas === 1 && resultadoEstruturadoMobile.dentroDaViewport && !resultadoEstruturadoMobile.rolagemHorizontal
     };
-    resultado.aprovado &&= editorContextual.focoNoPainel && editorContextual.painelVisivel && editorContextual.menuFechado && editorContextual.fontePreservada && editorContextual.copiaIntegral && editorContextual.titulo === 'Editor de XML';
+    resultado.aprovado &&= editorDireto.focoNoPainel && editorDireto.painelVisivel && editorDireto.acaoDireta && editorDireto.fontePreservada && editorDireto.copiaIntegral && editorDireto.titulo === 'Editor de XML';
     resultado.aprovado &&= editorCarregadoResponsivo.every(item=>item.outside.length===0&&item.scrollWidth<=item.width+1);
     writeFileSync(path.join(SAIDA, 'auditoria-200.json'), JSON.stringify(resultado, null, 2));
     console.log(JSON.stringify(resultado, null, 2));

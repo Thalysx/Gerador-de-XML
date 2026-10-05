@@ -80,3 +80,15 @@ Em 05/10/2026, a correção do crachá e do XML Fiscal foi enviada para `main` p
 - `/api/status` continuou respondendo HTTP 503, `configured:false`; a configuração da IA pública permanece fora desta correção.
 
 Evidência HTTP: `artifacts/xml-layout-and-direct-badge/production-http.json`. Comportamento e validação local em `docs/xml-layout-and-direct-badge.md`.
+
+## Publicação 3.0.0-alpha.6 — Vercel
+
+Em 05/10/2026, o commit `2f166f8cfe9cb8415056138a15465f7713e9da2e` foi enviado para `main` com a geração automática de placa e preservação do padrão escolhido.
+
+- Produção: https://gerador-de-xml.vercel.app/
+- Deploy da implementação: `dpl_47y3fm2iSFiZjZDrcCxNjjxKYDYE`; check Vercel no GitHub: success.
+- Os 17 ativos públicos conferidos retornaram HTTP 200 e SHA-256 correspondente ao commit/build local, incluindo os dois scripts alterados.
+- Validação local: 119 testes, build, 12 specs canônicas após o arquivamento e auditoria Chromium aprovados. O teste de interação cobre opção, Home, busca, dois formatos, alias antigo, botão, Ctrl+Enter e histórico único.
+- `/api/status` permaneceu HTTP 503, `configured:false`; nenhuma configuração de IA foi alterada nesta correção.
+
+Evidência HTTP: `artifacts/direct-plate-generation/production-http.json`. Comportamento e cobertura em `docs/direct-plate-generation.md`.

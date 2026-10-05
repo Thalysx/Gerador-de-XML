@@ -16,3 +16,7 @@ Telefone mantém sua configuração atual. XML Fiscal e crachá conservam a corr
 - `openspec validate --all --strict`: 13 itens aprovados antes do arquivamento.
 
 Não houve alteração de layout nesta versão. Evidência local de navegador: `artifacts/visual-review/auditoria-200.json`. As verificações automatizadas usam Chromium; outros navegadores, dispositivo físico e leitor de tela permanecem verificações manuais.
+
+## Publicação
+
+Enviada para `main` pelo commit `2f166f8cfe9cb8415056138a15465f7713e9da2e` e publicada pela integração Git da Vercel em 05/10/2026. O check Vercel retornou success para o deploy `dpl_47y3fm2iSFiZjZDrcCxNjjxKYDYE`. Os 17 arquivos públicos conferidos, incluindo registry e controller, retornaram HTTP 200 e SHA-256 correspondente ao commit/build local. Evidência: `artifacts/direct-plate-generation/production-http.json`.

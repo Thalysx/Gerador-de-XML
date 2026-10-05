@@ -1,6 +1,6 @@
 # Roadmap consolidado do FUTURE G
 
-Este documento incorpora ao repositório as decisões do plano consolidado aprovado e registra o estado real do produto em 30/09/2026.
+Este documento incorpora ao repositório as decisões do plano consolidado aprovado e registra o estado real do produto em 05/10/2026.
 
 ## Estado atual
 
@@ -17,7 +17,11 @@ A rodada `release-readiness-regressions` corrigiu antes da publicação:
 - quebra legível de identificadores e valores longos;
 - auditoria e testes de regressão correspondentes.
 
-A fase `future-g-12-refine-interface-layout` formaliza o refinamento posterior à Fase 11 sem alterar regras de negócio: busca e categoria de Dados cadastrais acima do workspace, dropzone única e compacta no Editor XML e Assistente centrado na conversa com composer unificado. O plano aprovado completo está registrado em `docs/FUTURE_G_PLANO_CONSOLIDADO_ROADMAP_ATUALIZADO.md`.
+A fase `future-g-12-refine-interface-layout` está concluída e arquivada, assim como `fix-structured-result-panel`, `release-readiness-regressions` e `future-g-13a-local-fiscal-validation`. O refinamento posterior à Fase 11 preservou as regras de negócio: busca e categoria de Dados cadastrais acima do workspace, dropzone única e compacta no Editor XML e Assistente centrado na conversa com composer unificado. O plano aprovado completo está registrado em `docs/FUTURE_G_PLANO_CONSOLIDADO_ROADMAP_ATUALIZADO.md`.
+
+A manutenção `normalize-legacy-openspec-specs` foi concluída e arquivada em 05/10/2026, com 8 de 8 tarefas completas. As cinco especificações legadas foram normalizadas sem alterar requisitos ou comportamento do produto.
+
+A revisão `simplify-visual-system-and-workspaces` foi concluída e arquivada em 05/10/2026, com 8 de 8 tarefas. A versão `3.0.0-alpha.4` aplica o plano visual atualizado: tokens neutros compartilhados, azul para interação, roxo para IA, hierarquia de ações, geração por clique e divulgação progressiva em Home, Dados, XML Fiscal, Cadastro e Assistente. Não há changes ativas. O registro da implementação e verificação está em [Revisão visual](visual-system-refresh.md).
 
 ## Pendências de encerramento externo
 
@@ -33,19 +37,19 @@ A fase 12 consolida as melhorias aprovadas de layout e comportamento: busca supe
 
 A fase 13 será incremental e não deve misturar validação determinística, integração oficial e explicação por IA no mesmo incremento.
 
-Ordem aprovada:
+Estado da trilha após a decisão de 05/10/2026:
 
-1. `future-g-13a-local-fiscal-validation`: definir documentos e versões suportados, inventariar regras existentes, pesquisar a distribuição oficial dos schemas e projetar validação XSD e regras determinísticas adicionais.
-2. `future-g-13b-official-fiscal-validation`: pesquisar e especificar autorizadores, certificados, homologação, produção, segurança e limites legais antes de qualquer integração.
-3. `future-g-13c-ai-fiscal-explanation`: explicar relatórios determinísticos e oficiais sem apresentar inferência de IA como validade fiscal.
+1. `future-g-13a-local-fiscal-validation`: concluída e arquivada, com validação local e XSD para os documentos e versões suportados.
+2. `future-g-13b-official-fiscal-validation`: cancelada por decisão do usuário. A integração SEFAZ não será implementada; pesquisa de autorizadores, certificados, homologação e produção deixa de ser uma pendência deste roadmap. Nenhuma change foi aberta para essa fase.
+3. `future-g-13c-ai-fiscal-explanation`: possibilidade futura, não iniciada nem autorizada para implementação. Se retomada, deverá explicar relatórios locais, sem depender de integração SEFAZ ou apresentar inferência de IA como validade fiscal.
 
 Arquitetura-alvo:
 
-`Validação local -> Validação oficial -> Explicação por IA`
+`Validação local -> Explicação por IA (possibilidade futura)`
 
 ## Fase 13A concluída e limites preservados
 
-A fase 13A reutiliza o analisador atual e acrescenta XSD first-party para NF-e e CT-e 4.00, sem consulta SEFAZ. Certificados, credenciais, autorização oficial e IA permanecem fora do escopo até changes próprias. A próxima etapa dessa trilha é a pesquisa e especificação de `future-g-13b-official-fiscal-validation`; ela não foi iniciada automaticamente.
+A fase 13A reutiliza o analisador atual e acrescenta XSD first-party para NF-e e CT-e 4.00, sem consulta SEFAZ. Certificados, credenciais e autorização oficial permanecem fora do escopo porque a fase 13B foi cancelada. A validação local existente permanece disponível; a aplicação não consulta nem autoriza documentos na SEFAZ. Não há próxima etapa fiscal autorizada.
 
 ## Fluxo
 

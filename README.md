@@ -10,13 +10,13 @@ Bootstrap e fontes continuam sendo carregados de serviços externos e precisam d
 
 Veja [ATUALIZACOES.md](ATUALIZACOES.md) para as funcionalidades adicionadas, exemplos do chat, verificações e limitações. O andamento da revisão de interface está em [PLANO-VISUAL.md](PLANO-VISUAL.md), com as evidências em [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md) e o roteiro final em [CHECKLIST-LEITOR-TELA.md](CHECKLIST-LEITOR-TELA.md).
 
-O estado das fases concluídas e a preparação incremental da validação fiscal estão em [Roadmap consolidado](docs/roadmap-consolidado.md).
+O estado das fases concluídas e arquivadas está em [Roadmap consolidado](docs/roadmap-consolidado.md). A validação fiscal local da fase 13A está concluída; a integração SEFAZ da fase 13B foi cancelada por decisão do usuário.
 
 A identidade, os arquivos de logo, as regras de uso e a triagem pública do nome estão documentados em [IDENTIDADE.md](IDENTIDADE.md).
 
 ## Organização
 
-A Home reúne descoberta, busca, categorias, favoritos e recentes. Cada ferramenta abre pelo ID do registry único e executa no seu workspace. A identidade FUTURE G e a navegação pertencem à sidebar; Geradores Gerais usa a identidade branca/roxa (ou escura/roxa) e QA Portuário mantém a identidade azul. O seletor troca o contexto sem recarregar a aplicação e projeta catálogos, XMLs e sugestões exclusivos de cada ambiente. Os seis arquivos CSS têm responsabilidades definidas, sem camadas de overrides. Veja [Arquitetura da interface](docs/ui-architecture.md) para contratos, persistência, estilos e verificações.
+A Home reúne descoberta, busca, ferramentas e recentes, com favoritos e atividade acessíveis sob demanda. Cada ferramenta abre pelo ID do registry único e executa no seu workspace. Os ambientes compartilham superfícies neutras e interação azul nos dois temas; roxo identifica detalhes de IA. A sidebar mantém a marca FUTURE G e o contexto ativo. Os seis arquivos CSS têm responsabilidades definidas. Veja [Arquitetura da interface](docs/ui-architecture.md) para contratos, persistência, estilos e verificações e [Revisão visual](docs/visual-system-refresh.md) para as mudanças e evidências.
 
 O fluxo OpenSpec deve permanecer uniforme: concluir checklist e relatório, incorporar as decisões às especificações canônicas, executar testes/build/auditoria pertinentes e mover a mudança para `openspec/changes/archive/AAAA-MM-DD-nome-da-mudanca`. A etapa seguinte só começa depois desse arquivamento.
 
@@ -95,7 +95,7 @@ npm run dev
 
 Abra `http://127.0.0.1:4173`. A dependência `jsdom` é usada nos testes e no servidor para reaproveitar as regras do gerador; ela não é carregada pelo navegador.
 
-Para conferir as oito telas em escala de 200%, percorrer os controles por teclado, testar a busca global, inspecionar console e orçamentos de recursos e verificar movimento reduzido em um Chrome ou Edge instalado:
+Para conferir as sete telas em escala de 200%, percorrer os controles por teclado, testar a busca global, inspecionar console e orçamentos de recursos e verificar movimento reduzido em um Chrome ou Edge instalado:
 
 ```sh
 npm run audit:browser
@@ -103,7 +103,7 @@ npm run audit:browser
 
 O comando cria um servidor temporário sem dependências externas, grava as evidências locais em `artifacts/visual-review` e encerra o navegador isolado ao concluir. A dependência de desenvolvimento `ws` é usada somente para essa comunicação com o navegador.
 
-`npm run build` recria antes da distribuição o subset local de 49 ícones. Para executar somente essa etapa, use `npm run icons:build`. A matriz responsiva completa pode ser repetida com `$env:AUDIT_MATRIX='1'; npm run audit:browser` no PowerShell.
+`npm run build` recria antes da distribuição o subset local de 51 ícones. Para executar somente essa etapa, use `npm run icons:build`. A matriz responsiva completa dos dois ambientes e temas, incluindo disclosures abertos, pode ser repetida com `$env:AUDIT_MATRIX='1'; npm run audit:browser` no PowerShell.
 
 Para recriar os PNGs da identidade em `assets/brand`:
 
@@ -131,4 +131,4 @@ O ambiente **QA Portuário** possui uma biblioteca de dez fluxos operacionais, d
 
 Os testes automatizados da IA usam um provedor simulado para manter a suíte determinística e verificam a execução real das ferramentas. A integração pública com Groq também foi exercitada no site implantado.
 
-Os 107 testes abrangem geração geral e portuária, apresentação estruturada e rolagem do painel Resultado, ficha seletiva do Cadastro Geral, crachá sintético, cenários operacionais coerentes, busca global, dashboards, privacidade da atividade, home, favoritos e recentes, atalhos, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API, ativos PWA no servidor local, relatórios XML estruturados, destinatário de CT-e, variantes negativas e o estado de processamento do upload. A atualização também foi conferida em Chromium em escala de 200% e numa matriz de 128 combinações de painel, tema, largura e sidebar. Consulte [FUTURE G 11 — Polimento e robustez](docs/future-g-11-polish.md).
+Os 117 testes abrangem geração geral e portuária por clique e atalho opcional, apresentação estruturada e rolagem do painel Resultado, ficha seletiva do Cadastro Geral, crachá sintético, cenários operacionais coerentes, busca global, dashboards, privacidade da atividade, home, favoritos e recentes, atalhos, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API, ativos PWA no servidor local, relatórios XML estruturados, destinatário de CT-e, variantes negativas e o estado de processamento do upload. A revisão visual foi conferida em Chromium em escala de 200%, em 224 combinações de painel, ambiente, tema, largura e sidebar, em 56 estados com opções abertas e em quatro casos do Editor carregado no celular. Consulte [Revisão visual](docs/visual-system-refresh.md) e o marco anterior [FUTURE G 11 — Polimento e robustez](docs/future-g-11-polish.md).

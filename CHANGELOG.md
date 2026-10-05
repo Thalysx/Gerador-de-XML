@@ -2,6 +2,24 @@
 
 Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O histórico detalhado anterior à adoção deste arquivo permanece em `ATUALIZACOES.md`.
 
+## [Não publicado]
+
+## [3.0.0-alpha.4] — 2026-10-05
+
+### Interface — 2026-10-05
+
+- Botão Gerar disponível por clique para todos os geradores individuais selecionados; Ctrl+Enter permanece opcional, sem selo no texto do botão.
+- Aplicado o plano visual atualizado: superfícies neutras nos dois ambientes/temas, azul para interação, cores semânticas para estados e roxo nos detalhes de IA.
+- Home, Dados, XML Fiscal, Cadastro e Assistente passam a priorizar tarefa e resultado; configurações e ações complementares ficam disponíveis sob demanda. Editor e Validação acompanham os tokens compartilhados.
+- Corrigidos foco na navegação contextual ao Editor e largura das abas/cards/campos com NF-e e CT-e carregados no celular; título e importação passam a identificar XML.
+- Preservados os motores, dados, APIs e armazenamento. Verificação: 117 testes, build, 13 itens OpenSpec, auditoria Chrome e 280 estados responsivos mais quatro casos do Editor carregado aprovados. Relatório em `docs/visual-system-refresh.md`.
+
+### Documentação — 2026-10-05
+
+- Arquivada `simplify-visual-system-and-workspaces`, com 8 de 8 tarefas concluídas e especificações canônicas sincronizadas.
+- Arquivada `normalize-legacy-openspec-specs`, com 8 de 8 tarefas concluídas e normalização de cinco especificações canônicas sem mudança de comportamento.
+- Registrado o encerramento das changes ativas e o cancelamento da fase 13B (integração SEFAZ) por decisão do usuário; a validação fiscal local da fase 13A permanece concluída.
+
 ## [3.0.0-alpha.3] — 2026-09-30
 
 ### Roadmap

@@ -6,7 +6,7 @@
   <title>FUTURE G — dados sintéticos, documentos e XML para testes</title>
   <meta name="description" content="FUTURE G cria dados sintéticos, documentos brasileiros e XML fiscal para desenvolvimento, testes e validação." />
   <meta name="application-name" content="FUTURE G" />
-  <meta id="theme-color" name="theme-color" content="#2d1b45" />
+  <meta id="theme-color" name="theme-color" content="#f0f2f5" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="FUTURE G — dados de teste para desenvolvimento e QA." />
   <meta property="og:description" content="Gere dados sintéticos, documentos brasileiros e XML fiscal para desenvolvimento e testes." />
@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700;800&family=Inter:wght@400;450;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/documentos.css">
   <link rel="stylesheet" href="assets/css/cadastro.css">
@@ -100,30 +100,36 @@
   <div class="tab-panel active" id="tab-home" role="tabpanel" aria-labelledby="tab-btn-home" tabindex="0">
     <div class="home-dashboard">
       <section class="home-intro" aria-labelledby="home-title">
-        <div><span class="home-kicker">SUAS FERRAMENTAS</span><h2 id="home-title">O que deseja gerar?</h2><p>Encontre a ferramenta certa e comece a gerar.</p></div>
+        <div><h2 id="home-title">O que deseja fazer?</h2><p>Dados sintéticos para desenvolvimento e QA.</p></div>
         <label class="home-search" for="home-generator-search"><i data-lucide="search" aria-hidden="true"></i><span class="sr-only">Buscar gerador</span><input type="search" id="home-generator-search" placeholder="Buscar gerador..." autocomplete="off"><kbd>Ctrl K</kbd></label>
       </section>
 
-      <section class="productivity-dashboard" aria-labelledby="productivity-dashboard-title">
-        <div class="home-section-heading"><div><span>PAINEL DO AMBIENTE</span><h3 id="productivity-dashboard-title">Resumo de Geradores Gerais</h3></div><p id="productivity-dashboard-description" class="texto-apoio"></p></div>
-        <div class="productivity-metrics" id="productivity-dashboard-metrics"></div>
-        <div class="productivity-activity-heading"><strong>Atividade recente</strong><button type="button" id="productivity-activity-clear" class="btn-xs">Limpar deste ambiente</button></div>
-        <div class="productivity-activity" id="productivity-activity" aria-live="polite"></div>
-      </section>
 
-      <div class="home-category-chips" id="home-category-chips" aria-label="Filtrar geradores por categoria"></div>
+
+      <details class="ui-disclosure home-filter-disclosure"><summary>Filtrar por categoria</summary><div class="home-category-chips" id="home-category-chips" aria-label="Filtrar geradores por categoria"></div></details>
 
       <section class="home-section" aria-labelledby="home-quick-title">
-        <div class="home-section-heading"><div><span>ACESSO RÁPIDO</span><h3 id="home-quick-title">Geradores</h3></div><p id="home-search-status" class="texto-apoio" role="status"></p></div>
+        <div class="home-section-heading"><div><h3 id="home-quick-title">Geradores</h3></div><p id="home-search-status" class="texto-apoio" role="status"></p></div>
         <div class="home-generator-grid" id="home-generator-grid"></div>
       </section>
 
+      <div class="home-tools" role="group" aria-label="Ferramentas XML e assistente">
+        <button type="button" class="ui-ghost" onclick="switchTab('editor')"><i data-lucide="square-pen" aria-hidden="true"></i> Editor XML</button>
+        <button type="button" class="ui-ghost" onclick="switchTab('validacao')"><i data-lucide="shield-check" aria-hidden="true"></i> Validação XML</button>
+        <button type="button" class="ui-ghost" onclick="switchTab('chat')"><i data-lucide="message-circle-more" aria-hidden="true"></i> Assistente IA</button>
+      </div>
       <div class="home-context-row">
-        <section class="home-compact-section" aria-labelledby="home-favorites-title"><div class="home-section-heading"><div><span>FIXADOS</span><h3 id="home-favorites-title">Favoritos</h3></div></div><div class="home-chip-list" id="home-favorites"></div></section>
-        <section class="home-compact-section" aria-labelledby="home-recents-title"><div class="home-section-heading"><div><span>HISTÓRICO LOCAL</span><h3 id="home-recents-title">Recentes</h3></div></div><div class="home-chip-list" id="home-recents"></div></section>
+        <details class="home-compact-section ui-disclosure"><summary id="home-favorites-title">Favoritos</summary><div class="home-chip-list" id="home-favorites"></div></details>
+        <section class="home-compact-section" aria-labelledby="home-recents-title"><div class="home-section-heading"><div><h3 id="home-recents-title">Recentes</h3></div></div><div class="home-chip-list" id="home-recents"></div></section>
       </div>
 
 
+      <details class="productivity-dashboard ui-disclosure"><summary>Painel e atividade do ambiente</summary><div class="ui-disclosure-content">
+        <div class="home-section-heading"><div><h3 id="productivity-dashboard-title">Resumo de Geradores Gerais</h3></div><p id="productivity-dashboard-description" class="texto-apoio"></p></div>
+        <div class="productivity-metrics" id="productivity-dashboard-metrics"></div>
+        <div class="productivity-activity-heading"><strong>Atividade recente</strong><button type="button" id="productivity-activity-clear" class="btn-xs">Limpar deste ambiente</button></div>
+        <div class="productivity-activity" id="productivity-activity" aria-live="polite"></div>
+      </div></details>
     </div>
   </div>
 
@@ -132,35 +138,33 @@
     <div class="toolbar shadow-sm">
       <span class="toolbar-label" id="xml-actions-label">Gerar</span>
       <div class="toolbar-actions" role="group" aria-labelledby="xml-actions-label">
-        <button type="button" class="btn btn-primary ui-primary" onclick="processarXML(acao.regenerar)"><i data-lucide="refresh-cw" aria-hidden="true"></i> Gerar novos dados</button>
-        <button type="button" onclick="gerarXMLComCampos(true)"><i data-lucide="square-pen" aria-hidden="true"></i> Usar campos atuais</button>
-        <button type="button" class="lock-badge" id="lock-btn" onclick="toggleLock()" aria-pressed="false" aria-label="Preservar os campos XML ao gerar novamente" data-bs-toggle="tooltip" data-bs-title="Manter os dados editados ao gerar novamente"><i data-lucide="lock-open" aria-hidden="true"></i> Preservar campos</button>
+        <button type="button" class="btn btn-primary ui-primary" onclick="processarXML(acao.regenerar)"><i data-lucide="refresh-cw" aria-hidden="true"></i> Gerar XML</button>
+
+
       </div>
+      <details class="action-disclosure "><summary aria-label="Opções de geração"><i data-lucide="ellipsis" aria-hidden="true"></i><span>Opções de geração</span></summary><div class="action-disclosure-content">        <button type="button" onclick="gerarXMLComCampos(true)"><i data-lucide="square-pen" aria-hidden="true"></i> Usar campos atuais</button>        <button type="button" class="lock-badge" id="lock-btn" onclick="toggleLock()" aria-pressed="false" aria-label="Preservar os campos XML ao gerar novamente" data-bs-toggle="tooltip" data-bs-title="Manter os dados editados ao gerar novamente"><i data-lucide="lock-open" aria-hidden="true"></i> Preservar campos</button>
       <div class="sr-only" id="xml-download-title">Arquivos XML gerados para download</div>
       <div class="download-area" id="downloadArea" role="group" aria-labelledby="xml-download-title"></div>
       <div class="sr-only" id="xml-download-status" role="status" aria-live="polite" aria-atomic="true">Nenhum arquivo XML gerado ainda.</div>
+</div></details>
+
     </div>
 
     <div class="xml-setup-row">
     <div class="xml-form-selector campo-novo"><label for="xml-form-tipo">Documento</label><select id="xml-form-tipo" aria-controls="xml-form-cte xml-form-nfe" aria-describedby="xml-form-help"><option value="nfe">NF-e — Nota fiscal</option><option value="cte">CT-e — Conhecimento de transporte</option><option value="ambos" selected>Mostrar os dois formulários</option></select><p class="texto-apoio" id="xml-form-help">NF-e e CT-e são gerados juntos; este seletor altera apenas os formulários visíveis.</p></div>
-    <section class="painel-novo xml-scenarios" aria-labelledby="xml-scenarios-title">
-      <div class="xml-scenarios-title" id="xml-scenarios-title">Cenários salvos</div>
-      <div class="cenario-form">
-        <div class="campo-novo"><label for="cenario-nome">Nome do novo cenário</label><input id="cenario-nome" maxlength="80" placeholder="Ex.: carga em toneladas"></div>
-        <button type="button" onclick="salvarCenarioXml()">Salvar cenário atual</button>
-        <div class="campo-novo"><label for="cenario-lista">Cenários deste navegador</label><select id="cenario-lista"></select></div>
-        <button type="button" onclick="carregarCenarioXml()">Carregar</button><button type="button" onclick="excluirCenarioXml()">Excluir</button>
-      </div>
-    </section>
+
     </div>
-    <section class="painel-novo ncm-manual" aria-labelledby="ncm-manual-title">
-      <div><strong id="ncm-manual-title">NCMs manuais</strong><p class="texto-apoio" id="ncm-manual-help">Adicione códigos de 8 dígitos separados por espaço, vírgula ou linha. Ao aplicar, eles seguem a ordem dos produtos atuais.</p></div>
-      <form class="ncm-manual-form" onsubmit="return adicionarNcmsManuais(event)"><label class="sr-only" for="ncm-manual-input">NCMs manuais</label><input id="ncm-manual-input" inputmode="numeric" autocomplete="off" placeholder="Ex.: 17019900, 12019000" aria-describedby="ncm-manual-status"><button type="submit">Adicionar NCMs</button></form>
-      <div id="ncm-manual-lista" class="ncm-manual-lista" aria-label="NCMs manuais adicionados"></div>
-      <div class="acoes-inline"><button type="button" id="ncm-manual-aplicar" onclick="aplicarNcmsManuais()" disabled>Aplicar aos produtos</button><button type="button" id="ncm-manual-limpar" onclick="limparNcmsManuais()" disabled>Limpar lista</button></div>
-      <p id="ncm-manual-status" class="texto-apoio" role="status" aria-live="polite">Nenhum NCM manual adicionado.</p>
-    </section>
-    <div class="xml-workbench"><div class="xml-grid-2">
+
+    <div class="xml-workbench">
+      <aside class="painel-novo xml-preview" aria-labelledby="xml-preview-title" tabindex="0">
+        <div class="painel-cabecalho"><h2 id="xml-preview-title">XMLs gerados</h2><select id="xml-preview-tipo" aria-label="XML para visualizar" onchange="atualizarPreviaXml()"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select></div>
+        <div class="acoes-inline" role="group" aria-label="Ações do XML exibido"><button type="button" class="ui-ghost" onclick="copiarXmlGerado()">Copiar XML</button><button type="button" class="ui-ghost" onclick="baixarXmlGeradoAtual()">Baixar XML</button><button type="button" class="ui-secondary" onclick="validarXmlGeradoAtual()">Validar XML</button><details class="action-disclosure "><summary aria-label="Mais ações"><i data-lucide="ellipsis" aria-hidden="true"></i><span>Mais ações</span></summary><div class="action-disclosure-content"><button type="button" class="ui-ghost" onclick="abrirXmlGeradoNoEditor()">Abrir no editor</button><button type="button" class="ui-ghost" data-open-disclosure="xml-advanced">Editar campos</button></div></details></div>
+        <pre id="xml-preview-code" tabindex="0" aria-label="Prévia do XML gerado"></pre>
+        <p id="xml-preview-status" class="texto-apoio" role="status"></p><ul id="xml-checks" class="xml-checks"></ul>
+        <details class="ui-disclosure"><summary>Sobre a validação</summary><p class="texto-apoio">XML sintético para testes. A validação local e XSD não confere assinatura digital nem autorização SEFAZ.</p></details>
+      </aside>
+      <details class="ui-disclosure xml-fields" id="xml-advanced"><summary>Editar campos e opções avançadas</summary><div class="xml-advanced-content">
+<div class="xml-grid-2">
       <!-- CTe Card -->
       <section class="doc-card shadow-sm" id="xml-form-cte" aria-labelledby="cte-card-title" hidden>
         <div class="doc-card-header">
@@ -237,13 +241,24 @@
         </div>
       </section>
     </div>
-      <aside class="painel-novo xml-preview" aria-labelledby="xml-preview-title" tabindex="0">
-        <div class="painel-cabecalho"><h2 id="xml-preview-title">XMLs gerados</h2><select id="xml-preview-tipo" aria-label="XML para visualizar" onchange="atualizarPreviaXml()"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select></div>
-        <div class="acoes-inline" role="group" aria-label="Ações do XML exibido"><button type="button" onclick="copiarXmlGerado()">Copiar XML</button><button type="button" onclick="baixarXmlGeradoAtual()">Baixar XML</button><button type="button" onclick="validarXmlGeradoAtual()">Validar XML</button><button type="button" class="btn-accent ui-primary" onclick="abrirXmlGeradoNoEditor()">Abrir no editor</button></div>
-        <pre id="xml-preview-code" tabindex="0" aria-label="Prévia do XML gerado"></pre>
-        <p id="xml-preview-status" class="texto-apoio" role="status"></p><ul id="xml-checks" class="xml-checks"></ul>
-        <p class="texto-apoio">XML para testes. As verificações básicas não conferem schema, regras fiscais nem assinatura digital.</p>
-      </aside>
+
+        <details class="ui-disclosure"><summary>Cenários salvos</summary>    <section class="painel-novo xml-scenarios" aria-labelledby="xml-scenarios-title">
+      <div class="xml-scenarios-title" id="xml-scenarios-title">Cenários salvos</div>
+      <div class="cenario-form">
+        <div class="campo-novo"><label for="cenario-nome">Nome do novo cenário</label><input id="cenario-nome" maxlength="80" placeholder="Ex.: carga em toneladas"></div>
+        <button type="button" onclick="salvarCenarioXml()">Salvar cenário atual</button>
+        <div class="campo-novo"><label for="cenario-lista">Cenários deste navegador</label><select id="cenario-lista"></select></div>
+        <button type="button" onclick="carregarCenarioXml()">Carregar</button><button type="button" onclick="excluirCenarioXml()">Excluir</button>
+      </div>
+    </section></details>
+        <details class="ui-disclosure"><summary>NCMs manuais</summary>    <section class="painel-novo ncm-manual" aria-labelledby="ncm-manual-title">
+      <div><strong id="ncm-manual-title">NCMs manuais</strong><p class="texto-apoio" id="ncm-manual-help">Adicione códigos de 8 dígitos separados por espaço, vírgula ou linha. Ao aplicar, eles seguem a ordem dos produtos atuais.</p></div>
+      <form class="ncm-manual-form" onsubmit="return adicionarNcmsManuais(event)"><label class="sr-only" for="ncm-manual-input">NCMs manuais</label><input id="ncm-manual-input" inputmode="numeric" autocomplete="off" placeholder="Ex.: 17019900, 12019000" aria-describedby="ncm-manual-status"><button type="submit">Adicionar NCMs</button></form>
+      <div id="ncm-manual-lista" class="ncm-manual-lista" aria-label="NCMs manuais adicionados"></div>
+      <div class="acoes-inline"><button type="button" id="ncm-manual-aplicar" onclick="aplicarNcmsManuais()" disabled>Aplicar aos produtos</button><button type="button" id="ncm-manual-limpar" onclick="limparNcmsManuais()" disabled>Limpar lista</button></div>
+      <p id="ncm-manual-status" class="texto-apoio" role="status" aria-live="polite">Nenhum NCM manual adicionado.</p>
+    </section></details>
+      </div></details>
     </div>
   </div>
 
@@ -266,8 +281,8 @@
       <!-- ── Coluna esquerda: botões ── -->
       <div class="doc-gen-left">
         <div class="workspace-section-heading"><span class="output-label">Configuração</span><h2 id="docs-selected-title" tabindex="-1">Escolha um gerador</h2><p id="docs-selected-description" class="texto-apoio">Selecione uma ferramenta abaixo para configurar.</p></div>
-        <button type="button" id="docs-generate-btn" class="ui-primary" disabled hidden>Gerar <kbd>Ctrl Enter</kbd></button>
-        <div class="toggles-row" id="docs-preferencias" role="group" aria-labelledby="docs-preferencias-title" hidden>
+        <button type="button" id="docs-generate-btn" class="ui-primary" aria-keyshortcuts="Control+Enter" title="Atalho opcional: Ctrl+Enter" disabled hidden>Gerar</button>
+        <details class="ui-disclosure" id="docs-advanced"><summary>Opções avançadas</summary>        <div class="toggles-row" id="docs-preferencias" role="group" aria-labelledby="docs-preferencias-title" hidden>
           <div class="sr-only" id="docs-preferencias-title">Preferências de geração</div>
           <div class="nome-toggle-row" id="docs-option-name" hidden>
             <label class="toggle-switch" for="toggle-nome">
@@ -285,6 +300,7 @@
           </div>
         </div>
 
+</details>
         <div class="opcoes-geracao" id="docs-phone-options" hidden>
           <div><label for="gerador-uf">UF do telefone (individual e lote)</label><select id="gerador-uf"></select></div>
           <div><label for="gerador-telefone-tipo">Tipo de telefone</label><select id="gerador-telefone-tipo"><option value="celular">Celular</option><option value="fixo">Fixo</option></select></div>
@@ -300,13 +316,14 @@
         <p class="texto-apoio" id="docs-environment-note">Os dados são sintéticos e não representam registros oficiais.</p>
         <hr class="divider">
 
-        <div class="section-label" id="docs-validar-title">Conferir documento</div>
+        <details class="ui-disclosure docs-validation"><summary>Conferir documento</summary>        <div class="section-label" id="docs-validar-title">Conferir documento</div>
         <form class="input-row" role="group" aria-labelledby="docs-validar-title" onsubmit="return atualizarValidacaoDocumento()">
           <label class="sr-only" for="validate-input">Documento para conferir</label>
           <input type="text" id="validate-input" placeholder="CPF, RG, CNH, CNPJ, RENAVAM ou placa..." maxlength="20" inputmode="text" autocomplete="off" spellcheck="false" aria-labelledby="docs-validar-title" aria-describedby="validate-status" aria-invalid="false" oninput="atualizarValidacaoDocumento()" />
           <button type="submit" class="btn-primary ui-primary">Validar</button>
         </form>
         <div id="validate-status" class="status idle" role="status" aria-live="polite" aria-atomic="true">Aguardando entrada</div>
+</details>
       </div>
 
       <!-- ── Coluna direita: resultado ── -->
@@ -314,11 +331,13 @@
         <div class="output-box shadow-sm" id="docs-output-box" aria-labelledby="docs-result-label">
           <div class="output-label" id="docs-result-label">Resultado</div>
           <div class="output-value placeholder" id="output-val" aria-label="Resultado gerado" role="status" aria-live="polite" aria-atomic="true">Escolha um gerador. Opções simples geram o resultado imediatamente.</div>
+          <p class="docs-result-status" id="docs-generation-status" hidden>✓ Gerado com sucesso</p>
           <div class="copy-row">
-            <button type="button" class="btn-accent ui-primary" onclick="gerarNovoDocumentoAtual()" id="new-doc-btn" disabled aria-label="Gerar novamente o documento atual"><i data-lucide="refresh-cw" aria-hidden="true"></i> Gerar novamente</button>
-            <button type="button" class="btn-primary ui-secondary" onclick="copyResult()" id="copy-btn" disabled aria-label="Copiar resultado gerado"><i data-lucide="copy" aria-hidden="true"></i> Copiar</button>
-            <button type="button" onclick="baixarResultadoDocumento()" id="download-doc-btn" disabled aria-label="Baixar resultado gerado em arquivo de texto"><i data-lucide="download" aria-hidden="true"></i> Baixar TXT</button>
-            <button type="button" id="docs-expand-btn" aria-expanded="false" aria-controls="docs-result-details" disabled>Ver detalhes</button><button type="button" id="docs-clear-btn" disabled>Limpar</button>
+
+            <button type="button" class="ui-ghost" onclick="copyResult()" id="copy-btn" disabled aria-label="Copiar resultado gerado"><i data-lucide="copy" aria-hidden="true"></i> Copiar</button>
+            <button type="button" class="ui-ghost" onclick="baixarResultadoDocumento()" id="download-doc-btn" disabled aria-label="Baixar resultado gerado em arquivo de texto"><i data-lucide="download" aria-hidden="true"></i> Baixar TXT</button>
+
+<details class="action-disclosure "><summary aria-label="Mais ações"><i data-lucide="ellipsis" aria-hidden="true"></i><span>Mais ações</span></summary><div class="action-disclosure-content">            <button type="button" class="ui-ghost" onclick="gerarNovoDocumentoAtual()" id="new-doc-btn" disabled aria-label="Gerar novamente o documento atual"><i data-lucide="refresh-cw" aria-hidden="true"></i> Gerar novamente</button>            <button type="button" id="docs-expand-btn" aria-expanded="false" aria-controls="docs-result-details" disabled>Ver detalhes</button><button type="button" class="ui-danger" id="docs-clear-btn" disabled>Limpar</button></div></details>
             <span class="copied-msg" id="copied-msg">Copiado!</span>
           </div>
           <pre id="docs-result-details" hidden></pre>
@@ -451,10 +470,6 @@
         </div>
       </section>
 
-      <div class="cadastro-layout">
-
-        <!-- ── Coluna esquerda: formulário ── -->
-        <div class="cadastro-col-left">
           <section class="cadastro-form shadow-sm cadastro-portuario-form" id="cadastro-portuario-form" aria-labelledby="cadastro-portuario-title" hidden>
             <div class="cadastro-section">
               <div class="cadastro-section-title" id="cadastro-portuario-title"><span class="section-dot" aria-hidden="true"></span>Ficha portuária completa</div>
@@ -499,8 +514,13 @@
               <button type="button" class="ui-danger" onclick="limparCadastro()"><i data-lucide="trash-2" aria-hidden="true"></i> Limpar</button>
             </div>
           </section>
+      <div class="cadastro-layout">
 
-          <div class="cadastro-form shadow-sm" id="cadastro-general-form">
+        <!-- ── Coluna esquerda: formulário ── -->
+        <div class="cadastro-col-left">
+
+
+          <details class="ui-disclosure" id="cadastro-edit"><summary>Editar dados</summary><div class="cadastro-form" id="cadastro-general-form">
 
             <!-- Identificação pessoal -->
             <div class="cadastro-section" role="group" aria-labelledby="cad-identificacao-title">
@@ -651,12 +671,14 @@
               <span class="copied-msg" id="cad-copied-msg" style="opacity:0">Copiado!</span>
             </div>
           </div>
+          </details>
         </div>
 
         <!-- ── Coluna direita: resultado + histórico ── -->
         <div class="cadastro-col-right" role="region" aria-label="Resultados e histórico de cadastros" tabindex="0">
 
           <section class="painel-novo cadastro-empty" aria-label="Resultado do cadastro">
+            <button type="button" class="ui-ghost" data-edit-cadastro>Editar dados</button>
             <h2 id="cadastro-empty-title">Seu cadastro aparece aqui</h2>
             <p class="texto-apoio" id="cadastro-empty-description">Gere um perfil completo ou preencha os campos para conferir o resultado. Você poderá copiar os dados e restaurá-los pelo histórico.</p>
           </section>
@@ -685,6 +707,7 @@
             <div class="result-copy-all">
               <button type="button" class="btn-primary btn-sm" onclick="copiarCadastroTexto()" aria-label="Copiar cadastro em texto"><i data-lucide="copy" aria-hidden="true"></i> Copiar cadastro</button>
               <button type="button" class="btn-primary btn-sm" onclick="copiarCadastroJSON()" aria-label="Copiar cadastro em JSON"><i data-lucide="braces" aria-hidden="true"></i> Copiar JSON</button>
+              <button type="button" class="ui-ghost" data-edit-cadastro>Editar dados</button>
               <span class="copied-msg" id="cad-copied-msg-2" style="opacity:0">Copiado!</span>
             </div>
           </div>
@@ -731,13 +754,13 @@
       <div class="nfe-pro-header">
         <div class="nfe-pro-header-title">
           <i data-lucide="file-code-2" aria-hidden="true"></i>
-          <strong>Editor de <span>NFe</span></strong>
+          <strong>Editor de <span>XML</span></strong>
         </div>
         <input type="text" class="nfe-pro-filename" id="editor-nome-arquivo" placeholder="nome_do_arquivo.xml"
           oninput="editorRenomearArquivoAtivo(this.value)" aria-label="Nome do arquivo ativo">
         <div class="nfe-pro-header-actions">
           <button type="button" class="nfe-btn" onclick="editorMostrarAjuda()"><i data-lucide="circle-help" aria-hidden="true"></i> Ajuda</button>
-          <button type="button" class="nfe-btn" onclick="document.getElementById('editor-file-input-add').click()"><i data-lucide="plus" aria-hidden="true"></i> Adicionar NFes</button>
+          <button type="button" class="nfe-btn" onclick="document.getElementById('editor-file-input-add').click()"><i data-lucide="plus" aria-hidden="true"></i> Adicionar XMLs</button>
           <input type="file" id="editor-file-input-add" accept=".xml" multiple style="display:none" aria-label="Adicionar arquivos XML ao editor">
           <button type="button" class="nfe-btn ui-danger" onclick="editorLimparGrupo()"><i data-lucide="trash-2" aria-hidden="true"></i> Limpar grupo</button>
           <button type="button" class="nfe-btn nfe-btn-primary ui-primary" onclick="editorExportarFinal()"><i data-lucide="download" aria-hidden="true"></i> Exportar XML</button>
@@ -749,7 +772,7 @@
       <div class="nfe-pro-filetabs" id="editor-abas-arquivos"></div>
 
       <div class="nfe-pro-subnav" id="editor-subnav">
-        <button type="button" class="nfe-subnav-btn active" data-sub="produtos" onclick="editorTrocarSubTab('produtos')"><i data-lucide="package" aria-hidden="true"></i> Produtos da NFe</button>
+        <button type="button" class="nfe-subnav-btn active" data-sub="produtos" onclick="editorTrocarSubTab('produtos')"><i data-lucide="package" aria-hidden="true"></i> Produtos (NF-e)</button>
         <button type="button" class="nfe-subnav-btn" data-sub="volumes" onclick="editorTrocarSubTab('volumes')"><i data-lucide="archive" aria-hidden="true"></i> Volumes</button>
         <button type="button" class="nfe-subnav-btn" data-sub="totais" onclick="editorTrocarSubTab('totais')"><i data-lucide="calculator" aria-hidden="true"></i> Totais</button>
         <button type="button" class="nfe-subnav-btn" data-sub="chaves" onclick="editorTrocarSubTab('chaves')"><i data-lucide="key-round" aria-hidden="true"></i> Chaves</button>
@@ -780,13 +803,14 @@
               <div id="chat-anexo-pendente" class="chat-attachment-chip" hidden><span id="chat-anexo-nome">XML pendente</span><button type="button" id="chat-anexo-limpar" onclick="limparAnexoIa()" aria-label="Remover anexo">×</button></div>
             </div>
             <label class="sr-only" for="chat-pedido">Mensagem</label><textarea id="chat-pedido" rows="1" maxlength="6000" autocomplete="off" placeholder="Pergunte ou peça para gerar algo..." aria-describedby="chat-status" required></textarea>
-            <button id="chat-enviar" type="submit" class="btn-accent ui-primary"><span>Enviar</span><i data-lucide="arrow-up" aria-hidden="true"></i></button>
+            <button id="chat-enviar" type="submit" class="btn-accent ui-primary" aria-label="Enviar mensagem"><span class="sr-only">Enviar</span><i data-lucide="arrow-up" aria-hidden="true"></i></button>
           </div>
-          <div class="chat-controls">
-            <div class="chat-mode"><label class="sr-only" for="chat-modo">Modo</label><select id="chat-modo" aria-label="Modo do assistente" onchange="atualizarModoChat()"><option value="ia">Assistente IA</option><option value="local">Comandos locais</option></select></div>
+<details class="action-disclosure chat-secondary"><summary aria-label="Opções do assistente"><i data-lucide="ellipsis" aria-hidden="true"></i><span>Opções do assistente</span></summary><div class="action-disclosure-content">          <div class="chat-controls">
+            <div class="chat-mode"><label for="chat-modo">Modo do assistente</label><select id="chat-modo" aria-label="Modo do assistente" onchange="atualizarModoChat()"><option value="ia">Assistente IA</option><option value="local">Comandos locais</option></select></div>
             <label class="chat-mask"><input type="checkbox" id="chat-mascara" checked> Máscara</label>
             <button type="button" class="chat-new-conversation ui-secondary" onclick="limparChat()" aria-label="Nova conversa" data-tooltip="Nova conversa"><i data-lucide="message-square-plus" aria-hidden="true"></i><span>Nova conversa</span></button>
-          </div>
+<button type="button" class="ui-ghost" data-open-privacy>Privacidade e retenção</button>
+          </div></div></details>
         </form>
         <div class="texto-apoio" id="chat-status" role="status" aria-live="polite"></div>
       </div>
@@ -856,6 +880,7 @@
 <script src="assets/js/app.js"></script>
 <script src="assets/js/generator-workspace.js"></script>
 <script src="assets/js/visual-layout.js"></script>
+<script src="assets/js/visual-disclosure.js"></script>
 <script src="assets/js/home-dashboard.js"></script>
 <script src="assets/js/productivity.js"></script>
 <script type="module" src="assets/js/speed-insights.js"></script>

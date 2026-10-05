@@ -1,3 +1,18 @@
+# FUTURE G 3.0.0-alpha.4 — 05/10/2026
+
+- Botão Gerar disponível por clique para todos os geradores individuais selecionados; Ctrl+Enter permanece opcional, sem selo no texto do botão.
+- Implementado o plano visual atualizado com tokens compartilhados, superfícies neutras, interação azul, feedback semântico e detalhes roxos para IA.
+- Tarefas e resultados ganham prioridade; preferências, edição completa, dashboards e ações complementares ficam disponíveis em seções recolhidas, preservando seus valores e funções.
+- As sete telas foram alinhadas nos dois ambientes e temas. Controller de apresentação trata menus, foco, campos inválidos e anexos no celular.
+- A revisão interativa corrigiu foco ao abrir o Editor por Mais ações e controles cortados no Editor carregado no celular. Abas, cards e campos agora respeitam a largura disponível; título/importação identificam XML.
+- 117 testes, build, 13 itens OpenSpec, auditoria Chrome e 224 combinações responsivas mais 56 estados expandidos e quatro casos do Editor carregado aprovados. Detalhes em `docs/visual-system-refresh.md`.
+- Revisão `simplify-visual-system-and-workspaces` concluída e arquivada com 8 de 8 tarefas, sem changes ativas.
+
+# Encerramento documental — 05/10/2026
+
+- Arquivada a manutenção `normalize-legacy-openspec-specs`, com todas as 8 tarefas concluídas. As fases de interface e validação fiscal local já estavam arquivadas; o encerramento ocorreu antes da abertura da revisão visual registrada acima.
+- A integração SEFAZ da fase 13B foi cancelada por decisão do usuário. A validação fiscal local existente permanece disponível; a explicação fiscal por IA continua apenas como possibilidade futura, sem implementação iniciada.
+
 # FUTURE G 3.0.0-alpha.3 — 30/09/2026
 
 - A fase 13A incorporou validação XSD first-party para NF-e 4.00 e CT-e 4.00 com schemas oficiais versionados, hashes de integridade, cobertura explícita e fallback para o relatório local.

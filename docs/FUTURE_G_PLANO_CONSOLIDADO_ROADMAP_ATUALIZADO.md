@@ -6,6 +6,10 @@ Documento de referência para OpenSpec/Codex, consolidando as decisões
 aprovadas para a evolução do FUTURE G. A implementação deve ser
 incremental, verificável e sem regressões.
 
+## Atualização de escopo — 05/10/2026
+
+As fases 01–12 e a validação fiscal local da fase 13A estão concluídas e arquivadas. A manutenção das especificações legadas também foi encerrada. A fase 13B, de integração com SEFAZ e serviços fiscais oficiais, foi cancelada por decisão do usuário e não será implementada. A fase 13C permanece apenas como possibilidade futura de explicar relatórios locais por IA, sem trabalho iniciado. Esta decisão substitui as previsões de integração oficial nas seções abaixo; o estado vigente está em [Roadmap consolidado](roadmap-consolidado.md).
+
 ## 1. Direção do produto
 
 O FUTURE G evolui para uma plataforma modular de apoio a QA,
@@ -296,7 +300,7 @@ Priorizar hierarquia por espaçamento, alinhamento, tipografia, agrupamento, con
 10. `future-g-10-productivity`
 11. `future-g-11-polish`
 12. `future-g-12-refine-interface-layout` --- refinamento consolidado de UI/UX
-13. `future-g-13-fiscal-validation` --- futuro
+13. Validação fiscal: `future-g-13a-local-fiscal-validation` concluída e arquivada; `future-g-13b-official-fiscal-validation` cancelada; `future-g-13c-ai-fiscal-explanation` apenas como possibilidade futura.
 
 ## 4. Fase 12 --- Refine Interface Layout
 
@@ -306,7 +310,7 @@ Esta fase preserva regras de negócio, geração, XML, validações, APIs, provi
 
 ## 4.1. Fase futura --- Fiscal Validation
 
-A fase 13 deve permanecer no roadmap como evolução fiscal posterior ao refinamento de interface.
+A fase 13A está concluída. A integração fiscal oficial da fase 13B foi cancelada em 05/10/2026; a descrição original das camadas abaixo permanece como histórico do planejamento, substituído por essa decisão.
 
 ### Objetivo
 
@@ -392,7 +396,9 @@ Somente após validar a fase 05: 06 General Generators -\> 07 XML
 Validation -\> 08 Port QA -\> 09 Test Scenarios -\> 10 Productivity -\>
 11 Polish.
 
-### Etapa D --- Especificar Fiscal Validation no futuro
+### Etapa D --- Planejamento fiscal original (substituído em 05/10/2026)
+
+A validação local foi concluída na fase 13A. As atividades de serviços oficiais, certificados, homologação/produção e integração SEFAZ abaixo foram canceladas; a explicação por IA continua sem implementação autorizada.
 
 1.  Definir documentos fiscais suportados.
 2.  Mapear validações locais.

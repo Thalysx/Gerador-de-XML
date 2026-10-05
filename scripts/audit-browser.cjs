@@ -26,6 +26,16 @@ async function criarServidorAuditoria() {
   if (process.env.AUDIT_DEBUG) console.error(`[auditoria] HTML: ${(html.match(/https:\/\//g) || []).length} URLs externas; ${(html.match(/<script[^>]*>/g) || []).length} scripts`);
   const servidor = http.createServer((req, res) => {
     const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    if (pathname === '/api/status') {
+      res.writeHead(200, {'Content-Type':'application/json', 'Cache-Control':'no-store'});
+      res.end(JSON.stringify({configured:false,provider:'audit',retentionMinutes:30}));
+      return;
+    }
+    if (pathname === '/assets/vendor/vercel-speed-insights.mjs') {
+      res.writeHead(200, {'Content-Type':'text/javascript; charset=utf-8'});
+      res.end(readFileSync(path.join(RAIZ,'node_modules','@vercel','speed-insights','dist','index.mjs')));
+      return;
+    }
     if (process.env.AUDIT_DEBUG) console.error(`[auditoria] HTTP ${pathname}`);
     if (pathname === '/' || pathname === '/index.html') {
       const corpo = Buffer.from(html);
@@ -141,7 +151,7 @@ async function esperarPagina(cdp) {
   for (let i = 0; i < 80; i += 1) {
     const estado = await avaliar(cdp, `({
       readyState: document.readyState,
-      pronta: typeof switchTab === 'function' && document.querySelectorAll('.tab-panel').length === 8
+      pronta: typeof switchTab === 'function' && typeof APP_NAVIGATION !== 'undefined' && document.querySelectorAll('.tab-panel').length === APP_NAVIGATION.length
     })`);
     ultimoEstado = estado;
     if (estado?.pronta) {
@@ -214,6 +224,9 @@ async function main() {
       if(entry.level === 'error')consoleAudit.errors.push(String(entry.text || '').slice(0,1000));
       else if(entry.level === 'warning')consoleAudit.warnings.push(String(entry.text || '').slice(0,1000));
     });
+    cdp.on('Network.responseReceived', event => {
+      if(event.response?.status >= 400) console.error(`[auditoria] HTTP ${event.response.status}: ${event.response.url}`);
+    });
     console.error('[auditoria] conectando ao CDP');
     await cdp.enviar('Page.enable');
     await cdp.enviar('Runtime.enable');
@@ -247,10 +260,10 @@ async function main() {
       const measurements = [];
       for (const width of [360,768,1280,1920]) {
         await cdp.enviar('Emulation.setDeviceMetricsOverride', {width,height:900,deviceScaleFactor:1,mobile:false});
-        for (const dark of [false,true]) for (const panel of ['home','xml','docs','cadastro','scenarios','editor','validacao','chat']) for(const collapsed of process.env.AUDIT_MATRIX?[false,true]:[false]) {
+        for (const environment of ['general','port']) for (const dark of [false,true]) for (const panel of ['home','xml','docs','cadastro','editor','validacao','chat']) for(const collapsed of process.env.AUDIT_MATRIX?[false,true]:[false]) {
           measurements.push(await avaliar(cdp, `(() => {
             if(document.body.classList.contains('dark')!==${dark})toggleTheme();
-            definirAmbiente('${panel}'==='scenarios'?'port':'general',false);
+            definirAmbiente('${environment}',false);
             switchTab('${panel}'); scrollTo(0,0);
             if(typeof definirSidebar==='function')definirSidebar(${collapsed},false);
             const outside=[...document.querySelectorAll('button,input,select,textarea,summary')].filter(el=>{
@@ -260,12 +273,35 @@ async function main() {
             const nav=document.getElementById('workspace-navigation');
             const navStyle=getComputedStyle(nav);
             const inaccessibleNavigation=nav.scrollHeight>nav.clientHeight+1&&!['auto','scroll'].includes(navStyle.overflowY);
-            return {panel:'${panel}',dark:${dark},collapsed:${collapsed},width:${width},scrollWidth:document.documentElement.scrollWidth,outside,inaccessibleNavigation};
+            return {environment:'${environment}',panel:'${panel}',dark:${dark},collapsed:${collapsed},width:${width},scrollWidth:document.documentElement.scrollWidth,outside,inaccessibleNavigation};
           })()`));
           await dormir(250);
           const shot = await cdp.enviar('Page.captureScreenshot',{format:'png'});
-          writeFileSync(path.join(baseline,`${width}-${dark?'dark':'light'}-${panel}${collapsed?'-collapsed':''}.png`),Buffer.from(shot.data,'base64'));
+          writeFileSync(path.join(baseline,`${width}-${environment}-${dark?'dark':'light'}-${panel}${collapsed?'-collapsed':''}.png`),Buffer.from(shot.data,'base64'));
         }
+      }
+      const expanded=[];
+      for(const width of [360,1280]) for(const environment of ['general','port']) for(const dark of [false,true]) for(const panel of ['home','xml','docs','cadastro','editor','validacao','chat']) {
+        await cdp.enviar('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
+        await avaliar(cdp, `(() => {
+          definirAmbiente('${environment}',false);
+          if(document.body.classList.contains('dark')!==${dark})toggleTheme();
+          switchTab('${panel}');definirSidebar(true,false);scrollTo(0,0);
+          document.querySelectorAll('#tab-${panel} details:not(.action-disclosure):not(.chat-attachment-menu)').forEach(d=>d.open=true);
+          const menu=document.querySelector('#tab-${panel} .action-disclosure');if(menu)menu.open=true;
+          if('${panel}'==='chat')document.getElementById('chat-anexo-area').open=true;
+        })()`);
+        await dormir(50);
+        expanded.push(await avaliar(cdp, `(() => {
+          const outside=[...document.querySelectorAll('#tab-${panel} button,#tab-${panel} input,#tab-${panel} select,#tab-${panel} textarea,#tab-${panel} summary')].filter(el=>{
+            if(!el.checkVisibility?.({visibilityProperty:true}))return false;
+            const r=el.getBoundingClientRect();return r.width>0&&(r.left < -1 || r.right>innerWidth+1);
+          }).map(el=>el.id||el.textContent.trim().slice(0,40));
+          return {width:${width},environment:'${environment}',dark:${dark},panel:'${panel}',outside,scrollWidth:document.documentElement.scrollWidth};
+        })()`));
+        const expandedShot=await cdp.enviar('Page.captureScreenshot',{format:'png'});
+        writeFileSync(path.join(baseline,`${width}-${environment}-${dark?'dark':'light'}-${panel}-expanded.png`),Buffer.from(expandedShot.data,'base64'));
+        await avaliar(cdp,`document.querySelectorAll('#tab-${panel} details').forEach(d=>d.open=false)`);
       }
       const phone = await avaliar(cdp, `(() => {
         definirAmbiente('general',false);
@@ -283,15 +319,15 @@ async function main() {
       await avaliar(cdp,"typeof definirSidebar==='function'?definirSidebar(true):homeApplySidebar(true)");
       const collapsed=await cdp.enviar('Page.captureScreenshot',{format:'png'});
       writeFileSync(path.join(baseline,'sidebar-collapsed.png'),Buffer.from(collapsed.data,'base64'));
-      writeFileSync(path.join(baseline,'measurements.json'),JSON.stringify({measurements,phone},null,2));
-      const failures=measurements.filter(m=>m.scrollWidth>m.width+1||m.outside.length||m.inaccessibleNavigation);
-      console.log(JSON.stringify({captures:measurements.length,failures,phone},null,2));
+      writeFileSync(path.join(baseline,'measurements.json'),JSON.stringify({measurements,expanded,phone},null,2));
+      const failures=[...measurements,...expanded].filter(m=>m.scrollWidth>m.width+1||m.outside.length||m.inaccessibleNavigation);
+      console.log(JSON.stringify({captures:measurements.length,expanded:expanded.length,failures,phone},null,2));
       if(process.env.AUDIT_MATRIX&&failures.length)process.exitCode=1;
       return;
     }
 
     const paineis = await avaliar(cdp, `(async () => {
-      const ids = ['home','xml','docs','cadastro','scenarios','editor','validacao','chat'];
+      const ids = ['home','xml','docs','cadastro','editor','validacao','chat'];
       const resultados = [];
       const nome = el => el.getAttribute('aria-label') || el.innerText?.trim().replace(/\\s+/g,' ').slice(0,100) || el.id || el.tagName;
       for (const id of ids) {
@@ -332,7 +368,7 @@ async function main() {
       document.documentElement.scrollTop = 0;
       return resultados;
     })()`);
-    console.error('[auditoria] oito painéis medidos');
+    console.error('[auditoria] sete painéis medidos');
 
     const commandPalette = await avaliar(cdp, `(async () => {
       definirAmbiente('general',false);
@@ -366,7 +402,7 @@ async function main() {
     console.error('[auditoria] busca global e orçamento de recursos conferidos');
 
     const acessibilidade = [];
-    for (const painel of ['home','xml','docs','cadastro','scenarios','editor','validacao','chat']) {
+    for (const painel of ['home','xml','docs','cadastro','editor','validacao','chat']) {
       await avaliar(cdp, `(() => {
         if(${JSON.stringify(painel)}==='scenarios')definirAmbiente('port',false);
         switchTab(${JSON.stringify(painel)}, document.getElementById('tab-btn-' + ${JSON.stringify(painel)}));
@@ -389,10 +425,10 @@ async function main() {
         marcosSemNome
       });
     }
-    console.error('[auditoria] árvore de acessibilidade conferida nas oito telas');
+    console.error('[auditoria] árvore de acessibilidade conferida nas sete telas');
 
     const percursos = [];
-    for (const painel of ['home','xml','docs','cadastro','scenarios','editor','validacao','chat']) {
+    for (const painel of ['home','xml','docs','cadastro','editor','validacao','chat']) {
       await avaliar(cdp, `(() => {
         if(${JSON.stringify(painel)}==='scenarios')definirAmbiente('port',false);
         switchTab(${JSON.stringify(painel)}, document.getElementById('tab-btn-' + ${JSON.stringify(painel)}));
@@ -425,7 +461,7 @@ async function main() {
       }
       percursos.push({ painel, itens });
     }
-    console.error('[auditoria] percurso de teclado concluído nas oito telas');
+    console.error('[auditoria] percurso de teclado concluído nas sete telas');
 
     await cdp.enviar('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
     const movimento = await avaliar(cdp, `(() => {
@@ -483,6 +519,12 @@ async function main() {
       definirAmbiente('port',false);
       openGenerator('motorista');
       generateSelectedDocument();
+      const simpleFields=document.getElementById('output-val').querySelectorAll('.structured-result-field').length;
+      // Individual Motorista intentionally has only Name/CPF; use the existing full
+      // cadastro generator to exercise long structured content and scroll replacement.
+      const longFixture=()=>({observacoes:'Conteúdo sintético longo para verificar leitura e substituição do resultado. '.repeat(100),...gerarCadastroPortuarioPorTipo('motorista'),categoria_cnh:'E',validade_cnh:'2027-01-01',funcao:'Motorista de testes',endereco:'Rua sintética, 100',telefone:'(11) 99999-0000',email:'qa@example.test',empresa:'Empresa de testes',cnpj:'00.000.000/0000-00'});
+      const profile=longFixture();
+      setOutput(JSON.stringify(profile),profile);
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
       const output=document.getElementById('output-val');
       const grid=output.querySelector('.structured-result-grid');
@@ -492,12 +534,16 @@ async function main() {
       const paginaAntes=scrollRoot.scrollTop;
       output.scrollTop=output.scrollHeight;
       const painelAntes=output.scrollTop;
-      generateSelectedDocument();
+      const nextProfile=longFixture();
+      setOutput(JSON.stringify(nextProfile),nextProfile);
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
       const gridAtual=output.querySelector('.structured-result-grid');
       const estilo=getComputedStyle(gridAtual);
       return {
         estruturado:output.classList.contains('is-structured'),
+        individualFields:simpleFields,
+        totalFields:Number(output.dataset.totalFields),
+        fullTextIncludesFields:['categoria_cnh','validade_cnh','funcao','endereco'].every(field=>currentResultText.includes(field)),
         campos:output.querySelectorAll('.structured-result-field').length,
         colunasDesktop:estilo.gridTemplateColumns.trim().split(/\\s+/).filter(Boolean).length,
         labels,
@@ -532,7 +578,14 @@ async function main() {
     await dormir(100);
     const capturaMarcaEscura = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     writeFileSync(path.join(SAIDA, 'future-g-home-dark.png'), Buffer.from(capturaMarcaEscura.data, 'base64'));
-    await avaliar(cdp, `(() => { openGenerator('cpf'); generateSelectedDocument(); return true; })()`);
+    await avaliar(cdp, `(() => {
+      definirAmbiente('general',false);openGenerator('cpf');
+      const button=document.getElementById('docs-generate-btn');
+      if(button.hidden||button.disabled||button.querySelector('kbd'))throw new Error('Gerar deve estar disponível por clique sem selo de teclado.');
+      button.click();
+      if(currentType!=='cpf'||!currentValue)throw new Error('O clique em Gerar não produziu CPF.');
+      return true;
+    })()`);
     await dormir(300);
     await avaliar(cdp, `document.getElementById('docs-output-box').scrollIntoView({block:'center'})`);
     const capturaResultadoHome = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
@@ -553,7 +606,6 @@ async function main() {
     writeFileSync(path.join(SAIDA, 'future-g-docs-minimal-dark.png'), Buffer.from(capturaDocsMinimalista.data, 'base64'));
     const capturasTelas = [
       ['cadastro', 'future-g-cadastro-dark.png'],
-      ['scenarios', 'future-g-scenarios-dark.png'],
       ['editor', 'future-g-editor-dark.png'],
       ['validacao', 'future-g-validacao-dark.png'],
       ['chat', 'future-g-chat-dark.png']
@@ -582,6 +634,51 @@ async function main() {
     writeFileSync(path.join(SAIDA, 'future-g-desktop-light.png'), Buffer.from(capturaMarcaClara.data, 'base64'));
     console.error('[auditoria] identidade capturada nos dois temas');
 
+    const editorContextual = await avaliar(cdp, `(() => {
+      switchTab('xml');
+      document.getElementById('xml-preview-tipo').value='cte';
+      gerarXMLComCampos();
+      const original=serializarXml(xmlsGerados.cte);
+      const button=document.querySelector('button[onclick="abrirXmlGeradoNoEditor()"]');
+      const menu=button.closest('details');menu.open=true;button.focus();button.click();
+      const panel=document.getElementById('tab-editor');
+      const rect=panel.getBoundingClientRect();
+      return {
+        focoNoPainel:document.activeElement===panel,
+        painelVisivel:!panel.hidden&&rect.width>0&&rect.height>0,
+        menuFechado:!menu.open,
+        fontePreservada:serializarXml(xmlsGerados.cte)===original,
+        copiaIntegral:editorArquivos.at(-1).original===original,
+        nomeArquivo:document.getElementById('editor-nome-arquivo').value,
+        titulo:document.querySelector('.nfe-pro-header-title').textContent.trim()
+      };
+    })()`);
+    await avaliar(cdp, `new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
+    await cdp.enviar('Page.captureScreenshot', {format:'png',captureBeyondViewport:false});
+    const capturaEditorContextual=await cdp.enviar('Page.captureScreenshot', {format:'png',captureBeyondViewport:false});
+    writeFileSync(path.join(SAIDA,'future-g-contextual-editor.png'),Buffer.from(capturaEditorContextual.data,'base64'));
+
+    const editorCarregadoResponsivo=[];
+    await cdp.enviar('Emulation.setDeviceMetricsOverride', {width:360,height:800,deviceScaleFactor:1,mobile:false});
+    for (const tipo of ['nfe','cte']) for (const dark of [false,true]) {
+      await avaliar(cdp, `(() => {
+        if(document.body.classList.contains('dark')!==${dark})toggleTheme();
+        switchTab('xml');document.getElementById('xml-preview-tipo').value='${tipo}';
+        const button=document.querySelector('button[onclick="abrirXmlGeradoNoEditor()"]');
+        button.closest('details').open=true;button.click();scrollTo(0,0);
+      })()`);
+      await avaliar(cdp, `new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
+      editorCarregadoResponsivo.push(await avaliar(cdp, `(() => {
+        const outside=[...document.querySelectorAll('#tab-editor button,#tab-editor input,#tab-editor select,#tab-editor summary')].filter(el=>{
+          const r=el.getBoundingClientRect();return r.width>0&&(r.left < -1 || r.right > innerWidth+1);
+        }).map(el=>el.getAttribute('aria-label')||el.textContent.trim());
+        return {tipo:'${tipo}',dark:${dark},width:innerWidth,scrollWidth:document.documentElement.scrollWidth,outside};
+      })()`));
+      await cdp.enviar('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+      const screenshot=await cdp.enviar('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+      writeFileSync(path.join(SAIDA,`future-g-loaded-editor-${tipo}-${dark?'dark':'light'}-mobile.png`),Buffer.from(screenshot.data,'base64'));
+    }
+
     const controlesPercorridos = percursos.flatMap(item => item.itens).filter(item => item.tag !== 'BODY');
     const nomesVazios = controlesPercorridos.filter(item => !item.nome).length;
     const focosInvisiveis = controlesPercorridos.filter(item => !item.visivel).length;
@@ -608,9 +705,13 @@ async function main() {
       marca,
       resultadoEstruturado,
       resultadoEstruturadoMobile,
+      editorContextual,
+      editorCarregadoResponsivo,
       movimentoReduzidoAplicado: movimento,
-      aprovado: paineis.every(item => !item.rolagemHorizontal && item.elementosExcedentes.length === 0 && !item.navegacaoVerticalInacessivel) && acessibilidade.every(item => item.controlesSemNome.length === 0 && item.marcosSemNome.length === 0) && nomesVazios === 0 && focosInvisiveis === 0 && focosSemContorno === 0 && movimento && commandPalette.named && commandPalette.focused && commandPalette.generalCount === 0 && commandPalette.portCount > 0 && commandPalette.insideViewport && Object.values(consoleAudit).every(items => items.length === 0) && performanceAudit.lucideBytes <= 20000 && performanceAudit.localJavaScriptBytes <= 600000 && performanceAudit.localCssBytes <= 150000 && performanceAudit.domNodes <= 2500 && marca.nome === 'FUTURE G' && marca.assinatura === 'Geradores Gerais' && marca.imagemCarregada && marca.imagemVisivel && marca.favicon === 'assets/brand/favicon.svg' && resultadoEstruturado.estruturado && resultadoEstruturado.campos >= 10 && resultadoEstruturado.colunasDesktop === 2 && ['Categoria CNH','Validade da CNH','Função','Endereço'].every(label=>resultadoEstruturado.labels.includes(label)) && !resultadoEstruturado.identificadoresTecnicosVisiveis && resultadoEstruturado.blocosTecnicos === 0 && resultadoEstruturado.painelRolavel && resultadoEstruturado.painelAntes > 0 && resultadoEstruturado.painelDepois === 0 && resultadoEstruturado.paginaAntes === resultadoEstruturado.paginaDepois && resultadoEstruturado.acoesAtivas && resultadoEstruturadoMobile.colunas === 1 && resultadoEstruturadoMobile.dentroDaViewport && !resultadoEstruturadoMobile.rolagemHorizontal
+      aprovado: paineis.every(item => !item.rolagemHorizontal && item.elementosExcedentes.length === 0 && !item.navegacaoVerticalInacessivel) && acessibilidade.every(item => item.controlesSemNome.length === 0 && item.marcosSemNome.length === 0) && nomesVazios === 0 && focosInvisiveis === 0 && focosSemContorno === 0 && movimento && commandPalette.named && commandPalette.focused && commandPalette.generalCount === 0 && commandPalette.portCount > 0 && commandPalette.insideViewport && Object.values(consoleAudit).every(items => items.length === 0) && performanceAudit.lucideBytes <= 20000 && performanceAudit.localJavaScriptBytes <= 600000 && performanceAudit.localCssBytes <= 150000 && performanceAudit.domNodes <= 2500 && marca.nome === 'FUTURE G' && marca.assinatura === 'Geradores Gerais' && marca.imagemCarregada && marca.imagemVisivel && marca.favicon === 'assets/brand/favicon.svg' && resultadoEstruturado.estruturado && resultadoEstruturado.campos === 4 && resultadoEstruturado.totalFields >= 10 && resultadoEstruturado.fullTextIncludesFields && resultadoEstruturado.individualFields === 2 && resultadoEstruturado.colunasDesktop === 2 && ['Nome','CPF'].every(label=>resultadoEstruturado.labels.includes(label)) && !resultadoEstruturado.identificadoresTecnicosVisiveis && resultadoEstruturado.blocosTecnicos === 0 && resultadoEstruturado.painelRolavel && resultadoEstruturado.painelAntes > 0 && resultadoEstruturado.painelDepois === 0 && resultadoEstruturado.paginaAntes === resultadoEstruturado.paginaDepois && resultadoEstruturado.acoesAtivas && resultadoEstruturadoMobile.colunas === 1 && resultadoEstruturadoMobile.dentroDaViewport && !resultadoEstruturadoMobile.rolagemHorizontal
     };
+    resultado.aprovado &&= editorContextual.focoNoPainel && editorContextual.painelVisivel && editorContextual.menuFechado && editorContextual.fontePreservada && editorContextual.copiaIntegral && editorContextual.titulo === 'Editor de XML';
+    resultado.aprovado &&= editorCarregadoResponsivo.every(item=>item.outside.length===0&&item.scrollWidth<=item.width+1);
     writeFileSync(path.join(SAIDA, 'auditoria-200.json'), JSON.stringify(resultado, null, 2));
     console.log(JSON.stringify(resultado, null, 2));
     if (!resultado.aprovado) process.exitCode = 1;

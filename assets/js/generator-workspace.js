@@ -14,10 +14,10 @@ function openGenerator(id) {
     document.getElementById('docs-selected-title').textContent=selectedItem.label;
     document.getElementById('docs-selected-description').textContent=selectedItem.description;
     const generateButton=document.getElementById('docs-generate-btn');
-    const needsConfiguration=generatorNeedsConfiguration(selectedItem);
-    generateButton.hidden=!needsConfiguration||!!item.batchOnly;
-    generateButton.disabled=!!item.batchOnly;
-    generateButton.childNodes[0].textContent=`Gerar ${selectedItem.label} `;
+    const canGenerate=!!selectedItem.run&&!item.batchOnly;
+    generateButton.hidden=!canGenerate;
+    generateButton.disabled=!canGenerate;
+    generateButton.textContent=`Gerar ${selectedItem.label}`;
     atualizarOpcoesDocumento(selectedItem.domainType,document.getElementById('lote-tipo').value);
     document.querySelectorAll('[data-generator-id]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.generatorId===selectedId)));
     if(item.batchOnly){document.querySelector('.docs-batch').open=true;document.getElementById('lote-tipo').value=id;}

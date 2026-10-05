@@ -5,7 +5,7 @@
 .validacao-dropzone { border: 1px dashed var(--border-strong); border-radius: var(--ui-radius); padding: 0; text-align: center; margin: 1rem 0; background: var(--surface-2); overflow: hidden; }
 .validacao-dropzone.arrastando { border-color: var(--accent); background: var(--info-bg); }
 .validacao-dropzone input { width: 100%; color: var(--text); font-size: .8rem; margin-top: .7rem; }
-.validacao-entrada textarea { display: block; width: 100%; min-height: 280px; resize: vertical; padding: .9rem; margin: .5rem 0 1rem; border: 1px solid var(--border); border-radius: 10px; background: var(--input-bg); color: var(--text); font: 12px/1.6 'DM Mono',monospace; }
+.validacao-entrada textarea { display: block; width: 100%; min-height: 280px; resize: vertical; padding: .9rem; margin: .5rem 0 1rem; border: 1px solid var(--border); border-radius: var(--ui-radius-sm); background: var(--input-bg); color: var(--text); font: 12px/1.6 'DM Mono',monospace; }
 .validacao-entrada label { font-size: .8rem; font-weight: 600; }
 .validacao-relatorio h3 { overflow-wrap: anywhere; }
 .validacao-selos { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .4rem; }
@@ -17,7 +17,7 @@
 .validacao-abas button[aria-selected="true"] { border-bottom-color: var(--accent); background: var(--info-bg); color: var(--text); }
 .validacao-resumo-grade { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .75rem 1rem; margin: 1rem 0 0; }
 .validacao-resumo-grade div { min-width: 0; }
-.validacao-resumo-grade dt { color: var(--text-muted); font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+.validacao-resumo-grade dt { color:var(--text-muted); font-size:13px; font-weight:500; }
 .validacao-resumo-grade dd { margin: .18rem 0 0; overflow-wrap: anywhere; font: .78rem/1.5 'DM Mono',monospace; }
 .validacao-cobertura { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .45rem .75rem; margin-top: 1rem; padding: .75rem; border: 1px solid var(--border); border-radius: var(--ui-radius-sm); background: var(--surface-2); font-size: .75rem; }
 .validacao-cobertura span { overflow-wrap: anywhere; }
@@ -28,8 +28,8 @@
 .validacao-lista strong { display: block; }
 .validacao-lista span { display: block; margin-top: .25rem; line-height: 1.6; }
 .validacao-lista .validacao-localizacao { font-family: 'DM Mono',monospace; color: var(--text); font-size: .75rem; }
-.validacao-lista .validacao-erro { border-left-color: var(--error); }
-.validacao-lista .validacao-aviso { border-left-color: var(--border-strong); }
+.validacao-lista .validacao-erro { border-left-color:var(--danger); background:var(--danger-soft); }
+.validacao-lista .validacao-aviso { border-left-color:var(--warning); background:var(--warning-soft); }
 .validacao-lista .validacao-informacao { border-left-color: var(--accent); }
 .validacao-xml-fonte { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 430px; overflow: auto; background: var(--input-bg); border: 1px solid var(--border); border-radius: var(--ui-radius-sm); padding: .75rem; color: var(--text); font: 12px/1.6 'DM Mono',monospace; }
 .validacao-negativa { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }

@@ -79,6 +79,8 @@ function toggleTheme() {
     btn.setAttribute('aria-label', 'Alternar para tema escuro');
   }
   renderLucideIcons(btn);
+  const themeColor=document.getElementById('theme-color');
+  if(themeColor)themeColor.content=getComputedStyle(body).getPropertyValue('--sidebar').trim() || '#0d131d';
   storageSet('gerador:tema', document.body.classList.contains('dark') ? 'dark' : 'light');
 }
 
@@ -112,7 +114,7 @@ function definirAmbiente(id, persist = true, announce = true) {
   const brandMark=document.getElementById('sidebar-brand-mark');
   if(brandMark)brandMark.src=environment.brandMark;
   const themeColor=document.getElementById('theme-color');
-  if(themeColor)themeColor.content=environment.themeColor;
+  if(themeColor)themeColor.content=getComputedStyle(document.body).getPropertyValue('--sidebar').trim() || (document.body.classList.contains('dark') ? '#0d131d' : '#f0f2f5');
   renderEnvironmentNavigation(environmentId);
   document.querySelectorAll('.environment-option[data-environment]').forEach(button => {
     const selected = button.dataset.environment === environmentId;

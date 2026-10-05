@@ -12,6 +12,7 @@ O repositório usa `main` como única fonte ativa. Versões concluídas são ide
 | `v3.0.0-alpha.1` | Fundação FUTURE G, shell unificado e seletor de ambientes |
 | `v3.0.0-alpha.2` | Correções de prontidão, isolamento fiscal, ativos PWA e acessibilidade |
 | `v3.0.0-alpha.3` | Resultado estruturado reutilizável e rolagem reiniciada por nova geração |
+| `v3.0.0-alpha.4` | Sistema visual compartilhado, telas simplificadas, ações contextuais e geração por clique |
 
 ## Snapshots importados
 

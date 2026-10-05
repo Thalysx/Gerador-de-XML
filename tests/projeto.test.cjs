@@ -246,7 +246,7 @@ test('ambientes compartilham NF-e, CT-e e Cadastro geral e isolam os demais dado
     for(const id of ['xml-preview-tipo','validacao-gerado-tipo','validacao-negativa-tipo','chat-anexo-tipo'])assert.deepEqual([...w.document.getElementById(id).options].map(option=>option.value),['nfe','cte'],id);
     assert.doesNotMatch(w.document.getElementById('chat-sugestoes').textContent,/contêiner|booking|motorista/i);
     assert.match(w.document.getElementById('sidebar-brand-mark').src,/future-g-mark-general\.svg$/);
-    assert.equal(w.document.getElementById('theme-color').content,'#2d1b45');
+    assert.equal(w.document.getElementById('theme-color').content,'#0d131d');
     const cadastro=run("gerarRegistro('cadastro').valor");
     assert.equal(Object.hasOwn(cadastro,'conteiner'),false);
     assert.equal(Object.hasOwn(cadastro,'lacre'),false);
@@ -260,7 +260,7 @@ test('ambientes compartilham NF-e, CT-e e Cadastro geral e isolam os demais dado
     for(const id of ['xml-preview-tipo','validacao-gerado-tipo','validacao-negativa-tipo','chat-anexo-tipo'])assert.deepEqual([...w.document.getElementById(id).options].map(option=>option.value),['nfe','cte'],id);
     assert.doesNotMatch(w.document.getElementById('chat-sugestoes').textContent,/CPF|CNPJ|cadastro|empresa/i);
     assert.match(w.document.getElementById('sidebar-brand-mark').src,/future-g-mark\.svg$/);
-    assert.equal(w.document.getElementById('theme-color').content,'#071a33');
+    assert.equal(w.document.getElementById('theme-color').content,'#0d131d');
     assert.equal(w.document.querySelector('[data-generator-id="cpf"]'),null);
     assert.ok(w.document.querySelector('[data-generator-id="conteiner"]'));
   } finally {dom.window.close();}
@@ -291,7 +291,7 @@ test('Home gera opções simples diretamente, registra histórico uma vez e ofer
     assert.equal(w.document.getElementById('tab-docs').hidden,false);
     assert.ok(run('currentValue'));
     assert.equal(w.document.getElementById('home-result'),null);
-    assert.equal(w.document.getElementById('docs-generate-btn').hidden,true);
+    assert.equal(w.document.getElementById('docs-generate-btn').hidden,false);
     const value=w.document.getElementById('output-val').textContent;
     assert.equal(w.validarCPF(value.replace(/\D/g,'')),true);
     assert.equal(run('historicoDocsList.length'),1);
@@ -319,7 +319,7 @@ test('fase 5 separa geração direta de configuração e mantém conteúdo prim�
     w.document.querySelector('[data-generator-id="nome"]').click();
     assert.equal(run('currentType'),'nome');
     assert.ok(run('currentValue'));
-    assert.equal(w.document.getElementById('docs-generate-btn').hidden,true);
+    assert.equal(w.document.getElementById('docs-generate-btn').hidden,false);
 
     w.clearDocumentResult();
     w.document.querySelector('[data-generator-id="telefone"]').click();
@@ -438,7 +438,7 @@ test('Cadastro Geral gera ficha somente com os grupos selecionados e restaura hi
 });
 
 test('atalhos da home e sidebar retrátil mantêm foco e preferência', async () => {
-  const {dom,w}=await abrir();
+  const {dom,w,run}=await abrir();
   try {
     w.document.body.focus();
     w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'/',bubbles:true}));
@@ -451,7 +451,11 @@ test('atalhos da home e sidebar retrátil mantêm foco e preferência', async ()
     assert.equal(collapse.textContent.trim(),'');
     assert.equal(JSON.parse(w.localStorage.getItem('thegenerator:sidebar-collapsed')),true);
     w.document.querySelector('[data-home-select="nome"]').click();
+    const count=run('historicoDocsList.length');
+    w.document.getElementById('docs-generate-btn').click();
+    assert.equal(run('historicoDocsList.length'),count+1);
     w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',ctrlKey:true,bubbles:true}));
+    assert.equal(run('historicoDocsList.length'),count+2);
     await new Promise(resolve=>w.setTimeout(resolve,230));
     assert.ok(w.document.getElementById('output-val').textContent.trim().split(/\s+/).length>=2);
   } finally {dom.window.close();}
@@ -1346,14 +1350,19 @@ test('migração preserva significado de favoritos, limites, histórico e recarg
   finally {next.dom.window.close();}
 });
 
-test('cada adaptador individual preserva ações, tipo e histórico único', async () => {
+test('cada adaptador individual gera pelo botão e preserva ações, tipo e histórico único', async () => {
   const {dom,w,run}=await abrir();
   try {
     for(const id of run('GENERATORS.filter(g=>g.run).map(g=>g.id)')) {
       const count=run('historicoDocsList.length');
       const item=w.generatorById(id);
       if(!w.generatorSupportsEnvironment(item))w.definirAmbiente(item.environments[0]);
-      w.openGenerator(id);w.generateSelectedDocument();
+      w.openGenerator(id);
+      const button=w.document.getElementById('docs-generate-btn');
+      assert.equal(button.hidden,false,id);
+      assert.equal(button.disabled,false,id);
+      assert.equal(button.querySelector('kbd'),null,id);
+      button.click();
       assert.equal(run('currentType'),w.generatorById(id).domainType,id);
       assert.ok(run('currentValue'),id);
       assert.equal(run('historicoDocsList.length'),Math.min(count+1,20),id);
@@ -1407,15 +1416,133 @@ test('Assistente trata falhas sem expor detalhes e preserva rascunho e anexo', a
   } finally {dom.window.close();}
 });
 
+test('divulgação progressiva preserva preferências, edição e resultados existentes', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.activateGenerator('cpf');
+    const options=w.document.getElementById('docs-advanced');
+    assert.equal(options.open,false);
+    const mask=w.document.getElementById('toggle-mascara');
+    mask.checked=false;w.onToggleMascara();
+    w.generateSelectedDocument();
+    const text=run('currentResultText');
+    options.open=true;options.open=false;
+    assert.equal(mask.checked,false);
+    assert.equal(run('currentResultText'),text);
+    assert.equal(w.document.querySelector('.productivity-dashboard').open,false);
+    assert.ok(w.document.getElementById('home-favorites').closest('details'));
+
+    w.switchTab('cadastro');w.gerarCadastroCompleto();
+    const edit=w.document.getElementById('cadastro-edit');
+    assert.equal(edit.open,false);
+    const name=w.document.getElementById('cad_nome').value;
+    assert.ok(name);
+    assert.match(w.document.getElementById('cadastro-result').textContent,new RegExp(name));
+    w.document.querySelector('#cadastro-result [data-edit-cadastro]').click();
+    assert.equal(edit.open,true);
+    assert.equal(w.document.activeElement.id,'cad_nome');
+    assert.equal(w.document.getElementById('cad_nome').value,name);
+    edit.open=false;w.restaurarDoHistorico(0);
+    assert.equal(w.document.getElementById('cad_nome').value,name);
+    w.definirAmbiente('port');
+    assert.equal(w.document.getElementById('cad-port-tipo').closest('details'),null);
+    w.gerarCadastroCompleto();
+    assert.equal(w.document.getElementById('cadastro-result').classList.contains('visible'),true);
+  } finally {dom.window.close();}
+});
+
+test('campos XML recolhidos continuam disponíveis para geração e edição contextual', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.switchTab('xml');
+    const advanced=w.document.getElementById('xml-advanced');
+    assert.equal(advanced.open,false);
+    w.document.getElementById('nfe_nomeEmit').value='Empresa sintética para QA';
+    w.gerarXMLComCampos(true);
+    assert.match(run('serializarXml(xmlsGerados.nfe)'),/Empresa sintética para QA/);
+    const button=w.document.querySelector('[data-open-disclosure="xml-advanced"]');
+    const actions=button.closest('details');actions.open=true;button.click();
+    assert.equal(advanced.open,true);
+    assert.equal(actions.open,false);
+    assert.equal(w.document.getElementById('nfe_nomeEmit').value,'Empresa sintética para QA');
+    assert.ok(advanced.contains(w.document.activeElement));
+  } finally {dom.window.close();}
+});
+
+test('abrir o Editor por ações contextuais mantém foco visível e o XML original', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.switchTab('xml');
+    w.document.getElementById('xml-preview-tipo').value='cte';
+    w.gerarXMLComCampos();
+    const original=run('serializarXml(xmlsGerados.cte)');
+    const button=w.document.querySelector('button[onclick="abrirXmlGeradoNoEditor()"]');
+    // The outside-only harness does not execute HTML inline handlers.
+    button.onclick=w.abrirXmlGeradoNoEditor;
+    const actions=button.closest('details');actions.open=true;button.focus();button.click();
+    assert.equal(actions.open,false);
+    assert.equal(w.document.activeElement,w.document.getElementById('tab-editor'));
+    assert.equal(w.document.activeElement.hidden,false);
+    assert.equal(run('serializarXml(xmlsGerados.cte)'),original);
+    assert.match(w.document.getElementById('editor-nome-arquivo').value,/CTE-gerado/);
+  } finally {dom.window.close();}
+});
+
+test('Escape e clique externo fecham ações sem perder foco, resultado ou sidebar', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.activateGenerator('cpf');w.definirSidebar(false,false);
+    const result=run('currentResultText');
+    const details=w.document.getElementById('docs-expand-btn').closest('details');
+    details.open=true;w.document.getElementById('docs-expand-btn').focus();
+    w.document.activeElement.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+    assert.equal(details.open,false);
+    assert.equal(w.document.activeElement,details.querySelector('summary'));
+    assert.equal(w.document.body.classList.contains('sidebar-collapsed'),false);
+    assert.equal(run('currentResultText'),result);
+    details.open=true;w.document.getElementById('docs-expand-btn').focus();
+    w.document.getElementById('docs-selected-title').click();
+    assert.equal(details.open,false);
+    assert.equal(w.document.activeElement,details.querySelector('summary'));
+    assert.equal(run('currentResultText'),result);
+  } finally {dom.window.close();}
+});
+
+test('opções do assistente preservam modo local e acesso contextual à privacidade', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.switchTab('chat');
+    const menu=w.document.querySelector('.chat-secondary');
+    assert.equal(menu.open,false);
+    menu.open=true;
+    const mode=w.document.getElementById('chat-modo');mode.value='local';w.atualizarModoChat();
+    menu.open=false;
+    w.document.getElementById('chat-pedido').value='Gere um CPF';
+    w.document.getElementById('chat-pedido').dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));
+    assert.equal(run('conversasChat.length'),1);
+    assert.equal(mode.value,'local');
+    const attachments=w.document.getElementById('chat-anexo-area');
+    attachments.open=true;w.document.getElementById('chat-anexo').focus();
+    w.document.activeElement.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+    assert.equal(attachments.open,false);
+    assert.equal(w.document.activeElement,attachments.querySelector('summary'));
+    menu.open=true;w.document.querySelector('[data-open-privacy]').click();
+    assert.equal(menu.open,false);
+    assert.equal(w.document.querySelector('.app-settings').open,true);
+    assert.equal(w.document.querySelector('.chat-privacy-settings').open,true);
+    assert.equal(w.document.activeElement,w.document.querySelector('.chat-privacy-settings > summary'));
+  } finally {dom.window.close();}
+});
+
 test('paleta visual possui uma única fonte de tokens', () => {
   const arquivos=fs.readdirSync(path.join(root,'assets/css')).filter(nome=>nome.endsWith('.css'));
   const declarantes=arquivos.filter(nome=>/--bg\s*:/.test(fs.readFileSync(path.join(root,'assets/css',nome),'utf8')));
   assert.deepEqual(declarantes,['base.css']);
   const base=fs.readFileSync(path.join(root,'assets/css/base.css'),'utf8');
-  assert.match(base,/:root\s*\{[^}]*--accent:\s*#7c3aed/);
-  assert.match(base,/body\[data-environment="port"\]\s*\{[^}]*--accent:\s*#2563eb/);
-  assert.match(base,/body\.dark\s*\{[^}]*--bg:\s*#131017[^}]*--accent:\s*#a78bfa/);
-  assert.match(base,/body\.dark\[data-environment="port"\]\s*\{[^}]*--bg:\s*#07111f[^}]*--accent:\s*#60a5fa/);
+  assert.match(base,/:root\s*\{[^}]*--primary:\s*#2563eb/);
+  assert.match(base,/--accent:\s*var\(--link\)/);
+  assert.match(base,/body\.dark\s*\{[^}]*--background:\s*#090d14/);
+  assert.doesNotMatch(base,/body[^{}]*\[data-environment="port"\][^{]*\{[^}]*--(?:primary|accent|background):/);
 });
 
 test('pares principais de texto mantêm contraste mínimo de 4,5 para 1', () => {
@@ -1424,8 +1551,13 @@ test('pares principais de texto mantêm contraste mínimo de 4,5 para 1', () => 
     return .2126*canais[0]+.7152*canais[1]+.0722*canais[2];
   };
   const contraste=(a,b)=>{const x=luminancia(a),y=luminancia(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};
-  const pares=[['241b33','ffffff'],['665676','f5f1fb'],['ffffff','6d28d9'],['7030ce','f5f1fb'],['f5effc','131017'],['c1b3ce','1c1624'],['a78bfa','131017'],['c5adff','131017'],['132238','ffffff'],['52647b','f4f7fb'],['ffffff','1d4ed8'],['1d4ed8','e6f0ff'],['1d7a4a','eaf5ef'],['b52f2f','ffffff'],['1d4ed8','ffffff'],['eff6ff','07111f'],['a8b8cc','0b1728'],['60a5fa','07111f'],['3bd68c','0f2318'],['ef5b68','07111f'],['93c5fd','07111f']];
-  for(const [texto,fundo] of pares)assert.ok(contraste(texto,fundo)>=4.5,`${texto} sobre ${fundo}`);
+  const base=fs.readFileSync(path.join(root,'assets/css/base.css'),'utf8');
+  const palette=selector=>Object.fromEntries([...base.match(selector)[1].matchAll(/--([\w-]+):\s*(#[\da-f]{6})/gi)].map(m=>[m[1],m[2]]));
+  const light=palette(/:root\s*\{([^}]+)\}/),dark={...light,...palette(/body\.dark\s*\{([^}]+)\}/)};
+  for(const colors of [light,dark]) {
+    const pairs=[['text-primary','background'],['text-secondary','surface'],['text-muted','surface-elevated'],['on-primary','primary'],['on-primary','primary-hover'],['link','primary-soft'],['success','success-soft'],['warning','warning-soft'],['danger','danger-soft'],['ai','surface']];
+    for(const [text,background] of pairs)assert.ok(contraste(colors[text],colors[background])>=4.5,`${text} sobre ${background}: ${colors[text]} / ${colors[background]}`);
+  }
 });
 
 test('filtro de gravidade preserva relatório completo e mostra ausência de resultados', async () => {

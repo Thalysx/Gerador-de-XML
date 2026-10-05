@@ -43,7 +43,7 @@ document.getElementById('clear-home-personalization').addEventListener('click',(
   document.getElementById('settings-status').textContent='Favoritos e recentes foram limpos.';
   mostrarStatus('Personalização da página inicial limpa.');
 });
-document.addEventListener('click',event=>{const settings=document.querySelector('.app-settings');if(settings.open&&!settings.contains(event.target))settings.open=false;});
+document.addEventListener('click',event=>{const settings=document.querySelector('.app-settings');if(settings.open&&!settings.contains(event.target)&&!event.target.closest('[data-open-privacy]'))settings.open=false;});
 document.addEventListener('keydown',event=>{
   if(event.key==='/'&&document.getElementById('tab-home').classList.contains('active')&&!event.target.matches?.('input,textarea,select,[contenteditable="true"]')){event.preventDefault();document.getElementById('home-generator-search').focus();}
   if(event.key==='Escape')document.querySelector('.app-settings').open=false;

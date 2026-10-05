@@ -332,6 +332,47 @@ test('fase 5 separa geração direta de configuração e mantém conteúdo prim�
   } finally {dom.window.close();}
 });
 
+test('placa gera ao ativar opção, Home e busca com padrão escolhido e histórico único', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    const selector=w.document.getElementById('gerador-placa-tipo');
+    w.openGenerator('placa');
+    assert.equal(run('historicoDocsList.length'),0);
+    const option=w.document.querySelector('[data-generator-id="placa"]');
+    assert.equal(option.getAttribute('aria-label'),'Gerar Placa');
+    option.click();
+    assert.match(run('currentValue'),/^[A-Z]{3}\d[A-Z]\d{2}$/);
+    assert.equal(run('historicoDocsList.length'),1);
+    assert.equal(w.document.getElementById('docs-plate-options').hidden,false);
+    selector.value='antiga';option.click();
+    assert.equal(selector.value,'antiga');
+    assert.match(run('currentValue'),/^[A-Z]{3}-\d{4}$/);
+    assert.equal(run('historicoDocsList.length'),2);
+    w.document.getElementById('docs-generate-btn').click();
+    assert.match(run('currentValue'),/^[A-Z]{3}-\d{4}$/);
+    assert.equal(run('historicoDocsList.length'),3);
+    w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',ctrlKey:true,bubbles:true}));
+    assert.match(run('currentValue'),/^[A-Z]{3}-\d{4}$/);
+    assert.equal(run('historicoDocsList.length'),4);
+    w.switchTab('home');w.document.querySelector('[data-home-select="placa"]').click();
+    assert.equal(selector.value,'antiga');
+    assert.match(run('currentValue'),/^[A-Z]{3}-\d{4}$/);
+    assert.equal(run('historicoDocsList.length'),5);
+    selector.value='mercosul';
+    w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true}));
+    const search=w.document.getElementById('command-palette-input');
+    search.value='placa';search.dispatchEvent(new w.Event('input',{bubbles:true}));
+    search.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
+    assert.equal(w.document.getElementById('command-palette').hidden,true);
+    assert.match(run('currentValue'),/^[A-Z]{3}\d[A-Z]\d{2}$/);
+    assert.equal(run('historicoDocsList.length'),6);
+    w.activateGenerator('placa-antiga');
+    assert.equal(selector.value,'antiga');
+    assert.match(run('currentValue'),/^[A-Z]{3}-\d{4}$/);
+    assert.equal(run('historicoDocsList.length'),7);
+  } finally {dom.window.close();}
+});
+
 test('fase 5 usa o espaço do assistente e adapta Cadastro geral ao ambiente', async () => {
   const {dom,w}=await abrir();
   try {

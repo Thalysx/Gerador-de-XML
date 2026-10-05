@@ -14,6 +14,7 @@ O repositório usa `main` como única fonte ativa. Versões concluídas são ide
 | `v3.0.0-alpha.3` | Resultado estruturado reutilizável e rolagem reiniciada por nova geração |
 | `v3.0.0-alpha.4` | Sistema visual compartilhado, telas simplificadas, ações contextuais e geração por clique |
 | `v3.0.0-alpha.5` | Crachá automático e restauração da organização anterior do XML Fiscal |
+| `v3.0.0-alpha.6` | Placa automática com preservação do padrão escolhido |
 
 ## Snapshots importados
 

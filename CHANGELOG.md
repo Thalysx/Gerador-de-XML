@@ -4,6 +4,12 @@ Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O hist
 
 ## [Não publicado]
 
+## [3.0.0-alpha.6] — 2026-10-05
+
+- Placa passa a gerar imediatamente ao selecionar a opção, pela Home ou pela busca global, preservando o padrão escolhido (Mercosul ou antigo).
+- Mantidos o seletor de formato, o botão Gerar, Ctrl+Enter opcional e um único registro de histórico por ação; navegação e alias de placa antiga permanecem compatíveis.
+- Relatório da correção em `docs/direct-plate-generation.md`.
+
 ## [3.0.0-alpha.5] — 2026-10-05
 
 - Crachá passa a gerar imediatamente ao ativar a opção, inclusive pela Home e busca global, usando as opções atuais. Gerar e Ctrl+Enter permanecem disponíveis para regeneração.

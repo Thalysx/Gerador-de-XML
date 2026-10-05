@@ -30,7 +30,9 @@ function openGenerator(id) {
 }
 function activateGenerator(id) {
   const item=generatorById(id);
+  const plateFormat=id==='placa'?document.getElementById('gerador-placa-tipo').value:null;
   if(!openGenerator(id))return false;
+  if(plateFormat)document.getElementById('gerador-placa-tipo').value=plateFormat;
   if(item.tool==='docs'&&item.run&&!generatorNeedsConfiguration(item))generateSelectedDocument();
   return true;
 }

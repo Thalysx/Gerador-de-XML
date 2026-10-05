@@ -21,6 +21,13 @@ The system SHALL execute simple deterministic generators directly when the user 
 - **AND** the Generate button and optional Ctrl+Enter shortcut remain available for regeneration
 - **AND** opening the generator solely for navigation does not generate a new result.
 
+#### Scenario: Activate a plate
+- **WHEN** the user activates Placa from its option, Home or global search
+- **THEN** one synthetic plate is generated immediately in the selected Mercosul or old format
+- **AND** the format selector, Generate button and optional Ctrl+Enter remain available
+- **AND** an explicit old-format option selects the old format
+- **AND** opening solely for navigation does not generate another result.
+
 ### Requirement: Persistent result
 The result area SHALL be present before and after generation.
 

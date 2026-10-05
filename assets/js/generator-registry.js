@@ -25,7 +25,7 @@ const GENERATORS = Object.freeze([
   {id:'cnpj',label:'CNPJ',description:'Cadastro empresarial numérico',category:'empresa',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarCNPJComToggle(),name:true,mask:true,validate:true},
   {id:'empresa',label:'Razão social',description:'Nome de empresa fictícia',category:'empresa',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarDocumentoExtra('empresa')},
   {id:'telefone',label:'Telefone',description:'Fixo ou celular, com DDD por UF',category:'contato',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarTelefone(),mask:true,requiresConfiguration:true},
-  {id:'placa',label:'Placa',description:'Padrões Mercosul e antigo',category:'veiculo',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarPlaca(document.getElementById('gerador-placa-tipo')?.value || 'mercosul'),validate:true,requiresConfiguration:true},
+  {id:'placa',label:'Placa',description:'Padrões Mercosul e antigo',category:'veiculo',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarPlaca(document.getElementById('gerador-placa-tipo')?.value || 'mercosul'),validate:true},
   {id:'nfe',label:'NF-e',description:'Nota fiscal eletrônica de teste',category:'xml',environments:SHARED_ENVIRONMENTS,route:'xml',batch:false,priority:true},
   {id:'cadastro',label:'Cadastro completo',description:'Ficha sintética completa do ambiente atual',category:'pessoa',environments:SHARED_ENVIRONMENTS,route:'cadastro',priority:true},
   {id:'rg',label:'RG',description:'Registro de identidade no padrão de São Paulo',category:'pessoa',environments:GENERAL_ENVIRONMENT,run:()=>gerarDocumentoExtra('rg'),mask:true,validate:true},

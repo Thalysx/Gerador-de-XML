@@ -1,6 +1,6 @@
 # Verificação da IA em produção
 
-Destino aprovado pelo usuário: Netlify, substituindo a publicação inicialmente planejada na Vercel. Site: https://gerador-all.netlify.app.
+Destino das verificações históricas de IA abaixo: Netlify, substituindo naquela etapa a publicação inicialmente planejada na Vercel. Site: https://gerador-all.netlify.app. A atualização visual `3.0.0-alpha.4` foi solicitada e publicada na Vercel; seu estado está registrado ao final deste documento.
 
 ## Evidência obtida
 
@@ -49,3 +49,20 @@ Em 30/09/2026, a versão `3.0.0-alpha.3` foi publicada no Netlify pelo deploy `6
 - A validação em Chrome confirmou o painel `RESULTADO · MOTORISTA` como uma lista semântica de 16 campos com rótulos amigáveis, sem apresentar identificadores técnicos crus.
 - Os controles para gerar novamente, copiar, baixar TXT, ver detalhes e limpar ficaram disponíveis após a geração.
 - A suíte local passou com 107 testes, o build foi concluído, a auditoria principal do Chromium foi aprovada e a matriz responsiva concluiu 128 capturas sem falhas.
+
+## Publicação 3.0.0-alpha.4 — Vercel
+
+Em 05/10/2026, o commit `b004d04c6ad36598fd449284cf79b65783471eee` foi enviado à `main` e publicado pela integração Git existente da Vercel.
+
+- URL de produção: https://gerador-de-xml.vercel.app
+- Projeto: `gerador-de-xml`, workspace `thalys-fef7`.
+- Deploy da implementação: `dpl_4Tv29vhzMGzGAP9NZh87QGc7rHJQ`; status **Ready**, ambiente **Production**, duração de 15 segundos.
+- URL do deploy: https://gerador-de-9xemeb7ua-thalys-fef7.vercel.app
+- Os 16 arquivos públicos verificados retornaram HTTP 200 e SHA-256 correspondente ao conteúdo publicado: HTML, seis CSS, quatro scripts de apresentação, dois símbolos da marca, runtime de Speed Insights, manifesto e favicon. Arquivos versionados foram comparados com o blob Git para considerar a normalização CRLF/LF; o asset vendorizado foi comparado com o build local.
+- A revisão em Chrome na produção confirmou seleção de CPF, geração pelo botão Gerar CPF e Ctrl+Enter opcional. Ambos produziram resultados novos, com opções avançadas recolhidas.
+- A suíte local passou com 117 testes; build, 12 specs canônicas após o arquivamento, auditoria Chrome, 224 combinações responsivas, 56 estados expandidos e quatro casos do Editor carregado foram aprovados.
+- As changes `normalize-legacy-openspec-specs` e `simplify-visual-system-and-workspaces` estão arquivadas; não há changes ativas. SEFAZ permanece cancelada.
+
+**Limitação observada:** `/api/status` nessa Vercel retornou HTTP 503 e `configured: false`, informando que a IA pública ainda não está configurada. A publicação confirma a interface e os geradores locais; não certifica IA externa nem Redis nessa hospedagem. Nenhuma credencial foi criada, copiada ou alterada para esta entrega.
+
+Evidência HTTP local: `artifacts/visual-system-refresh/alpha4-production-http.json`. Permanecem as conferências manuais de outros navegadores, dispositivo real e leitor de tela descritas em `docs/visual-system-refresh.md`.

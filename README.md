@@ -113,7 +113,7 @@ npm run brand:export
 
 ## Ativar o chat com IA
 
-Consulte [ATIVACAO-IA.md](ATIVACAO-IA.md) para configurar Groq ou OpenAI, desenvolvimento local, Redis, limites e etapas de verificação na Vercel. A IA está publicada na Netlify: [abrir gerador](https://gerador-all.netlify.app). Consulte [NETLIFY.md](NETLIFY.md) para configurar esse destino e [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md) para resultados reais e verificações pendentes.
+Consulte [ATIVACAO-IA.md](ATIVACAO-IA.md) para configurar Groq ou OpenAI, desenvolvimento local, Redis, limites e etapas de verificação na Vercel. A versão visual `3.0.0-alpha.4` está publicada na Vercel: [abrir FUTURE G](https://gerador-de-xml.vercel.app). A IA pública dessa hospedagem ainda não está configurada; as verificações históricas de IA na Netlify estão em [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md), junto ao registro do deploy atual. Consulte [NETLIFY.md](NETLIFY.md) para a configuração daquele destino.
 
 ## Validação XML
 

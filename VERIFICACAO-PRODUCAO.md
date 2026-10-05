@@ -1,5 +1,13 @@
 # Verificação da IA em produção
 
+## Publicação atual — 3.0.0-alpha.7
+
+O assistente atual usa exclusivamente comandos locais. Publicação pela integração Git da Vercel em 05/10/2026, commit `57e788a02e32d92c6517cb5724addec133405eaf`, deploy `dpl_EUa8xUkbVTrM2FKouPdw8XtfY787`, check success. Produção: https://gerador-de-xml.vercel.app/.
+
+Os 25 arquivos públicos verificados responderam HTTP 200 com SHA-256 idêntico ao commit/build. As rotas `/api/chat` e `/api/status` responderam HTTP 410 com modo local, e os antigos scripts de IA responderam HTTP 404. O navegador local confirmou os fluxos de comandos sem chamadas a essas rotas. Testes: 124 aprovados; build, auditoria e 280 estados responsivos aprovados. XSD first-party permanece na tela de Validação; SEFAZ continua fora do escopo. Guia: `docs/local-commands.md`; evidência: `artifacts/local-commands/production-http.json`.
+
+As verificações de IA abaixo são históricas e não descrevem o assistente da alpha.7.
+
 Destino das verificações históricas de IA abaixo: Netlify, substituindo naquela etapa a publicação inicialmente planejada na Vercel. Site: https://gerador-all.netlify.app. A atualização visual `3.0.0-alpha.4` foi solicitada e publicada na Vercel; seu estado está registrado ao final deste documento.
 
 ## Evidência obtida

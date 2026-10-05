@@ -25,6 +25,8 @@ A revisão `simplify-visual-system-and-workspaces` foi concluída e arquivada em
 
 ## Pendências de encerramento externo
 
+A manutenção `local-command-assistant` foi concluída e arquivada em 05/10/2026, com 5 de 5 tarefas. A alpha.7 substitui a IA por comandos locais completos: catálogo por ambiente, sugestões, favoritos, repetição, geração e consultas XML, validação local e cópias de teste isoladas. A atualização está publicada na Vercel. Veja [Comandos locais](local-commands.md).
+
 - Executar o roteiro auditivo com leitor de tela real em `CHECKLIST-LEITOR-TELA.md`.
 - Os testes Redis pertencem ao backend histórico de IA; não são uma dependência dos comandos locais da alpha.7.
 - Não marcar essas verificações como concluídas somente com testes simulados.

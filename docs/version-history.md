@@ -32,7 +32,7 @@ Os ZIPs têm manifesto SHA-256 e estão preparados para a Release `legacy-snapsh
 
 ## Estado da publicação
 
-O primeiro envio do histórico consolidado foi recusado pelo GitHub com HTTP 403. O bundle `future-g-all.bundle`, os ZIPs e o manifesto preservam aquele histórico. Em 05/10/2026, o envio das versões `3.0.0-alpha.4`, `3.0.0-alpha.5` e `3.0.0-alpha.6` à `main` foi concluído e a integração Git publicou as atualizações na Vercel. Consulte `VERIFICACAO-PRODUCAO.md` para o deploy e suas limitações. Tags e Releases remotas devem ser consideradas publicadas somente após a confirmação de seu envio.
+O primeiro envio do histórico consolidado foi recusado pelo GitHub com HTTP 403. O bundle `future-g-all.bundle`, os ZIPs e o manifesto preservam aquele histórico. Em 05/10/2026, o envio das versões `3.0.0-alpha.4`, `3.0.0-alpha.5`, `3.0.0-alpha.6` e `3.0.0-alpha.7` à `main` foi concluído e a integração Git publicou as atualizações na Vercel. Consulte `VERIFICACAO-PRODUCAO.md` para o deploy e suas limitações. Tags e Releases remotas devem ser consideradas publicadas somente após a confirmação de seu envio.
 
 ## Convenções
 

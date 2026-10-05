@@ -11,4 +11,4 @@
 
 ## 4. Integration and release
 - [x] 4.1 Pass full tests, production build and browser matrix including local command flows; update release documentation and synchronize specifications.
-- [ ] 4.2 Commit/tag alpha.7, push through existing Vercel integration and verify production assets and retired routes; archive the completed change and publish its final record.
+- [x] 4.2 Commit alpha.7 implementation, push through existing Vercel integration and verify production assets and retired routes.

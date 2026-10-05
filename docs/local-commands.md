@@ -48,3 +48,9 @@ Se o armazenamento do navegador estiver bloqueado, favoritos continuam disponív
 - `openspec validate --all --strict`: 13 itens aprovados antes do arquivamento.
 
 Evidências locais: `artifacts/visual-review/auditoria-200.json` e `artifacts/visual-review/future-g-local-commands.png`. Auditoria automatizada em Chromium; leitor de tela real e dispositivo físico continuam conferências manuais.
+
+## Publicação
+
+Publicada na [Vercel](https://gerador-de-xml.vercel.app/) em 05/10/2026 pelo commit `57e788a02e32d92c6517cb5724addec133405eaf`. O check Vercel retornou success para o deploy `dpl_EUa8xUkbVTrM2FKouPdw8XtfY787`. Os 25 arquivos públicos conferidos retornaram HTTP 200 e SHA-256 correspondente ao commit/build. `/api/chat` e `/api/status` retornaram HTTP 410 com `mode:local`; os antigos scripts de IA retornaram HTTP 404.
+
+Change `local-command-assistant` arquivada em `openspec/changes/archive/2026-10-05-local-command-assistant`, com 5 de 5 tarefas completas e especificações canônicas sincronizadas. Evidência HTTP: `artifacts/local-commands/production-http.json`.

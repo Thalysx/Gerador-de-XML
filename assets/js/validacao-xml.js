@@ -372,11 +372,15 @@ function substituirTagXml(doc,no,novoNome,valor) {
   return novo;
 }
 
-function criarVarianteNegativaXml(tipo,variante) {
-  const base=xmlsGerados[tipo]?.cloneNode(true);
+function criarVarianteNegativaXml(tipo,variante,documentoBase=xmlsGerados[tipo]) {
+  const base=documentoBase?.cloneNode(true);
   const definicao=VARIANTES_XML_NEGATIVAS[variante];
   if (!base || !definicao) return null;
   const inf=base.querySelector(tipo === 'nfe' ? 'infNFe' : 'infCte');
+  if (!inf) return null;
+  const alvos={'cpf-invalido':'dest > CNPJ, dest > CPF, rem > CNPJ, rem > CPF','cnpj-invalido':'CNPJ','campo-ausente':'emit > xNome','formato-invalido':'ide > mod','tag-invalida':'emit > xNome'};
+  if (alvos[variante] && !inf.querySelector(alvos[variante])) return null;
+  const original=serializarXml(base);
   let texto='';
   if (variante === 'cpf-invalido') {
     const documento=inf.querySelector('dest > CNPJ, dest > CPF') || inf.querySelector('rem > CNPJ, rem > CPF');
@@ -394,6 +398,7 @@ function criarVarianteNegativaXml(tipo,variante) {
   }
   texto=serializarXml(base);
   if (variante === 'xml-malformado') texto=texto.replace(/<\/[^>]+>\s*$/,'');
+  if (texto === original) return null;
   return {texto,nome:`${tipo.toUpperCase()}-teste-${variante}.xml`,rotulo:definicao.rotulo,descricao:definicao.descricao,variante};
 }
 

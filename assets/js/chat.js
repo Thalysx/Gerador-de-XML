@@ -1,52 +1,9 @@
-// Interpretador local de pedidos, sem chamadas a modelos ou APIs externas.
-const ALIASES_PEDIDOS = [
-  ['carga-conteinerizada', 'cargas? conteinerizadas?'], ['granel-solido', 'graneis? solidos?'], ['granel-liquido', 'graneis? liquidos?'], ['carga-solta', 'cargas? soltas?'],
-  ['conjunto-veicular', 'conjuntos? veiculares?'], ['cavalo-mecanico', 'cavalos? mecanicos?'], ['carreta', 'carretas?'],
-  ['transportadora', 'transportadoras?'], ['importador', 'importadores?'], ['exportador', 'exportadores?'], ['depositante', 'depositantes?'],
-  ['operador-portuario', 'operadores? portuarios?'], ['visitante-portuario', 'visitantes? portuarios?'],
-  ['cnpj-alfa', 'cnpjs? alfanumericos?'], ['conteiner-lacre', '(?:conteiner(?:es)?|containers?) (?:com|e) lacres?'],
-  ['cadastro', 'cadastros?(?: completos?)?'], ['motorista', '(?:dados para (?:um |uma )?)?motoristas?'],
-  ['empresa', '(?:nomes? de empresas?|razoes sociais|razao social|empresas?)'],
-  ['nome', '(?:nomes?(?: de pessoas?)?|pessoas?)'], ['cpf', 'cpfs?'], ['cnpj', 'cnpjs?'],
-  ['cnh', 'cnhs?'], ['rg', 'rgs?'], ['telefone', '(?:telefones?|celulares?|celular)'],
-  ['email', 'e-?mails?'], ['placa', 'placas?(?: mercosul)?'], ['conteiner', '(?:conteiner(?:es)?|containers?)'],
-  ['lacre', 'lacres?'], ['booking', 'bookings?'], ['due', 'du-?es?'], ['imo', 'imos?']
-];
-
-function interpretarPedido(texto, mascaraPadrao = true) {
-  let restante = texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-  if (!restante || restante.length > 500) throw new Error('Escreva um pedido de até 500 caracteres.');
-  const opcoes = { mascara: mascaraPadrao };
-  restante = restante.replace(/\b(sem|com) mascara\b/g, (_, modo) => { opcoes.mascara = modo === 'com'; return ' '; });
-  restante = restante.replace(/\b(?:uf|estado)\s+([a-z]{2})\b/g, (_, uf) => {
-    opcoes.uf = uf.toUpperCase();
-    if (!DDD_POR_UF[opcoes.uf]) throw new Error('Use a sigla de uma UF, como SP ou BA.');
-    return ' ';
-  });
-  restante = restante.replace(/\bfixos?\b/g, () => { opcoes.telefoneTipo = 'fixo'; return ' '; });
-  restante = restante.replace(/\bantigas?\b/g, () => { opcoes.placaTipo = 'antiga'; return ' '; });
-  const quantidades = { um:1, uma:1, dois:2, duas:2, tres:3, quatro:4, cinco:5, seis:6, sete:7, oito:8, nove:9, dez:10 };
-  restante = restante.replace(/\b(um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez)\b/g, palavra => String(quantidades[palavra]));
-  const pedidos = [];
-  for (const [tipo, alias] of ALIASES_PEDIDOS) {
-    const regex = new RegExp('(?:\\b(\\d+)\\s+(?:de\\s+)?)?\\b(?:' + alias + ')\\b', 'g');
-    restante = restante.replace(regex, (_, quantidade) => {
-      pedidos.push({ tipo, quantidade: quantidade === undefined ? 1 : Number(quantidade) });
-      return ' ';
-    });
-  }
-  const sobra = restante.replace(/\b(?:preciso|quero|gere|gerar|crie|criar|me|de|do|da|dos|das|e|para|por|favor|dados|com|sem|o|a|os|as)\b/g, ' ').replace(/[\s,;.!?]+/g, '');
-  if (sobra || !pedidos.length) throw new Error('Não entendi o pedido completo. Exemplo: “3 CPFs e 2 CNPJs” ou “5 telefones fixos UF SP”.');
-  const total = pedidos.reduce((n,p) => n + p.quantidade, 0);
-  if (total > 500 || pedidos.some(p => !Number.isSafeInteger(p.quantidade) || p.quantidade < 1)) throw new Error('Use quantidades inteiras de 1 a 500 registros no total.');
-  return { pedidos, opcoes };
-}
-
 let conversasChat = [];
+let ultimoComandoChat = '';
 let ultimoLote = [];
 const SUGESTOES_CHAT_AMBIENTE = Object.freeze({
-  general: Object.freeze(['3 CPFs e 2 CNPJs','2 cadastros','3 nomes e 2 empresas','5 telefones fixos UF SP']),
-  port: Object.freeze(['2 cargas conteinerizadas','1 conjunto veicular','3 transportadoras','dados para um motorista'])
+  general: Object.freeze(['3 CPFs e 2 CNPJs','10 crachás sem código de barras','5 UUIDs','gerar NF-e com 3 produtos']),
+  port: Object.freeze(['2 cargas conteinerizadas','1 conjunto veicular','gerar CT-e','resumir XML anexado'])
 });
 
 function atualizarChatPorAmbiente() {
@@ -58,7 +15,8 @@ function atualizarChatPorAmbiente() {
     button.addEventListener('click',()=>sugerirChat(pedido));
     return button;
   }));
-  document.getElementById('chat-pedido').placeholder='Pergunte ou peça para gerar algo...';
+  document.getElementById('chat-pedido').placeholder='Digite um comando, como “gerar NF-e com 3 produtos”';
+  renderCatalogoChat(); renderFavoritosChat(); atualizarSugestoesComando();
 }
 
 function ajustarAlturaComposerChat() {
@@ -70,7 +28,13 @@ function ajustarAlturaComposerChat() {
 function inicializarComposerChat() {
   const input=document.getElementById('chat-pedido');
   input.addEventListener('input',ajustarAlturaComposerChat);
+  input.addEventListener('input',atualizarSugestoesComando);
   input.addEventListener('keydown',event=>{
+    if(event.key==='Escape'){document.getElementById('chat-completar').hidden=true;return;}
+    if(event.key==='ArrowDown'&&!event.shiftKey) {
+      const sugestao=document.querySelector('#chat-completar:not([hidden]) button');
+      if(sugestao){event.preventDefault();sugestao.focus();return;}
+    }
     if(event.key!=='Enter' || event.shiftKey || event.isComposing)return;
     event.preventDefault();
     if(!input.value.trim()){input.focus();return;}
@@ -99,11 +63,10 @@ function renderChat() {
   document.getElementById('chat-vazio').hidden = conversasChat.length > 0;
   renderizarChatPreservandoScroll(area, () => {
     area.innerHTML = conversasChat.map((conversa, idx) => `
-      <article class="chat-troca">
+      <article class="chat-troca" aria-labelledby="chat-resposta-${idx}">
         <div class="chat-pedido"><span>Você</span><p>${escapeHtml(conversa.pedido)}</p></div>
-        <div class="chat-resposta"><strong>${conversa.erro ? 'Vamos ajustar o pedido' : `${conversa.registros.length} registros gerados`}</strong>
-          ${conversa.erro ? `<p>${escapeHtml(conversa.erro)}</p>` : renderRegistros(conversa.registros)}
-          ${conversa.erro ? '' : `<div class="acoes-inline"><button type="button" onclick="copiarChat(${idx})">Copiar tudo</button><button type="button" onclick="exportarChat(${idx}, 'json')">JSON</button><button type="button" onclick="exportarChat(${idx}, 'csv')">CSV</button><button type="button" onclick="exportarChat(${idx}, 'txt')">TXT</button></div>`}
+        <div class="chat-resposta"><strong id="chat-resposta-${idx}">${escapeHtml(conversa.erro ? 'Vamos ajustar o comando' : conversa.titulo)}</strong>
+          ${conversa.erro ? `<p>${escapeHtml(conversa.erro)}</p><button type="button" onclick="abrirCatalogoChat()">Ver comandos disponíveis</button>` : renderResultadoComando(conversa,idx)}
         </div>
       </article>`).join('');
   });
@@ -115,18 +78,32 @@ function enviarChatLocal(event) {
   const pedido = input.value.trim();
   if (!pedido) { input.focus(); return false; }
   try {
-    const { pedidos, opcoes } = interpretarPedido(pedido, document.getElementById('chat-mascara').checked);
-    const indisponivel=pedidos.find(item=>!generatorSupportsEnvironment(generatorById(item.tipo)));
-    if(indisponivel)throw new Error(`${generatorById(indisponivel.tipo)?.label || indisponivel.tipo} não está disponível em ${APP_ENVIRONMENTS[activeEnvironmentId()].label}.`);
-    conversasChat.push({ pedido, registros: gerarLoteDados(pedidos, opcoes) });
-    document.getElementById('chat-status').textContent = 'Pedido concluído. Resultados disponíveis na conversa.';
+    let efetivo=pedido,comando=interpretarComando(efetivo,document.getElementById('chat-mascara').checked);
+    if(comando.acao==='repetir') {
+      if(!ultimoComandoChat)throw new Error('Execute um comando primeiro para poder repeti-lo.');
+      efetivo=ultimoComandoChat;comando=interpretarComando(efetivo,document.getElementById('chat-mascara').checked);
+    }
+    let resultado;
+    if(comando.acao==='ajuda') {
+      abrirCatalogoChat();resultado={titulo:'Comandos locais',texto:'Use o catálogo para escolher um comando. Aceitamos de 1 a 500 registros, máscara, UF, telefone fixo, placa antiga e crachá com ou sem código de barras. XML: gerar NF-e/CT-e, resumir, mostrar produtos/destinatário, validar e criar cópias de teste. Indique XML anexado, NF-e atual, CT-e atual ou XML resultado. Enter envia; Shift+Enter insere uma linha. Sugestões e favoritos aguardam sua revisão.'};
+    } else if(comando.acao==='registros') {
+      const indisponivel=comando.pedidos.find(item=>!generatorSupportsEnvironment(generatorById(item.tipo)));
+      if(indisponivel)throw new Error(`${generatorById(indisponivel.tipo)?.label || indisponivel.tipo} não está disponível em ${APP_ENVIRONMENTS[activeEnvironmentId()].label}. Troque o ambiente ou escolha um comando do catálogo.`);
+      const registros=gerarLoteDados(comando.pedidos,comando.opcoes);
+      resultado={titulo:`${registros.length} registros gerados`,registros};
+    } else resultado=executarXmlComando(comando);
+    conversasChat.push({pedido,...resultado,comando:comando.acao==='ajuda'?undefined:efetivo,ambiente:activeEnvironmentId()});
+    if(comando.acao!=='ajuda')ultimoComandoChat=efetivo;
+    input.value='';
+    document.getElementById('chat-status').textContent='Comando concluído localmente. Resultados disponíveis na conversa.';
   } catch (erro) {
-    conversasChat.push({ pedido, erro: erro.message });
-    document.getElementById('chat-status').textContent = erro.message;
+    const mensagem=erro instanceof Error?erro.message:'Não foi possível concluir o comando. Revise o pedido e o anexo.';
+    conversasChat.push({ pedido, erro: mensagem });
+    document.getElementById('chat-status').textContent = mensagem;
   }
   // Limita a memória da conversa sem persistir lotes grandes no localStorage.
   if (conversasChat.length > 10) conversasChat.shift();
-  input.value = '';
+  atualizarSugestoesComando();
   ajustarAlturaComposerChat(); renderChat(); input.focus();
   return false;
 }
@@ -134,11 +111,39 @@ function enviarChatLocal(event) {
 function sugerirChat(pedido) {
   const input=document.getElementById('chat-pedido');
   input.value=pedido;ajustarAlturaComposerChat();input.focus();
+  atualizarSugestoesComando();
   document.getElementById('chat-status').textContent='Sugestão preenchida. Revise o pedido e pressione Enviar.';
 }
-function limparChatLocal() { conversasChat = []; renderChat(); document.getElementById('chat-status').textContent = 'Conversa limpa.'; }
-function copiarChat(idx) { copiarTexto(conversasChat[idx].registros.map(r => `${r.rotulo}: ${textoRegistro(r)}`).join('\n\n')); }
+function enviarChat(event) { return enviarChatLocal(event); }
+function limparChatLocal() { conversasChat = []; ultimoComandoChat=''; limparAnexoChat(false); renderChat(); document.getElementById('chat-status').textContent = 'Conversa limpa.'; document.getElementById('chat-pedido').focus(); }
+function limparChat() { limparChatLocal(); }
+function copiarChat(idx) { const c=conversasChat[idx]; if(c)copiarTexto(c.xml?.texto || (c.registros?c.registros.map(r => `${r.rotulo}: ${textoRegistro(r)}`).join('\n\n'):c.texto||'')); }
 function exportarChat(idx, formato) { exportarRegistros(conversasChat[idx].registros, formato); }
+
+function renderResultadoComando(c,idx) {
+  const texto=c.texto?`<p class="command-texto">${escapeHtml(c.texto)}</p>`:'';
+  const registros=c.registros?`<details class="command-registros"><summary>${c.registros.length} registros · ver conteúdo</summary>${renderRegistros(c.registros)}</details>`:'';
+  const xml=c.xml?`<div class="command-artefato"><h3>${escapeHtml(c.xml.nome)}</h3><details><summary>Ver XML</summary><pre>${escapeHtml(formatarXmlPreview(c.xml.texto.slice(0,16000)))}</pre>${c.xml.texto.length>16000?'<p class="texto-apoio">Prévia limitada. Copiar e baixar incluem o arquivo completo.</p>':''}</details><div class="acoes-inline"><button type="button" onclick="baixarXmlChat(${idx})">Baixar XML</button><button type="button" onclick="validarXmlChat(${idx})">Validar localmente</button><button type="button" onclick="editarXmlChat(${idx})">Abrir no Editor</button></div></div>`:'';
+  const formatos=c.registros?`<button type="button" onclick="exportarChat(${idx},'json')">JSON</button><button type="button" onclick="exportarChat(${idx},'csv')">CSV</button><button type="button" onclick="exportarChat(${idx},'txt')">TXT</button>`:'';
+  return `${texto}${registros}${xml}<div class="acoes-inline"><button type="button" onclick="copiarChat(${idx})">Copiar tudo</button>${formatos}${c.comando?`<button type="button" onclick="favoritarComandoChat(${idx})">Favoritar comando</button>`:''}</div>`;
+}
+function baixarXmlChat(idx) { const xml=conversasChat[idx]?.xml;if(xml)baixarTexto(xml.nome,xml.texto,'application/xml'); }
+function validarXmlChat(idx) {
+  const xml=conversasChat[idx]?.xml;if(!xml)return;
+  conversasChat.push({pedido:`Validar ${xml.nome}`, ...executarXmlComando({acao:'validar'},xml)});
+  if(conversasChat.length>10)conversasChat.shift();renderChat();
+  document.getElementById('chat-status').textContent='Validação local concluída.';
+}
+function editarXmlChat(idx) {
+  const xml=conversasChat[idx]?.xml;if(!xml)return;
+  const r=analisarXml(xml.texto,xml.nome);
+  if(!r.editavel){document.getElementById('chat-status').textContent='Este XML não pode ser aberto no Editor. Confira a validação local.';return;}
+  const doc=new DOMParser().parseFromString(xml.texto,'application/xml');
+  editorGarantirGrupoPadrao();const id=editorProxId++;
+  editorArquivos.push({id,nome:xml.nome,doc,original:serializarXml(doc),modificado:false,grupoId:editorGrupoAtivo,_estrutura:null});
+  editorSubTabAtual=xml.tipo==='nfe'?'produtos':'estrutura';editorPosCarga(id);switchTab('editor');
+  document.getElementById('tab-editor').focus({preventScroll:true});
+}
 
 function gerarLoteInterface(event) {
   event?.preventDefault();

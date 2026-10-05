@@ -11,11 +11,10 @@ const tipos = {
   '.png':'image/png',
   '.webmanifest':'application/manifest+json; charset=utf-8'
 };
-const { createAssistant } = require('./ai.cjs');
 const { createHttpApi } = require('./http-api.cjs');
 const { fiscalValidationRuntime } = require('./fiscal-validation-api.cjs');
 const { randomBytes } = require('node:crypto');
-function createServer(assistant = createAssistant()) {
+function createServer(assistant) {
 let api;
 const cookieSecret=process.env.AI_COOKIE_SECRET || randomBytes(32).toString('hex');
 return http.createServer(async (req, res) => {
@@ -26,6 +25,7 @@ return http.createServer(async (req, res) => {
     const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
     if (pathname === '/api/validate-xml') return fiscalValidationRuntime(req,res);
     if (pathname === '/api/status' || pathname === '/api/chat') {
+      if (!assistant) return json(410,{error:'O assistente usa comandos locais.',mode:'local'});
       api ||= createHttpApi({assistant,secret:cookieSecret,origins:[`http://127.0.0.1:${port}`,`http://localhost:${port}`]});
       return api(req,res,pathname.endsWith('status')?'status':'chat');
     }

@@ -26,9 +26,9 @@ async function criarServidorAuditoria() {
   if (process.env.AUDIT_DEBUG) console.error(`[auditoria] HTML: ${(html.match(/https:\/\//g) || []).length} URLs externas; ${(html.match(/<script[^>]*>/g) || []).length} scripts`);
   const servidor = http.createServer((req, res) => {
     const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
-    if (pathname === '/api/status') {
-      res.writeHead(200, {'Content-Type':'application/json', 'Cache-Control':'no-store'});
-      res.end(JSON.stringify({configured:false,provider:'audit',retentionMinutes:30}));
+    if (pathname === '/api/status' || pathname === '/api/chat') {
+      res.writeHead(410, {'Content-Type':'application/json', 'Cache-Control':'no-store'});
+      res.end(JSON.stringify({mode:'local'}));
       return;
     }
     if (pathname === '/assets/vendor/vercel-speed-insights.mjs') {
@@ -227,6 +227,8 @@ async function main() {
     cdp.on('Network.responseReceived', event => {
       if(event.response?.status >= 400) console.error(`[auditoria] HTTP ${event.response.status}: ${event.response.url}`);
     });
+    const remoteChatRequests=[];
+    cdp.on('Network.requestWillBeSent',event=>{if(/\/api\/(chat|status)(?:\?|$)/.test(event.request?.url||''))remoteChatRequests.push(event.request.url);});
     console.error('[auditoria] conectando ao CDP');
     await cdp.enviar('Page.enable');
     await cdp.enviar('Runtime.enable');
@@ -623,7 +625,30 @@ async function main() {
       const imagemTela = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
       writeFileSync(path.join(SAIDA, arquivo), Buffer.from(imagemTela.data, 'base64'));
     }
-    await avaliar(cdp, `(() => {definirAmbiente('general',false);switchTab('home', document.getElementById('tab-btn-home'));return true})()`);
+    const localCommands=await avaliar(cdp,`(() => {
+      definirAmbiente('general',false);switchTab('chat');limparChat();
+      const input=document.getElementById('chat-pedido');
+      const executar=texto=>{input.value=texto;document.getElementById('chat-enviar').click();return conversasChat.at(-1);};
+      const source=serializarXml(xmlsGerados.nfe),fields=JSON.stringify(capturarCamposXml());
+      const records=executar('10 crachás sem código de barras e 5 UUIDs');
+      const generated=executar('gerar NF-e com 3 produtos');
+      const summary=executar('resumir XML resultado');
+      const negative=executar('criar cópia com CNPJ inválido');
+      const errors=executar('mostrar apenas erros do XML resultado');
+      favoritarComandoChat(0);
+      const before=conversasChat.length;document.querySelector('#chat-favoritos-lista button').click();
+      const review=input.value==='10 crachás sem código de barras e 5 UUIDs'&&conversasChat.length===before;
+      const invalid=executar('3 CPFs e 2 unicórnios');
+      const preservedDraft=input.value==='3 CPFs e 2 unicórnios';
+      input.value='';atualizarSugestoesComando();
+      const artifact=document.querySelector('.command-artefato details');if(artifact)artifact.open=true;
+      const area=document.getElementById('chat-mensagens');area.scrollTop=0;
+      return {records:records.registros?.length,badges:records.registros?.filter(r=>r.tipo==='cracha').every(r=>!r.valor.codigo_barras),items:new DOMParser().parseFromString(generated.xml.texto,'application/xml').querySelectorAll('det').length,summary:summary.texto.includes('Itens: 3'),negative:negative.xml.intencional&&negative.xml.texto!==generated.xml.texto,errors:errors.texto.includes('ERRO'),sourcePreserved:source===serializarXml(xmlsGerados.nfe)&&fields===JSON.stringify(capturarCamposXml()),review,preservedDraft,invalid:Boolean(invalid.erro),modeGone:!document.getElementById('chat-modo')};
+    })()`);
+    await dormir(100);
+    const localScreenshot=await cdp.enviar('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+    writeFileSync(path.join(SAIDA,'future-g-local-commands.png'),Buffer.from(localScreenshot.data,'base64'));
+    await avaliar(cdp, `(() => {limparChat();definirAmbiente('general',false);switchTab('home', document.getElementById('tab-btn-home'));return true})()`);
     await avaliar(cdp, `toggleTheme()`);
     await dormir(500);
     await avaliar(cdp, `new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(resolve))))`);
@@ -700,6 +725,8 @@ async function main() {
       },
       acessibilidade,
       commandPalette,
+      localCommands,
+      remoteChatRequests,
       console: consoleAudit,
       performance: performanceAudit,
       marca,
@@ -712,6 +739,7 @@ async function main() {
     };
     resultado.aprovado &&= editorDireto.focoNoPainel && editorDireto.painelVisivel && editorDireto.acaoDireta && editorDireto.fontePreservada && editorDireto.copiaIntegral && editorDireto.titulo === 'Editor de XML';
     resultado.aprovado &&= editorCarregadoResponsivo.every(item=>item.outside.length===0&&item.scrollWidth<=item.width+1);
+    resultado.aprovado &&= remoteChatRequests.length===0 && localCommands.records===15 && localCommands.items===3 && Object.entries(localCommands).filter(([k])=>!['records','items'].includes(k)).every(([,v])=>v===true);
     writeFileSync(path.join(SAIDA, 'auditoria-200.json'), JSON.stringify(resultado, null, 2));
     console.log(JSON.stringify(resultado, null, 2));
     if (!resultado.aprovado) process.exitCode = 1;

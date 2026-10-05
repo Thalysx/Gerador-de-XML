@@ -1,5 +1,7 @@
 # Ativação gradual da IA pública
 
+> Registro histórico: a alpha.7 usa apenas comandos locais e aposenta `/api/chat` e `/api/status`. Consulte `docs/local-commands.md` para a experiência atual.
+
 ## Estado desta entrega
 
 O código possui integração com Groq e OpenAI, ferramentas reais do gerador, rotas para Vercel, sessões Redis e limites de uso. A publicação escolhida pelo usuário é a Netlify, com conversas e artefatos reais verificados. Siga [NETLIFY.md](NETLIFY.md) para esse destino e [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md) para a evidência. A seção Vercel abaixo permanece como alternativa, sem validação de produção nessa plataforma.

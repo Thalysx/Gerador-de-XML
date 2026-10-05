@@ -26,7 +26,7 @@ A revisão `simplify-visual-system-and-workspaces` foi concluída e arquivada em
 ## Pendências de encerramento externo
 
 - Executar o roteiro auditivo com leitor de tela real em `CHECKLIST-LEITOR-TELA.md`.
-- Executar `scripts/verify-redis.cjs` contra Redis real com credenciais fornecidas fora do repositório.
+- Os testes Redis pertencem ao backend histórico de IA; não são uma dependência dos comandos locais da alpha.7.
 - Não marcar essas verificações como concluídas somente com testes simulados.
 
 ## Fase 12: refinamento consolidado de interface
@@ -60,4 +60,4 @@ Cada change deve conter proposta, desenho e tarefas; atualizar as especificaçõ
 
 A atualização do painel Resultado não deve mover a viewport para o topo. O comportamento aprovado para FUTURE 12 é preservar a posição atual do usuário ao clicar em um gerador e receber um novo resultado. Qualquer regra anterior de reset automático do Resultado para o topo fica substituída por esta regra.
 
-O auto-scroll do Assistente IA continua sendo um comportamento separado e não deve ser removido.
+O auto-scroll dos Comandos locais continua sendo um comportamento separado e não deve ser removido.

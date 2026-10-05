@@ -24,13 +24,169 @@ async function abrir(estado = {}) {
   return { dom, w, run: code => vm.runInContext(code, dom.getInternalVMContext()) };
 }
 
+test('catálogo local cobre todos os geradores de lote nos dois ambientes', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    let chamadas=0;w.fetch=()=>{chamadas++;throw new Error('Não deve acessar rede');};
+    for(const ambiente of ['general','port']) {
+      w.definirAmbiente(ambiente);
+      const catalogo=run('catalogoComandos()');
+      assert.equal(catalogo.filter(c=>c.tipo).length,run('generatorsForEnvironment().filter(g=>g.batch).length'));
+      for(const c of catalogo.filter(c=>c.tipo)) {
+        const p=w.interpretarComando(c.texto);assert.equal(p.acao,'registros',c.texto);
+        assert.equal(p.pedidos.length,1,c.texto);assert.equal(p.pedidos[0].tipo,c.tipo,c.texto);
+        w.document.getElementById('chat-pedido').value=c.texto;w.enviarChat();
+        assert.equal(run('conversasChat.at(-1).erro'),undefined,c.texto);
+        assert.equal(run('conversasChat.at(-1).registros.length'),3,c.texto);
+      }
+    }
+    assert.equal(chamadas,0);
+    for(const texto of ['1 conjunto veicular','1 importador','1 exportador','1 endereço MAC local'])assert.equal(w.interpretarPedido(texto).pedidos.length,1,texto);
+  } finally {dom.window.close();}
+});
+
+test('comandos rejeitam pedidos inteiros, preservam rascunho e respeitam opções', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    const input=w.document.getElementById('chat-pedido');
+    input.value='10 crachás sem código de barras e 5 UUIDs';w.enviarChat();
+    const registros=run('conversasChat.at(-1).registros');assert.equal(registros.length,15);
+    assert.equal(registros.filter(r=>r.tipo==='cracha').every(r=>r.valor.codigo_barras===''),true);
+    const antes=run("JSON.stringify(storageGet(RECENTS_KEY,[]))");
+    const anexo='<raiz/>';w.document.getElementById('chat-anexo').value=anexo;
+    for(const texto of ['3 CPFs e 2 unicórnios','3 CPFs e 2 transportadoras','501 CPFs','gerar NF-e com 0 produtos','gerar CT-e com 2 produtos']) {
+      input.value=texto;w.enviarChat();assert.ok(run('conversasChat.at(-1).erro'),texto);
+      assert.equal(input.value,texto);assert.equal(w.document.getElementById('chat-anexo').value,anexo);
+      assert.equal(run("JSON.stringify(storageGet(RECENTS_KEY,[]))"),antes);
+    }
+    assert.equal(w.interpretarPedido('2 telefones fixos UF SP sem máscara').opcoes.telefoneTipo,'fixo');
+    assert.equal(w.interpretarPedido('2 placas antigas').opcoes.placaTipo,'antiga');
+  } finally {dom.window.close();}
+});
+
+test('XML por comando é isolado e permite consultar, validar, copiar, baixar e editar', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    w.fetch=()=>{throw new Error('Rede proibida neste fluxo');};
+    const campos=run('JSON.stringify(capturarCamposXml())'),originais=run('JSON.stringify(Object.fromEntries(Object.entries(xmlsGerados).map(([k,d])=>[k,serializarXml(d)])))');
+    const input=w.document.getElementById('chat-pedido');
+    input.value='gerar NF-e com 3 produtos';w.enviarChat();assert.equal(run('conversasChat.at(-1).erro'),undefined);
+    const xml=run('conversasChat.at(-1).xml.texto');
+    const doc=new w.DOMParser().parseFromString(xml,'application/xml');assert.equal(doc.querySelectorAll('det').length,3);
+    assert.equal(doc.querySelector('tpAmb').textContent,'2');assert.equal(run(`verificarConsistenciaXml(new DOMParser().parseFromString(${JSON.stringify(xml)},'application/xml')).length`),0);
+    run('var arquivoComando, copiaComando; baixarTexto=(nome,texto,mime)=>arquivoComando={nome,texto,mime};copiarTexto=t=>copiaComando=t');
+    w.baixarXmlChat(0);w.copiarChat(0);assert.equal(run('arquivoComando.texto'),xml);assert.equal(run('copiaComando'),xml);
+    w.editarXmlChat(0);assert.equal(run('editorArquivos.at(-1).original'),xml);
+    run("editorArquivos.at(-1).doc.querySelector('emit > xNome').textContent='Editar cópia'");assert.equal(run('conversasChat[0].xml.texto'),xml);
+    for(const texto of ['resumir XML resultado','mostrar produtos do XML resultado','mostrar destinatário do XML resultado','validar XML resultado','mostrar apenas erros do XML resultado']) {
+      input.value=texto;w.enviarChat();assert.equal(run('conversasChat.at(-1).erro'),undefined,texto);
+    }
+    assert.match(run('conversasChat.at(-1).texto'),/SEFAZ não foram executados/);
+    assert.doesNotMatch(run('conversasChat.at(-1).texto'),/ERRO ·/);
+    input.value='gerar CT-e';w.enviarChat();const cte=run('conversasChat.at(-1).xml.texto');
+    assert.match(cte,/infCte/);assert.equal(w.analisarXml(cte).resumo.tipo,'CT-e');
+    input.value='mostrar produtos do XML resultado';w.enviarChat();assert.match(run('conversasChat.at(-1).erro'),/NF-e/);
+    assert.equal(run('JSON.stringify(capturarCamposXml())'),campos);assert.equal(run('JSON.stringify(Object.fromEntries(Object.entries(xmlsGerados).map(([k,d])=>[k,serializarXml(d)])))'),originais);
+  } finally {dom.window.close();}
+});
+
+test('anexos e fontes XML são explícitos e cópias negativas preservam o original', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    const input=w.document.getElementById('chat-pedido'),anexo=w.document.getElementById('chat-anexo');
+    input.value='resumir XML anexado';w.enviarChat();assert.match(run('conversasChat.at(-1).erro'),/botão \+/);
+    const xml=w.gerarXmlComando('nfe',3).xml.texto;anexo.value=xml;
+    for(const texto of ['resumir XML anexado','mostrar produtos do XML anexado','mostrar destinatário do XML anexado','validar XML anexado','mostrar apenas erros do XML anexado','resumir NF-e atual','resumir CT-e atual']) {
+      input.value=texto;w.enviarChat();assert.equal(run('conversasChat.at(-1).erro'),undefined,texto);assert.equal(anexo.value,xml);
+    }
+    const base=run('serializarXml(xmlsGerados.nfe)');
+    for(const [variante,definicao] of Object.entries(run('VARIANTES_XML_NEGATIVAS'))) {
+      const texte=variante==='campo-ausente'?'remover campo obrigatório do XML anexado':`criar cópia com ${definicao.rotulo} do XML anexado`;
+      input.value=texte;w.enviarChat();assert.equal(run('conversasChat.at(-1).erro'),undefined,texte);
+      const negativo=run('conversasChat.at(-1).xml');assert.notEqual(negativo.texto,xml);assert.equal(negativo.intencional,true);assert.match(negativo.nome,/teste/);
+      assert.equal(anexo.value,xml);assert.equal(run('serializarXml(xmlsGerados.nfe)'),base);
+    }
+    anexo.value=xml.replace(/<xNome>[^<]*<\/xNome>/,'');input.value='remover campo obrigatório do XML anexado';w.enviarChat();assert.match(run('conversasChat.at(-1).erro'),/campo necessário/);
+    anexo.value='<raiz>';input.value='validar XML anexado';w.enviarChat();assert.match(run('conversasChat.at(-1).texto'),/malformado/);
+    input.value='resumir XML anexado';w.enviarChat();assert.ok(run('conversasChat.at(-1).erro'));
+    anexo.value='a'.repeat(100001);input.value='validar XML anexado';w.enviarChat();assert.match(run('conversasChat.at(-1).erro'),/100 KB/);
+  } finally {dom.window.close();}
+});
+
+test('resultados locais escapam comandos, conteúdo e nomes de arquivos', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    const perigo='<img src=x onerror=alert(1)>';
+    run(`conversasChat=[{pedido:${JSON.stringify(perigo)},titulo:${JSON.stringify(perigo)},texto:${JSON.stringify(perigo)},xml:{nome:${JSON.stringify(perigo)},texto:'<script>alert(1)</script>'},registros:[{rotulo:${JSON.stringify(perigo)},valor:${JSON.stringify(perigo)}}]}];renderChat()`);
+    assert.equal(w.document.querySelectorAll('#chat-mensagens img, #chat-mensagens script').length,0);
+    assert.match(w.document.getElementById('chat-mensagens').textContent,/<img/);
+    assert.equal(w.document.querySelector('.command-registros').open,false);
+    assert.equal(w.document.querySelector('.command-artefato details').open,false);
+    assert.deepEqual([...w.document.querySelectorAll('.command-artefato button')].map(b=>b.textContent),['Baixar XML','Validar localmente','Abrir no Editor']);
+  } finally {dom.window.close();}
+});
+
+test('repetição, favoritos e catálogo preservam revisão e isolamento por ambiente', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    const input=w.document.getElementById('chat-pedido');
+    input.value='repetir último comando';w.enviarChat();assert.match(run('conversasChat.at(-1).erro'),/primeiro/);
+    input.value='3 CPFs';w.enviarChat();const primeiro=run('conversasChat.at(-1).registros[0].valor');
+    w.favoritarComandoChat(1);const chave=run('chaveFavoritosChat()');assert.deepEqual(JSON.parse(w.localStorage.getItem(chave)),['3 CPFs']);
+    w.document.querySelector('#chat-favoritos-lista button').click();assert.equal(input.value,'3 CPFs');assert.equal(run('conversasChat.length'),2);
+    input.value='repetir último comando';w.enviarChat();assert.equal(run('conversasChat.at(-1).registros.length'),3);assert.notEqual(run('conversasChat.at(-1).registros[0].valor'),primeiro);
+    w.definirAmbiente('port');assert.equal(w.document.querySelectorAll('#chat-favoritos-lista button').length,0);
+    input.value='repetir último comando';w.enviarChat();assert.match(run('conversasChat.at(-1).erro'),/não está disponível/);
+    w.definirAmbiente('general');w.document.getElementById('chat-catalogo-busca').value='UUID';w.renderCatalogoChat();
+    const comandos=w.document.querySelectorAll('#chat-catalogo-lista button');assert.equal(comandos.length,1);comandos[0].click();assert.equal(input.value,'3 UUIDs');
+    input.value='uuid';input.dispatchEvent(new w.Event('input'));assert.equal(w.document.getElementById('chat-completar').hidden,false);
+    input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true}));assert.equal(w.document.activeElement.parentElement.id,'chat-completar');w.document.activeElement.click();assert.equal(w.document.activeElement,input);
+    w.limparChat();assert.equal(run('ultimoComandoChat'),'');assert.equal(run('conversasChat.length'),0);assert.equal(w.document.getElementById('chat-anexo').value,'');assert.deepEqual(JSON.parse(w.localStorage.getItem(chave)),['3 CPFs']);
+    assert.equal(w.document.getElementById('chat-modo'),null);assert.equal(run('typeof enviarChatIa'),'undefined');
+    const recarregado=await abrir({[chave]:['3 CPFs','<script>alert(1)</script>','501 CPFs',...Array.from({length:12},(_,i)=>`${i+1} UUIDs`)]});
+    try {
+      assert.equal(recarregado.run('favoritosComandosChat().length'),10);
+      recarregado.w.document.querySelector('#chat-favoritos-lista button').click();
+      assert.equal(recarregado.w.document.getElementById('chat-pedido').value,'3 CPFs');assert.equal(recarregado.run('conversasChat.length'),0);
+      recarregado.w.document.getElementById('chat-pedido').value='20 UUIDs';recarregado.w.enviarChat();recarregado.w.favoritarComandoChat(0);
+      assert.match(recarregado.w.document.getElementById('chat-status').textContent,/Limite de 10/);
+    } finally {recarregado.dom.window.close();}
+    run('storageSet=()=>false');input.value='5 UUIDs';w.enviarChat();w.favoritarComandoChat(0);
+    assert.ok(run("favoritosComandosChat().includes('5 UUIDs')"));assert.match(w.document.getElementById('chat-status').textContent,/nesta aba/);
+    for(let i=0;i<12;i++){input.value='1 CPF';w.enviarChat();}assert.equal(run('conversasChat.length'),10);
+  } finally {dom.window.close();}
+});
+
+test('remoção de anexo cancela leitura atrasada e falha de arquivo preserva o anexo', async () => {
+  const {dom,w}=await abrir();
+  try {
+    let leitor;w.FileReader=class { constructor(){leitor=this;}readAsText(){} };
+    const arquivo=w.document.getElementById('chat-anexo-arquivo'),texto=w.document.getElementById('chat-anexo');
+    Object.defineProperty(arquivo,'files',{value:[new w.File(['<raiz/>'],'teste.xml')],configurable:true});arquivo.dispatchEvent(new w.Event('change'));
+    w.limparAnexoChat();leitor.result='<raiz/>';leitor.onload();assert.equal(texto.value,'');
+    texto.value='<original/>';Object.defineProperty(arquivo,'files',{value:[new w.File(['x'],'teste.txt')],configurable:true});arquivo.dispatchEvent(new w.Event('change'));
+    assert.equal(texto.value,'<original/>');assert.match(w.document.getElementById('chat-anexo-status').textContent,/extensão .xml/);
+  } finally {dom.window.close();}
+});
+
+test('validar um arquivo anterior usa esse arquivo e não o último resultado', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    const input=w.document.getElementById('chat-pedido');input.value='gerar NF-e';w.enviarChat();
+    input.value='criar cópia com XML malformado';w.enviarChat();w.validarXmlChat(0);
+    assert.doesNotMatch(run('conversasChat.at(-1).texto'),/XML malformado/);
+    w.validarXmlChat(1);assert.match(run('conversasChat.at(-1).texto'),/XML malformado/);
+    w.editarXmlChat(1);assert.match(w.document.getElementById('chat-status').textContent,/não pode ser aberto/);
+  } finally {dom.window.close();}
+});
+
 test('menu agrupado mantém ordem visual e navegação por teclado', async () => {
   const {dom,w}=await abrir();
   try {
     const tabs=[...w.document.querySelectorAll('.tab-nav [role="tab"]')];
     assert.deepEqual(tabs.map(t=>t.id),['home','xml','docs','cadastro','editor','validacao','chat'].map(t=>'tab-btn-'+t));
     assert.equal(w.document.getElementById('tab-btn-xml').getAttribute('aria-label'),'XML fiscal');
-    assert.equal(w.document.getElementById('tab-btn-chat').getAttribute('aria-label'),'Assistente de geração');
+    assert.equal(w.document.getElementById('tab-btn-chat').getAttribute('aria-label'),'Comandos locais');
     const editor=w.document.getElementById('tab-btn-editor');
     editor.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true}));
     assert.equal(w.document.activeElement.id,'tab-btn-validacao');
@@ -53,7 +209,7 @@ test('migração FUTURE G mantém uma única rota para cada módulo e gerador ex
     assert.equal(new Set(tabIds).size,tabIds.length);
     assert.equal(run('GENERATORS.every(generator=>navigationById(generator.route))'),true);
     assert.equal(new Set(scripts).size,scripts.length);
-    for(const required of ['assets/js/lucide.min.js','assets/js/icons.js','assets/js/generator-registry.js','assets/js/generator-workspace.js','assets/js/gerador-xml.js','assets/js/xml-workflow.js','assets/js/validacao-xml.js','assets/js/chat.js','assets/js/chat-ia.js'])assert.equal(scripts.filter(file=>file===required).length,1,required);
+    for(const required of ['assets/js/lucide.min.js','assets/js/icons.js','assets/js/generator-registry.js','assets/js/generator-workspace.js','assets/js/gerador-xml.js','assets/js/xml-workflow.js','assets/js/validacao-xml.js','assets/js/chat.js','assets/js/command-parser.js','assets/js/command-xml.js','assets/js/command-discovery.js','assets/js/chat-attachments.js'])assert.equal(scripts.filter(file=>file===required).length,1,required);
     assert.doesNotMatch(html,/bootstrap-icons|\bbi bi-/);
     const lucideIcons=[...w.document.querySelectorAll('svg.lucide')];
     assert.ok(lucideIcons.length>20);
@@ -102,19 +258,6 @@ test('estados vazios orientam a próxima ação e movem foco aos geradores', asy
     assert.ok(editor.querySelector('button'));
     docs.querySelector('button').click();
     assert.equal(w.document.activeElement.id,'docs-search');
-  } finally {dom.window.close();}
-});
-
-test('resposta IA formata tabela, lista e XML sem executar HTML', async () => {
-  const {dom,w}=await abrir();
-  try {
-    const box=w.document.createElement('div');
-    box.innerHTML=w.formatarRespostaIa('**Resultado**\n- nome\n- empresa\n\n| Tipo | Valor |\n| --- | --- |\n| CPF | `123` |\n\n```xml\n<teste/>\n```\n<img src=x onerror=alert(1)>\n[javascript](javascript:alert(1))');
-    assert.equal(box.querySelectorAll('li').length,2);
-    assert.equal(box.querySelectorAll('th').length,2);
-    assert.equal(box.querySelector('pre code').textContent,'<teste/>');
-    assert.equal(box.querySelectorAll('img,script,a').length,0);
-    assert.match(box.textContent,/<img/);
   } finally {dom.window.close();}
 });
 
@@ -426,7 +569,6 @@ test('refinamento de layout integra busca, dropzone e composer sem duplicar cont
     assert.ok(chat.querySelector('#chat-sugestoes').compareDocumentPosition(form)&w.Node.DOCUMENT_POSITION_FOLLOWING);
     const input=w.document.getElementById('chat-pedido');
     assert.equal(input.tagName,'TEXTAREA');
-    w.document.getElementById('chat-modo').value='local';
     input.value='Gere um CPF';
     input.dispatchEvent(new w.Event('input',{bubbles:true}));
     input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));
@@ -1340,27 +1482,11 @@ test('chat interpreta exemplos, opções e rejeita pedidos parciais ou quantidad
     }
     for (const texto of ['0 CPFs','501 CPFs','2.5 CPFs','-3 CPFs','3 CPFs e 2 unicórnios','quinhentos CPFs','5 telefones UF XX']) assert.throws(() => run(`interpretarPedido(${JSON.stringify(texto)})`), texto);
     w.document.getElementById('chat-pedido').value = '3 CPFs e 2 CNPJs';
-    w.document.getElementById('chat-modo').value = 'local';
     w.enviarChat();
     assert.equal(w.document.querySelectorAll('#chat-mensagens .registro-lote').length, 5);
     w.limparChat();
     assert.equal(w.document.getElementById('chat-vazio').hidden, false);
   } finally { dom.window.close(); }
-});
-
-test('cartões do chat identificam arquivos e recolhem registros sem perder ações', async () => {
-  const {dom,w,run}=await abrir();
-  try {
-    run(`mensagensIa=[{pedido:'Dados',text:'Pronto',artifacts:[{kind:'records',name:'<img src=x onerror=alert(1)>',records:[{tipo:'nome',valor:'Ana'}]},{kind:'xml',name:'teste.xml',text:'<raiz/>'}]}];renderChatIa()`);
-    const cards=[...w.document.querySelectorAll('.ia-artefato')];
-    assert.equal(cards.length,2);
-    assert.equal(cards[0].querySelector('img'),null);
-    assert.equal(cards[0].querySelector('details').open,false);
-    assert.match(cards[0].textContent,/Ana/);
-    assert.deepEqual([...cards[0].querySelectorAll('button')].map(b=>b.textContent),['Baixar JSON','Baixar CSV','Baixar TXT']);
-    assert.deepEqual([...cards[1].querySelectorAll('button')].map(b=>b.textContent),['Baixar XML','Validar XML','Abrir cópia no editor']);
-    for(const card of cards)assert.ok(w.document.getElementById(card.getAttribute('aria-labelledby')));
-  } finally {dom.window.close();}
 });
 
 test('movimento reduzido desativa animações, transições e rolagem suave', () => {
@@ -1462,27 +1588,6 @@ test('distribuição inclui somente CSS proprietário e nenhum catálogo da Home
   assert.deepEqual(files,['base.css','documentos.css','cadastro.css','editor-xml.css','evolucao.css','validacao-xml.css']);
   for(const name of ['visual-lab.css','portus.css','usabilidade.css','minimal.css','experience.css'])assert.equal(fs.existsSync(path.join(root,'assets/css',name)),false);
   assert.doesNotMatch(fs.readFileSync(path.join(root,'assets/js/home-dashboard.js'),'utf8'),/HOME_GENERATORS|homeGenerate|homeState\.result/);
-});
-
-test('Assistente trata falhas sem expor detalhes e preserva rascunho e anexo', async () => {
-  const {dom,w}=await abrir();
-  try {
-    for(const status of [503,429,410]) {
-      w.fetch=async url=>url==='/api/status'?{ok:true,json:async()=>({configured:true})}:{ok:false,status,json:async()=>({error:'npm run dev INTERNAL_SECRET'})};
-      w.document.getElementById('chat-pedido').value='Gere CPF';
-      w.document.getElementById('chat-anexo').value='<teste />';
-      await w.enviarChatIa();
-      assert.doesNotMatch(w.document.getElementById('chat-status').textContent,/npm|INTERNAL_SECRET/);
-      assert.equal(w.document.getElementById('chat-anexo').value,'<teste />');
-      assert.equal(w.document.getElementById('chat-modo').value,'ia');
-      w.document.getElementById('chat-pedido').value='novo rascunho';w.recuperarPedidoIa(0);
-      assert.equal(w.document.getElementById('chat-pedido').value,'novo rascunho');
-    }
-    assert.match(w.mensagemFalhaIa({name:'AbortError'}),/demorou/);
-    w.fetch=async()=>{throw new TypeError('network stack');};
-    await w.enviarChatIa();
-    assert.match(w.document.getElementById('chat-status').textContent,/indisponível/);
-  } finally {dom.window.close();}
 });
 
 test('divulgação progressiva preserva preferências, edição e resultados existentes', async () => {
@@ -1587,12 +1692,10 @@ test('opções do assistente preservam modo local e acesso contextual à privaci
     const menu=w.document.querySelector('.chat-secondary');
     assert.equal(menu.open,false);
     menu.open=true;
-    const mode=w.document.getElementById('chat-modo');mode.value='local';w.atualizarModoChat();
     menu.open=false;
     w.document.getElementById('chat-pedido').value='Gere um CPF';
     w.document.getElementById('chat-pedido').dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));
     assert.equal(run('conversasChat.length'),1);
-    assert.equal(mode.value,'local');
     const attachments=w.document.getElementById('chat-anexo-area');
     attachments.open=true;w.document.getElementById('chat-anexo').focus();
     w.document.activeElement.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
@@ -1782,77 +1885,23 @@ test('fase 7 exporta relatório estruturado sem incluir o XML-fonte', async () =
   } finally {dom.window.close();}
 });
 
-test('chat sinaliza espera e limite; recupera pedido sem sobrescrever rascunho', async () => {
-  const {dom,w}=await abrir();
-  try {
-    let liberar;
-    w.fetch=async url=>url==='/api/status'
-      ? {ok:true,json:async()=>({configured:true,provider:'groq'})}
-      : await new Promise(resolve=>{liberar=()=>resolve({ok:false,status:429,json:async()=>({error:'Aguarde antes de enviar novamente.'})});});
-    const input=w.document.getElementById('chat-pedido');
-    input.value='Gere um CPF';
-    const envio=w.enviarChatIa();
-    await new Promise(resolve=>setImmediate(resolve));
-    assert.equal(w.document.getElementById('chat-enviar').disabled,true);
-    assert.equal(w.document.getElementById('chat-enviar').textContent,'Processando…');
-    assert.equal(w.document.getElementById('chat-ia-mensagens').getAttribute('aria-busy'),'true');
-    assert.match(w.document.querySelector('.ia-estado').textContent,/Analisando pedido/);
-    assert.match(w.document.getElementById('chat-status').textContent,/Conexão confirmada/);
-    liberar();await envio;
-    assert.match(w.document.querySelector('.ia-estado').textContent,/Limite atingido/);
-    assert.equal(w.document.getElementById('chat-enviar').disabled,false);
-    assert.equal(w.document.getElementById('chat-ia-mensagens').getAttribute('aria-busy'),'false');
-    const recuperar=w.document.querySelector('.chat-resposta > button');
-    input.value='Meu novo pedido';recuperar.click();
-    assert.equal(input.value,'Meu novo pedido');
-    input.value='';recuperar.click();
-    assert.equal(input.value,'Gere um CPF');
-    assert.equal(w.document.activeElement,input);
-  } finally {dom.window.close();}
-});
-
 test('sugestão do chat aguarda confirmação e anexo pode ser revisado ou removido', async () => {
   const {dom,w,run}=await abrir();
   try {
     w.sugerirChat('5 contêineres');
     assert.equal(w.document.getElementById('chat-pedido').value,'5 contêineres');
-    assert.equal(run('mensagensIa.length'),0);
     assert.equal(run('conversasChat.length'),0);
     assert.equal(w.document.activeElement.id,'chat-pedido');
     w.document.getElementById('chat-anexo-tipo').value='nfe';
-    w.anexarXmlAtualIa();
+    w.anexarXmlAtualChat();
     assert.equal(w.document.getElementById('chat-anexo-limpar').hidden,false);
-    assert.match(w.document.getElementById('chat-anexo-status').textContent,/NFE atual carregado/);
+    assert.match(w.document.getElementById('chat-anexo-status').textContent,/XML disponível/);
     assert.match(w.document.getElementById('chat-anexo').value,/nfeProc/);
-    w.limparAnexoIa();
+    w.limparAnexoChat();
     assert.equal(w.document.getElementById('chat-anexo').value,'');
     assert.equal(w.document.getElementById('chat-anexo-limpar').hidden,true);
     assert.equal(w.document.activeElement,w.document.querySelector('#chat-anexo-area > summary'));
   } finally {dom.window.close();}
-});
-
-test('interface IA envia somente anexo explícito, renderiza texto seguro e permite modo local', async () => {
-  const { dom,w,run }=await abrir();
-  try {
-    let sent;
-    let statusSignal;
-    w.fetch=async (url,options)=>{if(url==='/api/status'){statusSignal=options.signal;return {ok:true,json:async()=>({configured:true,provider:'groq'})};}if(options.method==='POST')assert.equal(options.signal,statusSignal);sent=JSON.parse(options.body);return {ok:true,json:async()=>({sessionId:'mock',text:'<img src=x onerror=alert(1)>',artifacts:[{kind:'records',name:'dados.json',records:[{tipo:'nome',rotulo:'Nome',valor:'Pessoa teste'}]}],activities:['gerar_dados']})};};
-    w.document.getElementById('chat-pedido').value='Me ajude a gerar um nome';
-    await w.enviarChatIa();
-    assert.equal(sent.xml,undefined);
-    assert.equal(sent.environment,'general');
-    assert.ok(statusSignal);
-    assert.equal(w.document.querySelectorAll('#chat-ia-mensagens img').length,0);
-    assert.equal(w.document.querySelectorAll('#chat-ia-mensagens .registro-lote').length,1);
-    assert.match(w.document.querySelector('.ia-estado').textContent,/Ferramentas executadas e resposta concluída/);
-    assert.equal(w.document.querySelector('.ia-ferramentas li').textContent,'Gerar dados');
-    w.document.getElementById('chat-anexo').value='<a/>';
-    w.document.getElementById('chat-pedido').value='Analise este XML';
-    await w.enviarChatIa();
-    assert.equal(sent.sessionId,'mock'); assert.equal(sent.xml,'<a/>');
-    w.AbortSignal.timeout=()=>undefined;
-    await w.limparChat(); assert.equal(run('sessaoIa'),null);
-  } finally { dom.window.close(); }
 });
 
 test('XML: produtos, cenários, bloqueio, cadastro e cópia isolada no editor', async () => {
@@ -2055,15 +2104,15 @@ test('fase 4 posiciona lote após resultado e mantém nomes de ações independe
 test('chat só acompanha atualizações perto do fim e exibe anexo pendente no compositor', async () => {
   const {dom,w,run}=await abrir();
   try {
-    const area=w.document.getElementById('chat-ia-mensagens');
+    const area=w.document.getElementById('chat-mensagens');
     Object.defineProperties(area,{scrollHeight:{value:1000,configurable:true},clientHeight:{value:100,configurable:true}});
     area.scrollTop=240;
-    run("mensagensIa=[{pedido:'primeiro',text:'resposta'}]");
-    w.renderChatIa();
+    run("conversasChat=[{pedido:'primeiro',titulo:'Resposta',texto:'resposta'}]");
+    w.renderChat();
     assert.equal(area.scrollTop,240);
     area.scrollTop=840;
-    run("mensagensIa.push({pedido:'segundo',text:'outra resposta'})");
-    w.renderChatIa();
+    run("conversasChat.push({pedido:'segundo',titulo:'Resposta',texto:'outra resposta'})");
+    w.renderChat();
     assert.equal(area.scrollTop,1000);
     assert.equal(w.document.querySelector('#chat-anexo-area > summary').getAttribute('aria-label'),'Adicionar anexo');
     w.document.getElementById('chat-anexo').value='<teste />';

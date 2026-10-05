@@ -1,10 +1,18 @@
-# Local Command Assistant
+## REMOVED Requirements
 
-## Purpose
+### Requirement: AI remains complementary
+**Reason**: The user replaced remote AI with deterministic local commands.
+**Migration**: Use the local catalog and explicit XML operations.
 
-Define deterministic local commands for synthetic data, isolated XML generation, attachment queries, local validation and reusable QA requests without remote model or session dependencies.
+### Requirement: Existing assistant parity after migration
+**Reason**: The user replaced remote AI with deterministic local commands.
+**Migration**: Use the local catalog and explicit XML operations.
 
-## Requirements
+### Requirement: Recoverable assistant failures
+**Reason**: The user replaced remote AI with deterministic local commands.
+**Migration**: Use the local catalog and explicit XML operations.
+
+## MODIFIED Requirements
 
 ### Requirement: Chat auto-scroll respects user position
 New local command messages and result updates SHALL auto-follow while the user remains near the bottom of the active conversation. If the user manually scrolls upward, rendering MUST preserve that reading position and SHALL resume following only after the user returns near the bottom.
@@ -50,6 +58,8 @@ Privacy, retention and local processing information SHALL remain accessible outs
 - **WHEN** the user opens application settings
 - **THEN** the privacy and retention explanation is available
 - **AND** the conversation is not interrupted by a permanent drawer or availability bar
+
+## ADDED Requirements
 
 ### Requirement: Local command execution
 The assistant SHALL complete supported commands in the browser without model or chat/status requests. All available batch generators SHALL support quantity, accent-insensitive names and documented options. Unsupported text, unavailable environments and totals outside 1 to 500 MUST fail before generation. Public remote assistant endpoints SHALL return a retirement response without creating sessions.

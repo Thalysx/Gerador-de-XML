@@ -1,5 +1,7 @@
 # Meta: IA pública no gerador
 
+> Registro histórico: a alpha.7 usa apenas comandos locais e aposenta `/api/chat` e `/api/status`. Consulte `docs/local-commands.md` para a experiência atual.
+
 ## Estado atual
 
 O trabalho acontece na pasta `projeto`. Por escolha do usuário, a publicação migrou para Netlify. A IA está ativa em https://gerador-all.netlify.app, com geração real de dados e XML confirmada. Consulte [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md) para a evidência e os testes restantes. As etapas abaixo registram o histórico da implementação; afirmações de testes pendentes são substituídas apenas pela evidência explícita desse relatório.

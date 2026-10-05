@@ -46,7 +46,7 @@
         <summary aria-label="Abrir configurações" data-bs-toggle="tooltip" data-bs-title="Configurações"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></summary>
         <div class="app-settings-panel">
           <strong>Configurações</strong>
-          <details class="chat-privacy-settings"><summary>Privacidade e retenção</summary><p id="chat-privacidade" class="texto-apoio">No modo IA, mensagens e anexos são enviados ao provedor configurado (Groq ou OpenAI). A conversa fica no servidor por até 30 minutos de inatividade. Nova conversa apaga os dados da conversa anterior no servidor da aplicação.</p></details>
+          <details class="chat-privacy-settings"><summary>Privacidade e retenção</summary><p id="chat-privacidade" class="texto-apoio">Os comandos rodam no navegador, sem enviar mensagens ou anexos a provedores de IA. A conversa fica apenas nesta aba e mantém as 10 últimas trocas. Favoritos guardam somente o texto do comando neste navegador. Nova conversa limpa resultados e anexo. A validação por comando é local; XSD pela tela de Validação usa a API da aplicação.</p></details>
           <button type="button" id="clear-home-personalization">Limpar favoritos e recentes</button>
           <p id="settings-status" class="texto-apoio" role="status"></p>
         </div>
@@ -91,7 +91,7 @@
       <button type="button" class="tab-btn" id="tab-btn-docs" role="tab" aria-selected="false" aria-controls="tab-docs" tabindex="-1" onclick="switchTab('docs', this)"><i data-lucide="contact" aria-hidden="true"></i> Dados cadastrais</button>
       <button type="button" class="tab-btn" id="tab-btn-cadastro" role="tab" aria-selected="false" aria-controls="tab-cadastro" tabindex="-1" onclick="switchTab('cadastro', this)"><i data-lucide="panels-top-left" aria-hidden="true"></i> Cadastro geral</button>
       <button type="button" class="tab-btn" id="tab-btn-editor" role="tab" aria-selected="false" aria-controls="tab-editor" tabindex="-1" onclick="switchTab('editor', this)"><i data-lucide="square-pen" aria-hidden="true"></i> Editor XML</button>
-      <button type="button" class="tab-btn" id="tab-btn-chat" role="tab" aria-selected="false" aria-controls="tab-chat" tabindex="-1" onclick="switchTab('chat', this)"><i data-lucide="message-circle-more" aria-hidden="true"></i> Assistente de geração</button>
+      <button type="button" class="tab-btn" id="tab-btn-chat" role="tab" aria-selected="false" aria-controls="tab-chat" tabindex="-1" onclick="switchTab('chat', this)"><i data-lucide="message-circle-more" aria-hidden="true"></i> Comandos locais</button>
       <button type="button" class="tab-btn" id="tab-btn-validacao" role="tab" aria-selected="false" aria-controls="tab-validacao" tabindex="-1" onclick="switchTab('validacao', this)">Validação XML</button>
     </div>
   </nav>
@@ -116,7 +116,7 @@
       <div class="home-tools" role="group" aria-label="Ferramentas XML e assistente">
         <button type="button" class="ui-ghost" onclick="switchTab('editor')"><i data-lucide="square-pen" aria-hidden="true"></i> Editor XML</button>
         <button type="button" class="ui-ghost" onclick="switchTab('validacao')"><i data-lucide="shield-check" aria-hidden="true"></i> Validação XML</button>
-        <button type="button" class="ui-ghost" onclick="switchTab('chat')"><i data-lucide="message-circle-more" aria-hidden="true"></i> Assistente IA</button>
+        <button type="button" class="ui-ghost" onclick="switchTab('chat')"><i data-lucide="message-circle-more" aria-hidden="true"></i> Comandos locais</button>
       </div>
       <div class="home-context-row">
         <details class="home-compact-section ui-disclosure"><summary id="home-favorites-title">Favoritos</summary><div class="home-chip-list" id="home-favorites"></div></details>
@@ -781,23 +781,23 @@
 
   <div class="tab-panel" id="tab-chat" role="tabpanel" aria-labelledby="tab-btn-chat" tabindex="0" hidden>
     <section class="chat-painel" aria-labelledby="chat-title">
-      <h2 id="chat-title" class="sr-only">Assistente de geração</h2>
-      <div id="chat-vazio" class="chat-vazio"><i data-lucide="message-square-text" aria-hidden="true"></i><h3>Como posso ajudar?</h3><p class="texto-apoio">Peça dados de teste, gere XMLs ou converse sobre seus campos e validações.</p></div>
-      <div id="chat-mensagens" class="chat-mensagens" role="region" aria-label="Pedidos e resultados locais" hidden></div>
-      <div id="chat-ia-mensagens" class="chat-mensagens" role="region" aria-label="Conversa com IA" aria-live="polite"></div>
+      <h2 id="chat-title" class="sr-only">Comandos locais</h2>
+      <div id="chat-vazio" class="chat-vazio"><i data-lucide="message-square-text" aria-hidden="true"></i><h3>Como posso ajudar?</h3><p class="texto-apoio">Gere dados de teste, consulte XMLs e crie variações com comandos locais. Digite ajuda ou abra o catálogo.</p></div>
+      <div id="chat-mensagens" class="chat-mensagens" role="region" aria-label="Pedidos e resultados locais" aria-live="polite"></div>
       <div class="chat-composer-region">
         <div id="chat-sugestoes" class="chat-sugestoes" role="group" aria-label="Sugestões de pedido"><button type="button" onclick="sugerirChat('3 CPFs e 2 CNPJs')">3 CPFs e 2 CNPJs</button><button type="button" onclick="sugerirChat('2 cadastros')">2 cadastros</button><button type="button" onclick="sugerirChat('3 nomes e 2 empresas')">3 nomes e 2 empresas</button><button type="button" onclick="sugerirChat('5 telefones fixos UF SP')">5 telefones fixos UF SP</button></div>
         <form class="chat-form" onsubmit="return enviarChat(event)">
           <div class="chat-compose-main">
             <div id="chat-anexo-fluxo" class="chat-attachment-tools">
-              <details id="chat-anexo-area" class="chat-attachment-menu"><summary aria-label="Adicionar anexo" data-tooltip="Adicionar anexo"><i data-lucide="plus" aria-hidden="true"></i></summary><div class="chat-attachment-popover"><strong>Adicionar anexo</strong><p class="texto-apoio">O XML será enviado à IA somente com a próxima mensagem. Até 100 KB.</p><div class="acoes-inline"><label class="btn" for="chat-anexo-arquivo">Adicionar arquivo</label><input class="sr-only" type="file" id="chat-anexo-arquivo" accept=".xml,text/xml,application/xml"><select id="chat-anexo-tipo" aria-label="Tipo de XML atual"><option value="nfe">NF-e atual</option><option value="cte">CT-e atual</option></select><button type="button" onclick="anexarXmlAtualIa()">Adicionar XML atual</button></div><label for="chat-anexo">Ou cole o conteúdo XML</label><textarea id="chat-anexo" spellcheck="false" placeholder="Cole o XML que deseja discutir" aria-describedby="chat-anexo-status"></textarea><p id="chat-anexo-status" class="texto-apoio" role="status">Nenhum anexo pendente.</p></div></details>
-              <div id="chat-anexo-pendente" class="chat-attachment-chip" hidden><span id="chat-anexo-nome">XML pendente</span><button type="button" id="chat-anexo-limpar" onclick="limparAnexoIa()" aria-label="Remover anexo">×</button></div>
+              <details id="chat-anexo-area" class="chat-attachment-menu"><summary aria-label="Adicionar anexo" data-tooltip="Adicionar anexo"><i data-lucide="plus" aria-hidden="true"></i></summary><div class="chat-attachment-popover"><strong>Adicionar anexo</strong><p class="texto-apoio">O XML fica neste navegador para consultas e testes. Até 100 KB.</p><div class="acoes-inline"><label class="btn" for="chat-anexo-arquivo">Adicionar arquivo</label><input class="sr-only" type="file" id="chat-anexo-arquivo" accept=".xml,text/xml,application/xml"><select id="chat-anexo-tipo" aria-label="Tipo de XML atual"><option value="nfe">NF-e atual</option><option value="cte">CT-e atual</option></select><button type="button" onclick="anexarXmlAtualChat()">Adicionar XML atual</button></div><label for="chat-anexo">Ou cole o conteúdo XML</label><textarea id="chat-anexo" spellcheck="false" placeholder="Cole o XML que deseja consultar" aria-describedby="chat-anexo-status"></textarea><p id="chat-anexo-status" class="texto-apoio" role="status">Nenhum anexo pendente.</p></div></details>
+              <div id="chat-anexo-pendente" class="chat-attachment-chip" hidden><span id="chat-anexo-nome">XML pendente</span><button type="button" id="chat-anexo-limpar" onclick="limparAnexoChat()" aria-label="Remover anexo">×</button></div>
             </div>
-            <label class="sr-only" for="chat-pedido">Mensagem</label><textarea id="chat-pedido" rows="1" maxlength="6000" autocomplete="off" placeholder="Pergunte ou peça para gerar algo..." aria-describedby="chat-status" required></textarea>
+            <label class="sr-only" for="chat-pedido">Mensagem</label><textarea id="chat-pedido" rows="1" maxlength="500" autocomplete="off" placeholder="Pergunte ou peça para gerar algo..." aria-describedby="chat-status" required></textarea>
             <button id="chat-enviar" type="submit" class="btn-accent ui-primary" aria-label="Enviar mensagem"><span class="sr-only">Enviar</span><i data-lucide="arrow-up" aria-hidden="true"></i></button>
           </div>
+<div id="chat-completar" role="group" aria-label="Sugestões de comandos ao digitar" hidden></div>
 <details class="action-disclosure chat-secondary"><summary aria-label="Opções do assistente"><i data-lucide="ellipsis" aria-hidden="true"></i><span>Opções do assistente</span></summary><div class="action-disclosure-content">          <div class="chat-controls">
-            <div class="chat-mode"><label for="chat-modo">Modo do assistente</label><select id="chat-modo" aria-label="Modo do assistente" onchange="atualizarModoChat()"><option value="ia">Assistente IA</option><option value="local">Comandos locais</option></select></div>
+            <details id="chat-catalogo"><summary>Catálogo de comandos</summary><label for="chat-catalogo-busca">Buscar comando</label><input id="chat-catalogo-busca" type="search" autocomplete="off" oninput="renderCatalogoChat()"><div id="chat-catalogo-lista"></div></details><details id="chat-favoritos"><summary>Comandos favoritos</summary><div id="chat-favoritos-lista"></div></details><button type="button" onclick="sugerirChat('repetir último comando')">Repetir último comando</button>
             <label class="chat-mask"><input type="checkbox" id="chat-mascara" checked> Máscara</label>
             <button type="button" class="chat-new-conversation ui-secondary" onclick="limparChat()" aria-label="Nova conversa" data-tooltip="Nova conversa"><i data-lucide="message-square-plus" aria-hidden="true"></i><span>Nova conversa</span></button>
 <button type="button" class="ui-ghost" data-open-privacy>Privacidade e retenção</button>
@@ -863,11 +863,13 @@
 <script src="assets/js/historico.js"></script>
 <script src="assets/js/editor-xml.js"></script>
 <script src="assets/js/geracao-dados.js"></script>
+<script src="assets/js/command-parser.js"></script>
+<script src="assets/js/command-xml.js"></script>
+<script src="assets/js/command-discovery.js"></script>
+<script src="assets/js/chat-attachments.js"></script>
 <script src="assets/js/chat.js"></script>
 <script src="assets/js/xml-workflow.js"></script>
 <script src="assets/js/validacao-xml.js"></script>
-<script src="assets/js/chat-formatacao.js"></script>
-<script src="assets/js/chat-ia.js"></script>
 <script src="assets/js/app.js"></script>
 <script src="assets/js/generator-workspace.js"></script>
 <script src="assets/js/visual-layout.js"></script>

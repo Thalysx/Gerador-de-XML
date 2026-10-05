@@ -100,10 +100,10 @@ Primary categories SHALL remain directly discoverable. Accordions SHALL be reser
 
 ### Requirement: Full-page assistant
 
-The AI assistant SHALL dedicate the central application area to empty state or conversation and keep suggestions immediately before the lower composer. Attachment, message and send SHALL remain directly available in the composer. Mode, mask, new conversation and privacy SHALL remain accessible through a named secondary disclosure without permanently competing with the conversation.
+The local command assistant SHALL dedicate the central application area to empty state or conversation and keep suggestions immediately before the lower composer. Attachment, message and send SHALL remain directly available in the composer. Catalog, favorites, mask, new conversation and privacy SHALL remain accessible through a named secondary disclosure without permanently competing with the conversation.
 
 #### Scenario: Open the AI assistant
-- **WHEN** the user opens the AI assistant
+- **WHEN** the user opens the local command assistant
 - **THEN** the conversation uses the available content area without a redundant outer card
 - **AND** message, attachment and send remain visible
 - **AND** secondary controls and privacy are accessible on demand

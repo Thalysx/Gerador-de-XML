@@ -11,7 +11,7 @@ const APP_NAVIGATION = Object.freeze([
   {id:'cadastro',label:'Cadastro geral',description:'Monte fichas completas e organize seus dados de teste.',group:'Gerar',environments:['general','port'],icon:'panels-top-left'},
   {id:'editor',label:'Editor XML',description:'Importe documentos, ajuste campos e revise as alterações.',group:'Trabalhar com XML',environments:['general','port'],icon:'square-pen'},
   {id:'validacao',label:'Validação XML',description:'Confira a sintaxe e a consistência básica dos documentos.',group:'Trabalhar com XML',environments:['general','port'],icon:'shield-check'},
-  {id:'chat',label:'Assistente de geração',description:'Converse sobre dados, gere documentos e explore seus XMLs.',group:'Assistente',environments:['general','port'],icon:'message-circle-more'}
+  {id:'chat',label:'Comandos locais',description:'Gere dados, consulte XMLs e crie cópias de teste com comandos locais.',group:'Assistente',environments:['general','port'],icon:'message-circle-more'}
 ].map(item=>Object.freeze({...item,environments:Object.freeze(item.environments)})));
 
 const GENERATOR_CATEGORIES = Object.freeze({pessoa:'Pessoa física',empresa:'Pessoa jurídica',contato:'Contato',endereco:'Endereço',veiculo:'Veículo',carga:'Carga',documento:'Documentos portuários',desenvolvimento:'Desenvolvimento',financeiro:'Finanças sintéticas',logistica:'Logística',xml:'XML'});

@@ -203,7 +203,7 @@ function obterDadosAleatoriosNFe(forcarNovo) {
   return dadosAleatoriosNFeAtual;
 }
 
-function aplicarDadosDinamicosNFe(nfeDoc, dados) {
+function aplicarDadosDinamicosNFe(nfeDoc, dados, nomeEmit = document.getElementById('nfe_nomeEmit')?.value || '') {
   const setText = (sel, val) => { const el = nfeDoc.querySelector(sel); if (el != null && val != null) el.textContent = val; };
   const preencherEndereco = (prefixo, end) => {
     setText(`${prefixo} > xLgr`, end.xLgr);
@@ -222,7 +222,6 @@ function aplicarDadosDinamicosNFe(nfeDoc, dados) {
 
   preencherEndereco('emit > enderEmit', dados.enderEmit);
   setText('emit > IE', dados.ieEmit);
-  const nomeEmit = document.getElementById('nfe_nomeEmit')?.value || '';
   if (nomeEmit) setText('emit > xFant', `${nomeEmit.split(' ')[0]} ${dados.enderEmit.xMun}`);
 
   preencherEndereco('dest > enderDest', dados.enderDest);

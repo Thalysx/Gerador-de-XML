@@ -394,5 +394,5 @@ body.sidebar-collapsed .environment-option { justify-content:center; padding:7px
 .action-disclosure-content { display:flex; position:absolute; z-index:25; top:calc(100% + 8px); right:0; width:min(272px,calc(100vw - 112px)); max-height: min(440px,60dvh); overflow:auto; flex-direction:column; gap:4px; padding:8px; background:var(--surface); border:1px solid var(--border-strong); border-radius:var(--ui-radius); }
 .action-disclosure-content > button { justify-content:flex-start; width:100%; white-space:normal; text-align:left; }
 .tab-btn.active svg { color:var(--accent); }
-#tab-btn-chat svg { color:var(--ai); }
+#tab-btn-chat svg { color:var(--accent); }
 .ui-status-success { color:var(--success); }

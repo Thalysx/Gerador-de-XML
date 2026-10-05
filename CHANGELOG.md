@@ -4,6 +4,14 @@ Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O hist
 
 ## [Não publicado]
 
+## [3.0.0-alpha.7] — 2026-10-05
+
+- Assistente passa a usar apenas comandos locais, sem modo IA ou chamadas remotas de chat. As rotas antigas retornam HTTP 410.
+- Catálogo completo por ambiente, sugestões enquanto digita, favoritos e repetição do último comando.
+- Comandos para gerar NF-e/CT-e isolados, consultar resumo, produtos e destinatário, validar localmente e criar cópias com erros intencionais.
+- Anexos locais, fontes identificadas, erros recuperáveis e ações de cópia, download e Editor preservando os originais.
+- Guia e verificação em `docs/local-commands.md`.
+
 ## [3.0.0-alpha.6] — 2026-10-05
 
 - Placa passa a gerar imediatamente ao selecionar a opção, pela Home ou pela busca global, preservando o padrão escolhido (Mercosul ou antigo).

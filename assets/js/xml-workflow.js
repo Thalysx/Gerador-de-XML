@@ -16,7 +16,7 @@ function serializarXml(doc) { return new XMLSerializer().serializeToString(doc);
 
 function formatarXmlPreview(doc) {
   let nivel = 0;
-  return serializarXml(doc).replace(/>\s*</g, '>\n<').split('\n').map(linha => {
+  return (typeof doc === 'string' ? doc : serializarXml(doc)).replace(/>\s*</g, '>\n<').split('\n').map(linha => {
     if (/^<\//.test(linha)) nivel = Math.max(0, nivel - 1);
     const resultado = '  '.repeat(nivel) + linha;
     if (/^<[^!?/][^>]*>$/.test(linha) && !/\/>$/.test(linha) && !/<\//.test(linha)) nivel++;

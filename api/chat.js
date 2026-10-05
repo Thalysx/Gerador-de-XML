@@ -1,2 +1,1 @@
-const {runtime}=require('../scripts/public-runtime.cjs');
-module.exports=(req,res)=>runtime(req,res,'chat');
+module.exports=(req,res)=>{res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');res.statusCode=410;res.end(JSON.stringify({error:'O assistente usa comandos locais.',mode:'local'}));};

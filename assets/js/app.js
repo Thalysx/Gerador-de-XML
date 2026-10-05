@@ -16,7 +16,7 @@ window.onload = () => {
 
   editorInicializar();
   inicializarGeracao();
-  inicializarAnexoChatIa();
+  inicializarAnexoChat();
   inicializarWorkflowXml();
   inicializarValidacaoXml();
 };

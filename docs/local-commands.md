@@ -1,6 +1,6 @@
-# Comandos locais — alpha.7
+# Comandos locais
 
-O assistente executa regras no navegador. Não usa IA nem envia comandos ou anexos para provedores. O catálogo nas Opções do assistente acompanha o ambiente atual e permite buscar qualquer gerador de lote disponível. As sugestões enquanto você digita e os favoritos apenas preenchem o pedido. Clique em Enviar ou pressione Enter; Shift+Enter insere uma linha. Uma barra inicial é opcional.
+O assistente executa regras no navegador. Não usa IA nem envia comandos ou anexos para provedores. O catálogo nas Opções do assistente reúne ferramentas gerais e portuárias e permite buscar qualquer gerador de lote disponível. As sugestões enquanto você digita e os favoritos apenas preenchem o pedido. Clique em Enviar ou pressione Enter; Shift+Enter insere uma linha. Uma barra inicial é opcional.
 
 ## Dados
 
@@ -9,9 +9,9 @@ O assistente executa regras no navegador. Não usa IA nem envia comandos ou anex
 - `5 UUIDs`
 - `5 telefones fixos UF SP`
 - `10 placas antigas`
-- `2 cargas conteinerizadas` no QA Portuário
+- `2 cargas conteinerizadas`
 
-Aceita singular, plural e nomes sem acento, de 1 a 500 registros por pedido. Use `com máscara` ou `sem máscara`. As opções se aplicam ao pedido inteiro. CPF, empresas e utilitários gerais ficam no ambiente Geral; entidades e documentos portuários ficam no QA Portuário. Pedidos parcialmente compreendidos são recusados por inteiro. Copiar, JSON, CSV e TXT incluem o lote completo; a prévia mostra até 50 registros.
+Aceita singular, plural e nomes sem acento, de 1 a 500 registros por pedido. Use `com máscara` ou `sem máscara`. As opções se aplicam ao pedido inteiro. Ferramentas gerais e portuárias usam o mesmo catálogo. Pedidos parcialmente compreendidos são recusados por inteiro. Copiar, JSON, CSV e TXT incluem o lote completo; a prévia mostra até 50 registros.
 
 ## XML
 
@@ -33,24 +33,12 @@ Os arquivos possuem ações para copiar, baixar, validar localmente e abrir uma 
 
 ## Reutilização e privacidade
 
-`ajuda` abre o catálogo. `repetir último comando` executa novamente o último comando concluído, verificando o ambiente atual. O XML é lido da fonte disponível no momento da repetição. Favoritar comando salva até 10 textos por ambiente neste navegador. Escolher um favorito não executa automaticamente.
+`ajuda` abre o catálogo. `repetir último comando` executa novamente o último comando concluído. O XML é lido da fonte disponível no momento da repetição. Favoritar comando salva até 20 textos em uma lista unificada neste navegador. Escolher um favorito não executa automaticamente.
 
 A conversa conserva até 10 trocas apenas em memória. Anexos permanecem disponíveis para consultas até serem removidos ou a conversa ser limpa. Nova conversa remove resultados, contexto de repetição e anexo; favoritos permanecem. Favoritos não guardam arquivos ou resultados. Remover um anexo cancela também uma leitura de arquivo que ainda estiver em andamento. As antigas rotas `/api/chat` e `/api/status` retornam HTTP 410; a validação XML permanece disponível.
 
 Se o armazenamento do navegador estiver bloqueado, favoritos continuam disponíveis na aba atual e a mensagem informa que não foram persistidos.
 
-## Verificação da versão
+## Verificação
 
-- `npm test`: 124 testes aprovados, com cobertura de todos os comandos de lote nos dois ambientes, opções, rejeição integral, consultas XML, cópias negativas, escapes, ações, favoritos, recarga e leitura cancelada de anexos.
-- `npm run build`: aprovado; 51 ícones locais, 11.744 bytes.
-- `npm run audit:browser`: sete painéis, 193 passos de teclado, console limpo, ações XML, favoritos e preservação do rascunho aprovados. Nenhuma requisição a `/api/chat` ou `/api/status`.
-- Matriz responsiva: 224 estados básicos e 56 expandidos sem overflow; quatro casos do Editor carregado em 360 px aprovados.
-- `openspec validate --all --strict`: 13 itens aprovados antes do arquivamento.
-
-Evidências locais: `artifacts/visual-review/auditoria-200.json` e `artifacts/visual-review/future-g-local-commands.png`. Auditoria automatizada em Chromium; leitor de tela real e dispositivo físico continuam conferências manuais.
-
-## Publicação
-
-Publicada na [Vercel](https://gerador-de-xml.vercel.app/) em 05/10/2026 pelo commit `57e788a02e32d92c6517cb5724addec133405eaf`. O check Vercel retornou success para o deploy `dpl_EUa8xUkbVTrM2FKouPdw8XtfY787`. Os 25 arquivos públicos conferidos retornaram HTTP 200 e SHA-256 correspondente ao commit/build. `/api/chat` e `/api/status` retornaram HTTP 410 com `mode:local`; os antigos scripts de IA retornaram HTTP 404.
-
-Change `local-command-assistant` arquivada em `openspec/changes/archive/2026-10-05-local-command-assistant`, com 5 de 5 tarefas completas e especificações canônicas sincronizadas. Evidência HTTP: `artifacts/local-commands/production-http.json`.
+Consulte o [guia de verificação](quality.md) para testes, build e auditoria e o [guia XML](xml-validation.md) para a cobertura da etapa XSD.

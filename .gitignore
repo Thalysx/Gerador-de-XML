@@ -15,3 +15,8 @@ artifacts/
 .playwright-cli/
 test-results/
 playwright-report/
+
+# Local historical plans and execution reports
+/openspec/changes/archive/
+/docs/quality/
+/docs/releases/

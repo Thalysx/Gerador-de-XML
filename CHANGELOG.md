@@ -1,8 +1,10 @@
 # Changelog
 
-Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O histórico detalhado anterior à adoção deste arquivo permanece em `ATUALIZACOES.md`.
+Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). Documentação histórica e versões anteriores permanecem recuperáveis pelo histórico Git e pelas tags.
 
 ## [Não publicado]
+
+- Documentação consolidada em guias atuais; relatórios de execução, planos antigos e propostas arquivadas removidos da árvore versionada, sem alteração do aplicativo.
 
 ## [3.0.0-alpha.8] — 2026-11-07
 
@@ -13,7 +15,7 @@ Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O hist
 - Cobertura Chromium desktop/mobile, testes de regressão e documentação de qualidade consolidados. Guia vigente em DESIGN.md.
 - Recursos Worker/WASM do motor XSD incluídos explicitamente no pacote das funções Vercel; validação positiva/negativa conferida após o deploy.
 - BASE-10: DESIGN.md consolidado a partir da interface existente; identidade, arquitetura e roteiro manual alinhados, com planos/relatos antigos identificados como históricos. Sem redesign, alteração de código ou nova aprovação visual. Veja [guia vigente](DESIGN.md).
-- BASE-09: inventário, README e planos alinhados ao runtime local; cenários XML salvos disponíveis e antiga biblioteca de fluxos portuários identificada como histórica/ausente. Spec de produtividade alinhada ao catálogo único existente. Nenhuma funcionalidade restaurada. Veja [inventário atual](docs/current-capabilities.md).
+- BASE-09: inventário, README e planos alinhados ao runtime local; cenários XML salvos disponíveis e antiga biblioteca de fluxos portuários identificada como histórica/ausente. Spec de produtividade alinhada ao catálogo único existente. Nenhuma funcionalidade restaurada. Veja [áreas disponíveis](README.md#áreas-disponíveis).
 
 ## [3.0.0-alpha.7] — 2026-10-05
 

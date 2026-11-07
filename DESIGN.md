@@ -1,12 +1,12 @@
 # Design vigente do FUTURE G
 
-Referência local em **07/11/2026**, consolidada na correção BASE-10. Este guia descreve a identidade e os contratos já implementados. Não introduz redesign, funcionalidades ou publicação. A disponibilidade das ferramentas está no [inventário atual](docs/current-capabilities.md).
+Referência da interface vigente, consolidada em **07/11/2026**. Este guia descreve a identidade e os contratos já implementados. Não introduz redesign, funcionalidades ou publicação. A disponibilidade das ferramentas está no [README](README.md#áreas-disponíveis).
 
 ## Identidade e linguagem
 
 O produto se chama **FUTURE G**, em caixa alta e com espaço. A assinatura do shell é **Dados sintéticos para testes**. A interface usa português brasileiro, nomes concretos de ferramentas e mensagens que deixam claro o caráter sintético dos dados. Formato ou dígitos válidos não significam cadastro oficial ou autorização fiscal.
 
-O símbolo é o G modular existente. Usar os arquivos de [marca](assets/brand), com símbolo/nome na navegação expandida e símbolo na navegação compacta/favicon. [IDENTIDADE.md](IDENTIDADE.md) detalha as aplicações. TheGenerator é nomenclatura histórica; IDs e chaves `thegenerator:*` permanecem por compatibilidade, sem renomeação ou limpeza automática.
+O símbolo é o G modular existente. Usar os arquivos de [marca](assets/brand), com símbolo/nome na navegação expandida e símbolo na navegação compacta/favicon. Os logos light/dark e mono têm versões SVG/PNG em `assets/brand`; `npm run brand:export` recria os PNGs. Use a variante adequada ao fundo, sem girar, distorcer, adicionar sombras fortes ou trocar o azul por cores de alerta. TheGenerator é nomenclatura histórica; IDs e chaves `thegenerator:*` permanecem por compatibilidade, sem renomeação ou limpeza automática.
 
 Há um catálogo único para ferramentas gerais e portuárias. Categorias, rótulos e tipos de ficha distinguem seu uso. A estrutura e os nomes das sete áreas vêm do [registry](assets/js/generator-registry.js); não criar uma segunda navegação ou separar temas por domínio.
 
@@ -78,7 +78,7 @@ Disclosures reutilizam `details/summary` e os controles originais. Recolher não
 
 A rolagem tem três contratos: trocar de área retorna a página ao topo; renderizar novo resultado documental reinicia o scroll interno do resultado e preserva a posição da página; a conversa acompanha atualizações quando o usuário está perto do fim e preserva a leitura manual acima dele. Não substituir esses comportamentos por um reset global a cada ação.
 
-O composer executa **comandos locais**, sem enviar mensagens/anexos a provedores de IA ou acionar chat/status remotos. A conversa mantém até dez trocas nesta aba; anexos permanecem até remoção ou Nova conversa. Favoritos de comandos guardam somente textos, com limite unificado de vinte. A tela de Validação XML tem uma etapa separada de XSD no servidor da aplicação; seguir seu [aviso e escopo](docs/quality/validation-processing-copy.md).
+O composer executa **comandos locais**, sem enviar mensagens/anexos a provedores de IA ou acionar chat/status remotos. A conversa mantém até dez trocas nesta aba; anexos permanecem até remoção ou Nova conversa. Favoritos de comandos guardam somente textos, com limite unificado de vinte. A tela de Validação XML tem uma etapa separada de XSD no servidor da aplicação; seguir seu [aviso e escopo](docs/xml-validation.md).
 
 ## Responsividade e implementação
 
@@ -99,8 +99,8 @@ O runtime usa HTML e scripts clássicos, Lucide vanilla empacotado e Bootstrap p
 
 ## Referências e verificação
 
-As specs vigentes de [shell](openspec/specs/app-shell/spec.md), [interface](openspec/specs/ui-system/spec.md), [navegação](openspec/specs/navigation/spec.md), [comandos locais](openspec/specs/ai-assistant/spec.md) e [acessibilidade/exportação](openspec/specs/export-accessibility/spec.md) preservam os contratos. Planos e relatos antigos mantêm cores, nomes e contagens da época; não substituem este guia.
+As specs vigentes de [shell](openspec/specs/app-shell/spec.md), [interface](openspec/specs/ui-system/spec.md), [navegação](openspec/specs/navigation/spec.md), [comandos locais](openspec/specs/ai-assistant/spec.md) e [acessibilidade/exportação](openspec/specs/export-accessibility/spec.md) preservam os contratos. Versões anteriores permanecem no histórico Git; este guia descreve os contratos atuais.
 
-Mudanças futuras de UI devem verificar os fluxos afetados, temas, teclado e recortes relevantes. Capturas devem ter estado e origem conferidos no [manifesto da auditoria](docs/quality/audit-capture-state.md). Estado e geometria corretos não aprovam automaticamente pixels, contraste efetivo ou fontes. A escuta com leitor de tela continua pendente; o arquivo do roteiro anterior foi removido na limpeza da documentação.
+Mudanças futuras de UI devem verificar os fluxos afetados, temas, teclado e recortes relevantes. Capturas devem ter estado e origem conferidos no [manifesto da auditoria](docs/quality.md). Estado e geometria corretos não aprovam automaticamente pixels, contraste efetivo ou fontes. A escuta com leitor de tela continua pendente.
 
-Esta consolidação não executou nova matriz visual nem aprovou snapshots. [Relatório BASE-10](docs/quality/design-documentation.md) registra os checks documentais e a preservação do código. Os resultados anteriores continuam vinculados às respectivas entregas.
+O procedimento de testes, auditoria e manutenção está no [guia de verificação](docs/quality.md). Alterações exclusivamente documentais não constituem nova aprovação visual.

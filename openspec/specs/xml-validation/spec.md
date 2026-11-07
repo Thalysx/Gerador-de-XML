@@ -131,6 +131,14 @@ Before XML selection or validation, the screen SHALL distinguish browser syntax/
 - **AND** it explains that file selection/drop or a validation action can initiate that processing
 - **AND** the screen retains explicit digital-signature, full-fiscal-rule and SEFAZ exclusions and describes local fallback when XSD is unavailable
 
+### Requirement: Packaged XSD runtime assets
+The Vercel function package SHALL explicitly include the dynamically loaded xmllint-wasm Worker and WASM binary alongside the existing fiscal schemas. Supported positive and negative XSD validation SHALL remain available without changing schemas, validation rules or API contracts.
+
+#### Scenario: Execute XSD from the deployed function package
+- **WHEN** a supported document is submitted to the deployed first-party XSD endpoint
+- **THEN** the Worker can load its packaged WASM binary
+- **AND** valid and invalid documents return XSD coverage rather than a missing-runtime service failure
+
 ### Requirement: Byte-preserving fiscal schema packaging
 Vendored fiscal XSDs SHALL retain the exact bytes identified by the existing manifest, independently of Git newline conversion settings. Restoration SHALL use packages matching recorded hashes and SHALL NOT change fiscal rules, recorded hashes or weaken integrity verification.
 

@@ -2,9 +2,11 @@
 
 Plataforma de dados sintéticos para desenvolvimento e QA. Este diretório é a única fonte ativa do produto; versões anteriores são preservadas por tags Git e pacotes preparados para Releases, não por cópias paralelas de pastas.
 
+Versão desta entrega: **3.0.0-alpha.8**, com catálogo único e correções BASE-01 a BASE-11. A publicação usa a integração Git do projeto `gerador-de-xml` na Vercel. O resultado da verificação de produção é registrado em [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md).
+
 O catálogo reúne ferramentas gerais e portuárias, com busca e filtros por categoria, sem alternância de ambiente. Cadastro geral tem um único seletor de tipo de ficha. Veja [Catálogo único](docs/unified-catalog.md) para a decisão e compatibilidade e [DESIGN.md](DESIGN.md) para a referência visual vigente.
 
-O assistente da alpha.7 usa apenas [comandos locais](docs/local-commands.md), com catálogo, favoritos, geração e consultas XML. Os planos e testes antigos de IA são registros históricos. As rotas públicas de chat foram aposentadas; a API de validação XML permanece disponível.
+O assistente usa apenas [comandos locais](docs/local-commands.md), com catálogo, favoritos, geração e consultas XML. Os planos e testes antigos de IA são registros históricos. As rotas públicas de chat foram aposentadas; a API de validação XML permanece disponível.
 
 Abra `index.html` no navegador para usar os geradores, editor e validação local. Mantenha a pasta `assets` ao lado do HTML. Os comandos locais também funcionam sem servidor. A verificação XSD da tela de Validação usa a API da aplicação.
 
@@ -129,7 +131,7 @@ npm run brand:export
 
 ## Comandos locais
 
-A versão `3.0.0-alpha.7` substitui o chat com IA por comandos locais. Experimente `10 crachás sem código de barras`, `5 UUIDs`, `gerar NF-e com 3 produtos`, `resumir XML anexado` e `repetir último comando`. Use o catálogo nas Opções do assistente para consultar todos os exemplos. Favoritos guardam somente comandos, em uma lista unificada. Veja [guia completo](docs/local-commands.md). A publicação usa a integração Git da [Vercel](https://gerador-de-xml.vercel.app/).
+Desde `3.0.0-alpha.7`, o assistente usa comandos locais. A `alpha.8` mantém esse fluxo no catálogo único. Experimente `10 crachás sem código de barras`, `5 UUIDs`, `gerar NF-e com 3 produtos`, `resumir XML anexado` e `repetir último comando`. Use o catálogo nas Opções do assistente para consultar todos os exemplos. Favoritos guardam somente comandos, em uma lista unificada. Veja [guia completo](docs/local-commands.md). A publicação usa a integração Git da [Vercel](https://gerador-de-xml.vercel.app/).
 
 ## Validação XML
 

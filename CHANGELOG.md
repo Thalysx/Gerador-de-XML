@@ -11,6 +11,7 @@ Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O hist
 - Lotes IPv4 consecutivos de até 500 sem esgotamento do domínio; aviso de processamento XML alinhado à etapa XSD no servidor.
 - Teclado da busca e composer com anexo longo corrigidos; auditoria confere identidade das capturas e registra manifestos com hashes.
 - Cobertura Chromium desktop/mobile, testes de regressão e documentação de qualidade consolidados. Guia vigente em DESIGN.md.
+- Recursos Worker/WASM do motor XSD incluídos explicitamente no pacote das funções Vercel; validação positiva/negativa conferida após o deploy.
 - BASE-10: DESIGN.md consolidado a partir da interface existente; identidade, arquitetura e roteiro manual alinhados, com planos/relatos antigos identificados como históricos. Sem redesign, alteração de código ou nova aprovação visual. Veja [guia vigente](DESIGN.md).
 - BASE-09: inventário, README e planos alinhados ao runtime local; cenários XML salvos disponíveis e antiga biblioteca de fluxos portuários identificada como histórica/ausente. Spec de produtividade alinhada ao catálogo único existente. Nenhuma funcionalidade restaurada. Veja [inventário atual](docs/current-capabilities.md).
 

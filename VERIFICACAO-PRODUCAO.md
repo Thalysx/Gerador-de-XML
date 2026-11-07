@@ -1,6 +1,18 @@
-# Verificação da IA em produção
+# Verificação das publicações em produção
 
-## Publicação atual — 3.0.0-alpha.7
+## Publicação atual — 3.0.0-alpha.8 — 07/11/2026
+
+Publicada pela integração Git da Vercel no projeto `thalys-fef7/gerador-de-xml`, a partir da `main`. Produção: https://gerador-de-xml.vercel.app/. Commit de implementação verificado: `6a7a9969b34302ce41a6b45094eb2e833fbe7164`. Registro Production no GitHub: `7626675626`, estado `success`, URL do deploy: https://gerador-de-o91lx7xrz-thalys-fef7.vercel.app/.
+
+- 58 arquivos públicos responderam HTTP 200 e tiveram SHA-256 idêntico ao build local.
+- `/api/chat` e `/api/status` responderam HTTP 410 com modo local. XSD retornou HTTP 200, rejeitando XML inválido e aprovando NF-e sintética gerada pelo navegador de produção.
+- A primeira verificação detectou HTTP 503/-1 no XSD. A reprodução isolada mostrou falta de `xmllint.wasm`; a configuração passou a incluir explicitamente o runtime da biblioteca, sem alterar schemas ou regras fiscais.
+- Navegador de produção: CPF, dois lotes IPv4 consecutivos de 500 com downloads JSON únicos, comando misto e relatório XSD positivo aprovados; zero exceções JavaScript, erros de console ou chamadas a chat/status remotos no percurso.
+- Local: 146/146 Node, 20/20 E2E desktop/mobile e build aprovados. As exclusões de documentação/configuração Netlify feitas na main durante a preparação foram preservadas.
+
+Detalhes, limites e evidências em [Publicação alpha.8](docs/releases/3.0.0-alpha.8.md). Os registros abaixo são históricos; as contagens e afirmações de IA pertencem às versões indicadas.
+
+## Publicação histórica — 3.0.0-alpha.7
 
 O assistente atual usa exclusivamente comandos locais. Publicação pela integração Git da Vercel em 05/10/2026, commit `57e788a02e32d92c6517cb5724addec133405eaf`, deploy `dpl_EUa8xUkbVTrM2FKouPdw8XtfY787`, check success. Produção: https://gerador-de-xml.vercel.app/.
 

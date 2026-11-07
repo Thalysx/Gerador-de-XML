@@ -1,3 +1,10 @@
+# Publicação 3.0.0-alpha.8 — Vercel — 07/11/2026
+
+- Atualização publicada em https://gerador-de-xml.vercel.app/ pela main, com catálogo único e correções BASE-01 a BASE-11.
+- Empacotamento do Worker/binário WASM corrigido após a verificação real do XSD; validações positiva e negativa aprovadas na produção, sem alterar regras fiscais ou schemas.
+- Node 146/146, E2E 20/20 e build aprovados; 58 ativos públicos com hashes do build e fluxos reais conferidos no navegador.
+- Exclusões novas da main preservadas, incluindo documentação antiga e configuração Netlify. Detalhes e limites em [Publicação alpha.8](docs/releases/3.0.0-alpha.8.md).
+
 # Em desenvolvimento — guia de design vigente — 07/11/2026
 
 - BASE-10 resolvido: [DESIGN.md](DESIGN.md) consolida identidade FUTURE G, temas, tokens, tipografia, medidas, hierarquia, estados, responsividade, teclado e rolagem já implementados.

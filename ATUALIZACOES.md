@@ -1,3 +1,38 @@
+# Em desenvolvimento — guia de design vigente — 07/11/2026
+
+- BASE-10 resolvido: [DESIGN.md](DESIGN.md) consolida identidade FUTURE G, temas, tokens, tipografia, medidas, hierarquia, estados, responsividade, teclado e rolagem já implementados.
+- Identidade, arquitetura, README e roteiro auditivo alinhados; planos/relatos visuais antigos identificados como históricos. Comandos locais e catálogo único substituem prescrições antigas de chat remoto e divisão por ambiente.
+- Node 145/145 e build aprovados; 18 tokens/36 valores de cor conferidos com o CSS. Código, assets, testes e contratos preservados; sem nova direção visual, execução auditiva ou aprovação de snapshots.
+- [Relatório](docs/quality/design-documentation.md). BASE-01 a BASE-11 resolvidos; avisos OpenSpec legados e verificações manuais permanecem. Sem publicação nesta etapa.
+
+# Em desenvolvimento — inventário documental — 07/11/2026
+
+- BASE-09 resolvido: README, roadmap e plano mestre distinguem cenários XML salvos da antiga biblioteca operacional portuária, ausente do runtime atual.
+- Novo [inventário vigente](docs/current-capabilities.md) registra as sete áreas existentes e a produtividade unificada. Relatórios das fases 09/10 identificados como históricos; spec de produtividade alinhada ao comportamento já implementado.
+- Node 145/145 e build aprovados; change/spec aprovadas no OpenSpec estrito. Nenhuma alteração de código, testes, schemas ou armazenamento; E2E/matriz não repetidos por ser etapa documental.
+- Evidências em [Inventário documental](docs/quality/capability-inventory.md). Sem restauração de funcionalidade ou publicação; BASE-10 permanece separada.
+
+# Em desenvolvimento — identidade das capturas — 07/11/2026
+
+- BASE-08 resolvido: Home escura selecionada e levada ao topo antes da captura; resultado CPF identificado como Dados cadastrais no nome do arquivo.
+- Auditor padrão e matriz conferem painel/aba/tema/catálogo antes de salvar PNG; também conferem viewport/sidebar quando declarados. Manifesto registra expectativa, estado real e SHA-256; permanece incompleto se a sequência falhar.
+- Node 145/145, E2E 20/20, build/auditor padrão aprovados. Matriz com 112 combinações, 28 estados expandidos e duas imagens auxiliares: zero falhas geométricas, 161 imagens padrão/matriz com estado/hash conferidos.
+- Detalhes em [Identidade das capturas](docs/quality/audit-capture-state.md). Capturas diagnósticas, sem aprovação de baseline visual ou publicação.
+
+# Em desenvolvimento — lotes IPv4 consecutivos — 07/11/2026
+
+- BASE-04 resolvido: geração IPv4 escolhe entre os candidatos fora dos últimos 500 valores e continua disponível após lotes anteriores, sem esgotar o domínio de 762 endereços.
+- Mesmos blocos, hosts de 1 a 254, formatos, limite de 500 e unicidade dentro do lote. Reutilização entre lotes é permitida após sair da janela recente; helper compartilhado e demais geradores intactos.
+- Três regressões Node e E2E falharam antes da correção; resultado final: Node 142/142, E2E 20/20, build/auditoria aprovados. Lotes e downloads JSON reais conferidos em desktop/mobile, inclusive nos comandos locais.
+- Relatório em [Lotes IPv4](docs/quality/ipv4-batches.md). Sem publicação nesta etapa.
+
+# Em desenvolvimento — comunicação da validação XML — 07/11/2026
+
+- BASE-02 resolvido: aviso antes da entrada distingue verificações no navegador de XSD no servidor da aplicação e explica quais ações enviam o XML.
+- Versões suportadas, limite XSD de 4 MiB, ausência de armazenamento/log no serviço, fallback local e exclusões fiscais explícitos. Controles, API e regras existentes preservados.
+- Node 139/139, E2E 18/18, build/auditoria aprovados; fluxo real e aviso em desktop/mobile conferidos. Change e spec XML aprovadas no OpenSpec estrito; os dois avisos globais legados permanecem.
+- Relatório e evidências em [Processamento da validação XML](docs/quality/validation-processing-copy.md). Sem publicação nesta etapa.
+
 # Em desenvolvimento — estados assíncronos — 02/11/2026
 
 - BASE-05: substituir upload por outra análise libera a entrada; leitura antiga não publica nem inicia XSD obsoleto.

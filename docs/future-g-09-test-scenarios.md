@@ -1,8 +1,10 @@
-# FUTURE G 09 — Cenários de teste coerentes
+# FUTURE G 09 — Cenários de teste coerentes (histórico)
 
-Fase concluída localmente em 28/09/2026, sem iniciar a mudança seguinte do roadmap.
+Este é o registro histórico de uma entrega local de 28/09/2026. **A biblioteca operacional descrita abaixo não integra o runtime atual**, conforme inventário de 07/11/2026. Não existem hoje sua rota `scenarios`, motor `assets/js/test-scenarios.js` ou spec `test-scenarios`. O corpo, lista de arquivos e resultados abaixo descrevem a época da entrega, não arquivos ou verificações atuais. Veja o [inventário vigente](current-capabilities.md).
 
-## Entrega
+Os **cenários XML salvos**, disponíveis em XML fiscal, são outro recurso e continuam funcionando. Nenhuma restauração da biblioteca operacional foi iniciada nesta correção documental.
+
+## Entrega histórica — 28/09/2026
 
 - Biblioteca inicial com Gate IN, Gate OUT, Recebimento, Expedição, Agendamento, processos internos de entrada e saída, operações com contêiner e carga solta e fluxo operacional completo.
 - Modelo versionado `future-g.test-scenario.v1`, com IDs próprios para cenário, processo, agendamento, motorista, transportadora, veículo, contêiner e carga.

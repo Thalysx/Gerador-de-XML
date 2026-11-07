@@ -24,7 +24,9 @@ O motor `xmllint-wasm` 5.3.0 roda em Node, com um documento por pedido, limite d
 
 ## Privacidade e falhas
 
-O XML somente é enviado após uma ação explícita de validação, para `/api/validate-xml`. A função não persiste nem registra o XML e não o inclui na resposta. O endpoint exige JSON e mesma origem. A exportação do relatório continua removendo o XML-fonte.
+A seleção ou o arraste de arquivos já inicia a validação; conteúdo colado, documento do gerador e cópia negativa são analisados ao acionar seus controles. Para NF-e e CT-e 4.00 com sintaxe válida e até 4 MiB, a tela envia o XML por POST para `/api/validate-xml`, na mesma origem, para a etapa XSD. Apenas abrir a tela ou digitar conteúdo não inicia esse envio. O limite de upload de 5 MB por arquivo é separado do limite XSD de 4 MiB.
+
+A função não persiste nem registra o XML e não o inclui na resposta. O endpoint exige JSON e mesma origem. A exportação do relatório continua removendo o XML-fonte. CT-e 3.00 não aciona XSD; se o serviço estiver indisponível, as verificações locais e o aviso de cobertura reduzida permanecem no relatório. Desde 07/11/2026, o aviso antes da seleção na tela identifica esse processamento. A validação dos comandos locais continua no navegador.
 
 ## Verificação
 

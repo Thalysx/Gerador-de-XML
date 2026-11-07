@@ -1,5 +1,7 @@
 # Revisão visual do FUTURE G — 05/10/2026
 
+> Relatório histórico da alpha.4. A organização fiscal restaurada posteriormente, o catálogo único e os comandos locais substituem as descrições antigas de XML recolhido, ambientes e detalhes de IA roxos. [DESIGN.md](../DESIGN.md) é a referência vigente; os resultados abaixo permanecem associados à entrega de 05/10/2026.
+
 Implementação do briefing `FUTURE_G_PLANO_VISUAL_ATUALIZADO.txt`, entregue na versão `3.0.0-alpha.4` e registrada na change `simplify-visual-system-and-workspaces`, concluída com 8 de 8 tarefas e arquivada em 05/10/2026. A interface prioriza escolher, gerar, consultar o resultado e agir; configuração complementar aparece sob demanda. Geradores Gerais e QA Portuário usam a mesma base visual nos temas claro e escuro.
 
 ## Telas e componentes
@@ -76,7 +78,7 @@ O arquivamento de `normalize-legacy-openspec-specs` e o registro do cancelamento
 
 A prévia estruturada atual continua mostrando até quatro campos; cópia, download, detalhes e histórico conservam o conteúdo completo. A auditoria usa o Motorista individual real de dois campos e, separadamente, uma fixture longa de cadastro com 18 campos para verificar duas/uma colunas e reset do scroll interno (`2146 → 0`) sem mover a página (`80 → 80`). Não modifica o contrato do gerador para satisfazer o teste.
 
-Evidências locais: [auditoria Chrome](../artifacts/visual-review/auditoria-200.json), [medições responsivas](../../artifacts/refactor-the-generator-ui/final/measurements.json), [Home escura](../../artifacts/refactor-the-generator-ui/final/1280-general-dark-home.png), [opções do Assistente no celular](../../artifacts/refactor-the-generator-ui/final/360-general-light-chat-expanded.png), [foco no Editor](../artifacts/visual-review/future-g-contextual-editor.png) e [Editor com NF-e no celular](../artifacts/visual-review/future-g-loaded-editor-nfe-dark-mobile.png). Esses arquivos ficam nos diretórios de artifacts ignorados pelo Git.
+Evidências locais referidas nesta revisão histórica: [auditoria Chrome](../artifacts/visual-review/auditoria-200.json), [medições responsivas](../../artifacts/refactor-the-generator-ui/final/measurements.json), [Home escura](../../artifacts/refactor-the-generator-ui/final/1280-general-dark-home.png), [opções do Assistente no celular](../../artifacts/refactor-the-generator-ui/final/360-general-light-chat-expanded.png) e [Editor com NF-e no celular](../artifacts/visual-review/future-g-loaded-editor-nfe-dark-mobile.png). A referência histórica de foco no Editor, `future-g-contextual-editor.png`, não está disponível neste checkout e não foi recriada por esta atualização documental. Esses diretórios são ignorados pelo Git; arquivos regenerados por auditorias posteriores devem ser associados ao manifesto de sua própria execução, não tratados automaticamente como a evidência de 05/10/2026.
 
 ## Limites da revisão manual
 

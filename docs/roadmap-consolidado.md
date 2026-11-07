@@ -1,10 +1,18 @@
 # Roadmap consolidado do FUTURE G
 
-Este documento incorpora ao repositório as decisões do plano consolidado aprovado e registra o estado real do produto em 05/10/2026.
+Este documento reúne o estado vigente local em 07/11/2026 e os marcos históricos do plano consolidado. O [inventário atual](current-capabilities.md) distingue disponibilidade no runtime de entregas arquivadas.
 
 ## Estado atual
 
-As fases `future-g-01-foundation` a `future-g-11-polish` estão concluídas e arquivadas no OpenSpec. A aplicação possui shell FUTURE G, registry único, Geradores Gerais, QA Portuário, validação XML estruturada, cenários, produtividade, acessibilidade automatizada e auditoria responsiva.
+O aplicativo tem um catálogo único com ferramentas gerais e portuárias e sete áreas: Início, XML fiscal, Dados cadastrais, Cadastro geral, Editor XML, Validação XML e Comandos locais. Busca, favoritos, recentes e atividade são conjuntos. O tipo de Cadastro escolhe uma ficha; não separa globalmente o catálogo.
+
+Cenários XML salvos continuam disponíveis em XML fiscal. A antiga biblioteca de dez fluxos operacionais portuários está ausente do runtime; sua retomada não foi iniciada. As fases arquivadas documentam sua história, sem substituir o inventário atual.
+
+Os itens BASE-01 a BASE-11 foram tratados em entregas locais sequenciais; BASE-09 alinhou o inventário e BASE-10 consolidou o padrão já implementado em [DESIGN.md](../DESIGN.md). A última verificação funcional, na etapa BASE-08, registrou 145 testes Node, 20 E2E, build e auditorias aprovados; as etapas documentais posteriores preservaram o código. Dois avisos OpenSpec legados de requisitos longos e verificações manuais de acessibilidade permanecem. Esses resultados e as correções locais não indicam nova publicação. Consulte [pendências e evidências](quality/known-issues.md).
+
+## Marcos históricos — até 05/10/2026
+
+As fases `future-g-01-foundation` a `future-g-11-polish` foram arquivadas no OpenSpec. Os registros abaixo preservam decisões e verificações da época, incluindo a antiga divisão Geral/Portuário e cenários operacionais; não constituem o inventário vigente.
 
 A rodada `release-readiness-regressions` corrigiu antes da publicação:
 

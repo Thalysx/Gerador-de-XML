@@ -1,4 +1,6 @@
-# Catálogo único e próximo plano visual
+# Catálogo único — registro da entrega
+
+> O padrão de design já implementado foi consolidado em [DESIGN.md](../DESIGN.md), em 07/11/2026. As propostas de exploração visual deste registro continuam históricas e não foram implementadas por essa consolidação documental. Para disponibilidade e pendências atuais, veja o [inventário vigente](current-capabilities.md) e os [registros de qualidade](quality/known-issues.md).
 
 > Registro da entrega de unificação. A etapa posterior de [integridade fiscal](quality/fiscal-schema-integrity.md) resolveu BASE-01 e elevou o resultado Node abaixo de 123/127 para **127/127**; os resultados originais desta change ficam preservados como histórico.
 
@@ -65,7 +67,7 @@ Esta seção é proposta para a próxima change, não um redesign já executado.
 | Navegação | Sidebar única e estável, com os grupos existentes e nomes acessíveis | Nenhum item some conforme a ferramenta; navegação completa alcançável em zoom e viewport baixa |
 | Comandos locais | Descoberta do catálogo completo com poucos exemplos contextuais e composer utilizável | Exemplos não ocupam a maior parte da conversa no mobile; anexo não obstrui Enviar |
 
-O `DESIGN.md` seguinte deve preservar azul/azul-marinho, Inter, DM Mono, temas e componentes existentes; definir hierarquia, espaçamento, estados e responsividade para essa organização. Taste Skill e Web Design Guidelines serão aplicadas à proposta visual. Image to Code permanece opcional para referências aprovadas e depende da disponibilidade da skill, sem trocar a stack ou copiar templates sobre o produto.
+O [DESIGN.md](../DESIGN.md) consolida a base já implementada: superfícies neutras, azul de interação, Inter, DM Mono, temas, componentes, hierarquia, estados e responsividade. A tabela acima preserva uma proposta histórica de exploração visual; sua implementação, aplicação de skills de art direction e eventual uso de referências visuais não fazem parte dessa consolidação documental.
 
 O roteiro de dez etapas anterior continua como backlog de qualidade, agora sobre o catálogo único. Integridade XSD e bugs conhecidos continuam prioritários; a aprovação de referências visuais deve aguardar a correção dos defeitos que elas retratariam. As changes seguintes não são iniciadas automaticamente.
 

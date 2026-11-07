@@ -800,9 +800,10 @@
     </section>
   </div>
   <div class="tab-panel" id="tab-validacao" role="tabpanel" aria-labelledby="tab-btn-validacao" tabindex="0" hidden>
-    <div class="screen-toolbar"><p class="texto-apoio">A análise acontece localmente no navegador.</p><div class="acoes-inline"><button type="button" id="validacao-exportar" onclick="exportarRelatorioXml()" disabled>Exportar relatório</button><button type="button" class="ui-danger" onclick="limparValidacaoXml()">Limpar análise</button></div></div>
+    <div class="screen-toolbar"><p class="texto-apoio">Análise local e XSD.</p><div class="acoes-inline"><button type="button" id="validacao-exportar" onclick="exportarRelatorioXml()" disabled>Exportar relatório</button><button type="button" class="ui-danger" onclick="limparValidacaoXml()">Limpar análise</button></div></div>
     <div class="validacao-layout">
       <section class="painel-novo validacao-entrada" aria-labelledby="validacao-entrada-title"><h3 id="validacao-entrada-title">Escolha o XML</h3>
+        <p class="texto-apoio">Sintaxe e regras locais são verificadas no navegador. Ao selecionar ou arrastar arquivos, ou acionar uma validação, XMLs de NF-e ou CT-e na versão 4.00, com sintaxe válida e até 4 MiB, são enviados ao servidor da aplicação para verificar o XSD. O serviço não armazena nem registra o conteúdo do XML.</p>
         <div class="validacao-dropzone" id="validacao-dropzone">
           <input type="file" id="validacao-arquivos" accept=".xml,application/xml,text/xml" multiple hidden aria-label="Selecionar arquivos XML para validação">
           <button type="button" class="validacao-dropzone-inner" onclick="document.getElementById('validacao-arquivos').click()" aria-label="Selecionar arquivos XML para validação">
@@ -823,7 +824,7 @@
           </div>
           <button type="button" class="ui-danger" onclick="gerarXmlNegativo()">Gerar XML intencionalmente inválido</button>
         </section>
-        <p class="texto-apoio">Esta análise não valida XSD, assinatura digital ou todas as regras fiscais, nem consulta autorização na SEFAZ. Nenhum arquivo é enviado a um servidor.</p>
+        <p class="texto-apoio">Se o serviço XSD estiver indisponível, as verificações locais continuam e o relatório informa a cobertura reduzida. CT-e 3.00 não tem cobertura XSD. A análise não verifica assinatura digital, todas as regras fiscais ou autorização na SEFAZ.</p>
       </section>
       <section class="validacao-resultados" aria-label="Relatórios de validação">
         <p id="validacao-resumo" class="texto-apoio" role="status" aria-live="polite"></p>

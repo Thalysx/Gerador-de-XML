@@ -4,6 +4,7 @@ const http = require('node:http');
 const { tmpdir } = require('node:os');
 const path = require('node:path');
 const WebSocket = require('ws');
+const { captureAuditedScreenshot } = require('./audit-capture.cjs');
 
 const RAIZ = path.resolve(__dirname, '..');
 const SAIDA = path.join(RAIZ, 'artifacts', 'visual-review');
@@ -255,8 +256,27 @@ async function main() {
     await esperarPagina(cdp);
     console.error('[auditoria] página carregada');
 
+    const captureDirectory = process.env.AUDIT_BASELINE || process.env.AUDIT_MATRIX
+      ? path.join(RAIZ, '..', 'artifacts', 'refactor-the-generator-ui', process.env.AUDIT_BASELINE ? 'baseline' : 'final')
+      : SAIDA;
+    mkdirSync(captureDirectory, { recursive: true });
+    const captures = [];
+    const writeManifest = complete => writeFileSync(path.join(captureDirectory, 'capture-manifest.json'), JSON.stringify({ complete, captures }, null, 2));
+    writeManifest(false);
+    const capture = async (name, expected) => {
+      const metadata = await captureAuditedScreenshot({
+        evaluate: expression => avaliar(cdp, expression),
+        capture: () => cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false }),
+        file: path.join(captureDirectory, name),
+        expected: { environment: 'unified', ...expected }
+      });
+      captures.push(metadata);
+      writeManifest(false);
+      return metadata;
+    };
+
     if (process.env.AUDIT_BASELINE || process.env.AUDIT_MATRIX) {
-      const baseline = path.join(RAIZ, '..', 'artifacts', 'refactor-the-generator-ui', process.env.AUDIT_BASELINE?'baseline':'final');
+      const baseline = captureDirectory;
       mkdirSync(baseline, { recursive:true });
       await cdp.enviar('Emulation.setEmulatedMedia', {features:[{name:'prefers-reduced-motion',value:'reduce'}]});
       const measurements = [];
@@ -278,8 +298,7 @@ async function main() {
             return {environment:'${environment}',panel:'${panel}',dark:${dark},collapsed:${collapsed},width:${width},scrollWidth:document.documentElement.scrollWidth,outside,inaccessibleNavigation};
           })()`));
           await dormir(250);
-          const shot = await cdp.enviar('Page.captureScreenshot',{format:'png'});
-          writeFileSync(path.join(baseline,`${width}-${environment}-${dark?'dark':'light'}-${panel}${collapsed?'-collapsed':''}.png`),Buffer.from(shot.data,'base64'));
+          await capture(`${width}-${environment}-${dark?'dark':'light'}-${panel}${collapsed?'-collapsed':''}.png`, { panel, theme: dark ? 'dark' : 'light', environment, width, height: 900, collapsed });
         }
       }
       const expanded=[];
@@ -301,8 +320,7 @@ async function main() {
           }).map(el=>el.id||el.textContent.trim().slice(0,40));
           return {width:${width},environment:'${environment}',dark:${dark},panel:'${panel}',outside,scrollWidth:document.documentElement.scrollWidth};
         })()`));
-        const expandedShot=await cdp.enviar('Page.captureScreenshot',{format:'png'});
-        writeFileSync(path.join(baseline,`${width}-${environment}-${dark?'dark':'light'}-${panel}-expanded.png`),Buffer.from(expandedShot.data,'base64'));
+        await capture(`${width}-${environment}-${dark?'dark':'light'}-${panel}-expanded.png`, { panel, theme: dark ? 'dark' : 'light', environment, width, height: 900, collapsed: true });
         await avaliar(cdp,`document.querySelectorAll('#tab-${panel} details').forEach(d=>d.open=false)`);
       }
       const phone = await avaliar(cdp, `(() => {
@@ -316,14 +334,13 @@ async function main() {
         }
         gerarTelefone(); return results;
       })()`);
-      const shot=await cdp.enviar('Page.captureScreenshot',{format:'png'});
-      writeFileSync(path.join(baseline,'telefone-result.png'),Buffer.from(shot.data,'base64'));
+      await capture('telefone-result.png', { panel: 'docs', theme: 'dark', width: 1280, height: 900 });
       await avaliar(cdp,"typeof definirSidebar==='function'?definirSidebar(true):homeApplySidebar(true)");
-      const collapsed=await cdp.enviar('Page.captureScreenshot',{format:'png'});
-      writeFileSync(path.join(baseline,'sidebar-collapsed.png'),Buffer.from(collapsed.data,'base64'));
+      await capture('sidebar-collapsed.png', { panel: 'docs', theme: 'dark', width: 1280, height: 900, collapsed: true });
       writeFileSync(path.join(baseline,'measurements.json'),JSON.stringify({measurements,expanded,phone},null,2));
       const failures=[...measurements,...expanded].filter(m=>m.scrollWidth>m.width+1||m.outside.length||m.inaccessibleNavigation);
       console.log(JSON.stringify({captures:measurements.length,expanded:expanded.length,failures,phone},null,2));
+      writeManifest(true);
       if(process.env.AUDIT_MATRIX&&failures.length)process.exitCode=1;
       return;
     }
@@ -475,9 +492,8 @@ async function main() {
     })()`);
 
     mkdirSync(SAIDA, { recursive: true });
-    await avaliar(cdp, `(() => {definirAmbiente('general',false);switchTab('home');openCommandPalette();return true})()`);
-    const capturaBusca = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
-    writeFileSync(path.join(SAIDA, 'command-palette-200.png'), Buffer.from(capturaBusca.data, 'base64'));
+    await avaliar(cdp, `(() => {definirAmbiente('general',false);switchTab('home');if(!document.body.classList.contains('dark'))toggleTheme();openCommandPalette();return true})()`);
+    await capture('command-palette-200.png', { panel: 'home', theme: 'dark', width: 640, height: 450 });
     await avaliar(cdp, 'closeCommandPalette()');
     await avaliar(cdp, `(() => {
       switchTab('home', document.getElementById('tab-btn-home'));
@@ -486,9 +502,8 @@ async function main() {
       alvo.scrollIntoView({ block: 'center' });
       return true;
     })()`);
-    const captura = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    await capture('200-percent.png', { panel: 'home', theme: 'dark', width: 640, height: 450 });
     console.error('[auditoria] captura concluída');
-    writeFileSync(path.join(SAIDA, '200-percent.png'), Buffer.from(captura.data, 'base64'));
 
     await cdp.enviar('Emulation.setDeviceMetricsOverride', {
       width: 1440,
@@ -560,8 +575,7 @@ async function main() {
       };
     })()`);
     await avaliar(cdp, `document.getElementById('docs-output-box').scrollIntoView({block:'center'})`);
-    const capturaResultadoEstruturado = await cdp.enviar('Page.captureScreenshot', { format:'png', captureBeyondViewport:false });
-    writeFileSync(path.join(SAIDA,'future-g-structured-result-desktop.png'),Buffer.from(capturaResultadoEstruturado.data,'base64'));
+    await capture('future-g-structured-result-desktop.png', { panel: 'docs', theme: 'dark', width: 1440, height: 900 });
     await cdp.enviar('Emulation.setDeviceMetricsOverride', {width:360,height:800,deviceScaleFactor:1,mobile:false,screenWidth:360,screenHeight:800});
     const resultadoEstruturadoMobile = await avaliar(cdp, `new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
       const output=document.getElementById('output-val');
@@ -574,12 +588,17 @@ async function main() {
         rolagemHorizontal:document.documentElement.scrollWidth>innerWidth+1
       });
     })))`);
-    const capturaResultadoEstruturadoMobile = await cdp.enviar('Page.captureScreenshot', { format:'png', captureBeyondViewport:false });
-    writeFileSync(path.join(SAIDA,'future-g-structured-result-mobile.png'),Buffer.from(capturaResultadoEstruturadoMobile.data,'base64'));
+    await capture('future-g-structured-result-mobile.png', { panel: 'docs', theme: 'dark', width: 360, height: 800 });
     await cdp.enviar('Emulation.setDeviceMetricsOverride', {width:1440,height:900,deviceScaleFactor:1,mobile:false,screenWidth:1440,screenHeight:900});
     await dormir(100);
-    const capturaMarcaEscura = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
-    writeFileSync(path.join(SAIDA, 'future-g-home-dark.png'), Buffer.from(capturaMarcaEscura.data, 'base64'));
+    await avaliar(cdp, `(() => {
+      definirAmbiente('unified', false);
+      switchTab('home');
+      if (!document.body.classList.contains('dark')) toggleTheme();
+      scrollTo(0, 0);
+      return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    })()`);
+    await capture('future-g-home-dark.png', { panel: 'home', theme: 'dark', width: 1440, height: 900 });
     await avaliar(cdp, `(() => {
       definirAmbiente('general',false);openGenerator('cpf');
       const button=document.getElementById('docs-generate-btn');
@@ -590,12 +609,10 @@ async function main() {
     })()`);
     await dormir(300);
     await avaliar(cdp, `document.getElementById('docs-output-box').scrollIntoView({block:'center'})`);
-    const capturaResultadoHome = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
-    writeFileSync(path.join(SAIDA, 'future-g-home-result-dark.png'), Buffer.from(capturaResultadoHome.data, 'base64'));
+    await capture('future-g-docs-result-dark.png', { panel: 'docs', theme: 'dark', width: 1440, height: 900 });
     await avaliar(cdp, `switchTab('xml', document.getElementById('tab-btn-xml'))`);
     await dormir(100);
-    const capturaXmlEscura = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
-    writeFileSync(path.join(SAIDA, 'future-g-desktop-dark.png'), Buffer.from(capturaXmlEscura.data, 'base64'));
+    await capture('future-g-desktop-dark.png', { panel: 'xml', theme: 'dark', width: 1440, height: 900 });
     await avaliar(cdp, `(() => {
       switchTab('docs', document.getElementById('tab-btn-docs'));
       return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -604,8 +621,7 @@ async function main() {
     await avaliar(cdp, `scrollTo(0, 0)`);
     await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     await dormir(50);
-    const capturaDocsMinimalista = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
-    writeFileSync(path.join(SAIDA, 'future-g-docs-minimal-dark.png'), Buffer.from(capturaDocsMinimalista.data, 'base64'));
+    await capture('future-g-docs-minimal-dark.png', { panel: 'docs', theme: 'dark', width: 1440, height: 900 });
     const capturasTelas = [
       ['cadastro', 'future-g-cadastro-dark.png'],
       ['editor', 'future-g-editor-dark.png'],
@@ -622,8 +638,7 @@ async function main() {
       await avaliar(cdp, `scrollTo(0, 0)`);
       // A primeira captura aquece a composição da tela no Chrome headless.
       await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
-      const imagemTela = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
-      writeFileSync(path.join(SAIDA, arquivo), Buffer.from(imagemTela.data, 'base64'));
+      await capture(arquivo, { panel: painel, theme: 'dark', width: 1440, height: 900 });
     }
     const localCommands=await avaliar(cdp,`(() => {
       definirAmbiente('general',false);switchTab('chat');limparChat();
@@ -646,8 +661,7 @@ async function main() {
       return {records:records.registros?.length,badges:records.registros?.filter(r=>r.tipo==='cracha').every(r=>!r.valor.codigo_barras),items:new DOMParser().parseFromString(generated.xml.texto,'application/xml').querySelectorAll('det').length,summary:summary.texto.includes('Itens: 3'),negative:negative.xml.intencional&&negative.xml.texto!==generated.xml.texto,errors:errors.texto.includes('ERRO'),sourcePreserved:source===serializarXml(xmlsGerados.nfe)&&fields===JSON.stringify(capturarCamposXml()),review,preservedDraft,invalid:Boolean(invalid.erro),modeGone:!document.getElementById('chat-modo')};
     })()`);
     await dormir(100);
-    const localScreenshot=await cdp.enviar('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
-    writeFileSync(path.join(SAIDA,'future-g-local-commands.png'),Buffer.from(localScreenshot.data,'base64'));
+    await capture('future-g-local-commands.png', { panel: 'chat', theme: 'dark', width: 1440, height: 900 });
     await avaliar(cdp, `(() => {limparChat();definirAmbiente('general',false);switchTab('home', document.getElementById('tab-btn-home'));return true})()`);
     await avaliar(cdp, `toggleTheme()`);
     await dormir(500);
@@ -655,8 +669,7 @@ async function main() {
     // A primeira leitura força a atualização das camadas após a troca de tema no Chrome headless.
     await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     await dormir(100);
-    const capturaMarcaClara = await cdp.enviar('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
-    writeFileSync(path.join(SAIDA, 'future-g-desktop-light.png'), Buffer.from(capturaMarcaClara.data, 'base64'));
+    await capture('future-g-desktop-light.png', { panel: 'home', theme: 'light', width: 1440, height: 900 });
     console.error('[auditoria] identidade capturada nos dois temas');
 
     const editorDireto = await avaliar(cdp, `(() => {
@@ -680,8 +693,7 @@ async function main() {
     })()`);
     await avaliar(cdp, `new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
     await cdp.enviar('Page.captureScreenshot', {format:'png',captureBeyondViewport:false});
-    const capturaEditorDireto=await cdp.enviar('Page.captureScreenshot', {format:'png',captureBeyondViewport:false});
-    writeFileSync(path.join(SAIDA,'future-g-direct-editor.png'),Buffer.from(capturaEditorDireto.data,'base64'));
+    await capture('future-g-direct-editor.png', { panel: 'editor', theme: 'light', width: 1440, height: 900 });
 
     const editorCarregadoResponsivo=[];
     await cdp.enviar('Emulation.setDeviceMetricsOverride', {width:360,height:800,deviceScaleFactor:1,mobile:false});
@@ -700,8 +712,7 @@ async function main() {
         return {tipo:'${tipo}',dark:${dark},width:innerWidth,scrollWidth:document.documentElement.scrollWidth,outside};
       })()`));
       await cdp.enviar('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
-      const screenshot=await cdp.enviar('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
-      writeFileSync(path.join(SAIDA,`future-g-loaded-editor-${tipo}-${dark?'dark':'light'}-mobile.png`),Buffer.from(screenshot.data,'base64'));
+      await capture(`future-g-loaded-editor-${tipo}-${dark?'dark':'light'}-mobile.png`, { panel: 'editor', theme: dark ? 'dark' : 'light', width: 360, height: 800 });
     }
 
     const controlesPercorridos = percursos.flatMap(item => item.itens).filter(item => item.tag !== 'BODY');
@@ -734,6 +745,7 @@ async function main() {
       resultadoEstruturadoMobile,
       editorDireto,
       editorCarregadoResponsivo,
+      captures,
       movimentoReduzidoAplicado: movimento,
       aprovado: paineis.every(item => !item.rolagemHorizontal && item.elementosExcedentes.length === 0 && !item.navegacaoVerticalInacessivel) && acessibilidade.every(item => item.controlesSemNome.length === 0 && item.marcosSemNome.length === 0) && nomesVazios === 0 && focosInvisiveis === 0 && focosSemContorno === 0 && movimento && commandPalette.named && commandPalette.focused && commandPalette.generalCount > 0 && commandPalette.portCount === commandPalette.generalCount && commandPalette.insideViewport && Object.values(consoleAudit).every(items => items.length === 0) && performanceAudit.lucideBytes <= 20000 && performanceAudit.localJavaScriptBytes <= 600000 && performanceAudit.localCssBytes <= 150000 && performanceAudit.domNodes <= 2500 && marca.nome === 'FUTURE G' && marca.assinatura === 'Dados sintéticos para testes' && marca.imagemCarregada && marca.imagemVisivel && marca.favicon === 'assets/brand/favicon.svg' && resultadoEstruturado.estruturado && resultadoEstruturado.campos === 4 && resultadoEstruturado.totalFields >= 10 && resultadoEstruturado.fullTextIncludesFields && resultadoEstruturado.individualFields === 2 && resultadoEstruturado.colunasDesktop === 2 && ['Nome','CPF'].every(label=>resultadoEstruturado.labels.includes(label)) && !resultadoEstruturado.identificadoresTecnicosVisiveis && resultadoEstruturado.blocosTecnicos === 0 && resultadoEstruturado.painelRolavel && resultadoEstruturado.painelAntes > 0 && resultadoEstruturado.painelDepois === 0 && resultadoEstruturado.paginaAntes === resultadoEstruturado.paginaDepois && resultadoEstruturado.acoesAtivas && resultadoEstruturadoMobile.colunas === 1 && resultadoEstruturadoMobile.dentroDaViewport && !resultadoEstruturadoMobile.rolagemHorizontal
     };
@@ -742,6 +754,7 @@ async function main() {
     resultado.aprovado &&= remoteChatRequests.length===0 && localCommands.records===15 && localCommands.items===3 && Object.entries(localCommands).filter(([k])=>!['records','items'].includes(k)).every(([,v])=>v===true);
     writeFileSync(path.join(SAIDA, 'auditoria-200.json'), JSON.stringify(resultado, null, 2));
     console.log(JSON.stringify(resultado, null, 2));
+    writeManifest(true);
     if (!resultado.aprovado) process.exitCode = 1;
   } catch (error) {
     if (errosNavegador.trim()) error.message += `\nChrome: ${errosNavegador.trim().slice(-2000)}`;

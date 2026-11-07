@@ -122,6 +122,15 @@ The application SHALL send XML to XSD processing only after an explicit validati
 - **THEN** the endpoint returns findings and coverage without the source XML
 - **AND** the existing report views, redacted export and editor-copy workflow remain consumers of the same report
 
+### Requirement: Accurate validation processing notice
+Before XML selection or validation, the screen SHALL distinguish browser syntax/local checks from first-party server XSD processing, identify its supported versions and size limit, explain upload/drop and validation triggers, and state that the XSD service does not store or log XML. It SHALL explain local fallback, unsupported CT-e 3.00 XSD coverage and fiscal exclusions without claiming all processing stays in the browser.
+
+#### Scenario: Review processing before providing XML
+- **WHEN** the user opens XML validation before selecting, dropping or validating XML
+- **THEN** the notice identifies first-party server processing for NF-e and CT-e 4.00 within the 4 MiB XSD limit
+- **AND** it explains that file selection/drop or a validation action can initiate that processing
+- **AND** the screen retains explicit digital-signature, full-fiscal-rule and SEFAZ exclusions and describes local fallback when XSD is unavailable
+
 ### Requirement: Byte-preserving fiscal schema packaging
 Vendored fiscal XSDs SHALL retain the exact bytes identified by the existing manifest, independently of Git newline conversion settings. Restoration SHALL use packages matching recorded hashes and SHALL NOT change fiscal rules, recorded hashes or weaken integrity verification.
 

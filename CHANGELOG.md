@@ -4,6 +4,9 @@ Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). O hist
 
 ## [Não publicado]
 
+- BASE-10: DESIGN.md consolidado a partir da interface existente; identidade, arquitetura e roteiro manual alinhados, com planos/relatos antigos identificados como históricos. Sem redesign, alteração de código ou nova aprovação visual. Veja [guia vigente](DESIGN.md).
+- BASE-09: inventário, README e planos alinhados ao runtime local; cenários XML salvos disponíveis e antiga biblioteca de fluxos portuários identificada como histórica/ausente. Spec de produtividade alinhada ao catálogo único existente. Nenhuma funcionalidade restaurada. Veja [inventário atual](docs/current-capabilities.md).
+
 ## [3.0.0-alpha.7] — 2026-10-05
 
 - Assistente passa a usar apenas comandos locais, sem modo IA ou chamadas remotas de chat. As rotas antigas retornam HTTP 410.

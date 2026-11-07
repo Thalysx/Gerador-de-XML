@@ -1,5 +1,7 @@
 # Evolução da experiência inicial — 24/09/2026
 
+> Relatório histórico. As decisões de ambiente, quantidade de acessos, cores e contagens abaixo descrevem a entrega dessa data. O padrão vigente está em [DESIGN.md](DESIGN.md) e a disponibilidade atual no [inventário](docs/current-capabilities.md); este relatório não inicia uma nova revisão visual.
+
 ## Decisão aplicada
 
 A simplificação anterior reduziu ruído nas ferramentas especializadas. Esta etapa adiciona uma entrada compacta para descoberta e uso rápido, mantendo o nível de informação necessário para QA e desenvolvimento. A nova home não substitui as telas existentes: ela chama as mesmas funções de geração e permite abrir cada ferramenta completa quando o usuário precisa de opções específicas.

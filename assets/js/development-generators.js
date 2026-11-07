@@ -16,9 +16,20 @@ function gerarUUIDv4() {
   });
 }
 
+const IPV4_DOCUMENTACAO = Object.freeze(['192.0.2', '198.51.100', '203.0.113'].flatMap(
+  bloco => Array.from({ length: 254 }, (_, indice) => `${bloco}.${indice + 1}`)
+));
+
 function gerarIPv4Documentacao() {
-  const blocos = [[192,0,2], [198,51,100], [203,0,113]];
-  return semRepeticaoRecente('ipv4-documentacao', () => `${pick(blocos).join('.')}.${1 + rand(254)}`);
+  const tipo = 'ipv4-documentacao';
+  if (!recentesGerados.has(tipo)) recentesGerados.set(tipo, new Set());
+  const recentes = recentesGerados.get(tipo);
+  // O domínio tem 762 valores: reservar os últimos 500 garante lotes únicos
+  // sem esgotar os candidatos ou depender de tentativas aleatórias por rejeição.
+  const valor = pick(IPV4_DOCUMENTACAO.filter(endereco => !recentes.has(endereco)));
+  recentes.add(valor);
+  if (recentes.size > 500) recentes.delete(recentes.values().next().value);
+  return valor;
 }
 
 function gerarIPv6Documentacao() {

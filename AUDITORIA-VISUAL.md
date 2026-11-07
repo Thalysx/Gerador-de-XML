@@ -1,4 +1,6 @@
-# Evidências de acessibilidade e revisão visual
+# Evidências históricas de acessibilidade e revisão visual
+
+> Registros de execuções anteriores, com os estados e contagens da época. O guia vigente é [DESIGN.md](DESIGN.md); a identificação atual das capturas e os limites das evidências estão em [BASE-08](docs/quality/audit-capture-state.md). Resultados automatizados e estas imagens não substituem a escuta pendente com leitor de tela nem aprovam uma nova baseline visual.
 
 ## Resultado estruturado e rolagem — 30/09/2026
 

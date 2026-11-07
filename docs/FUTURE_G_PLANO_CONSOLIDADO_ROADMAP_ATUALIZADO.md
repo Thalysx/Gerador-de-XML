@@ -6,7 +6,13 @@ Documento de referência para OpenSpec/Codex, consolidando as decisões
 aprovadas para a evolução do FUTURE G. A implementação deve ser
 incremental, verificável e sem regressões.
 
-## Atualização de escopo — 05/10/2026
+## Estado vigente — 07/11/2026
+
+O aplicativo atual usa **um catálogo único**, reunindo ferramentas gerais e portuárias, e sete áreas de navegação. Os **cenários XML salvos** continuam disponíveis em XML fiscal. A antiga biblioteca de dez fluxos operacionais portuários não integra o runtime; Gate, agendamento e massas operacionais relacionados nas previsões abaixo não são funcionalidades disponíveis nem implementação em andamento.
+
+Consulte o [inventário atual](current-capabilities.md), o [roadmap vigente](roadmap-consolidado.md) e o [guia de design atual](../DESIGN.md). As seções de planejamento e os marcos a seguir preservam o contexto histórico das decisões; não são uma lista de recursos atuais, uma direção visual vigente ou instrução para restaurar capacidades ausentes. Esta atualização é documental e não inicia outra fase de implementação.
+
+## Atualização histórica de escopo — 05/10/2026
 
 As fases 01–12 e a validação fiscal local da fase 13A estão concluídas e arquivadas. A manutenção das especificações legadas também foi encerrada. A fase 13B, de integração com SEFAZ e serviços fiscais oficiais, foi cancelada por decisão do usuário e não será implementada. A fase 13C permanece apenas como possibilidade futura de explicar relatórios locais por IA, sem trabalho iniciado. Esta decisão substitui as previsões de integração oficial nas seções abaixo; o estado vigente está em [Roadmap consolidado](roadmap-consolidado.md).
 
@@ -296,7 +302,7 @@ Priorizar hierarquia por espaçamento, alinhamento, tipografia, agrupamento, con
 6.  `future-g-06-general-generators`
 7.  `future-g-07-xml-validation`
 8.  `future-g-08-port-qa`
-9.  `future-g-09-test-scenarios`
+9.  `future-g-09-test-scenarios` — marco histórico; biblioteca operacional ausente do runtime atual (distinta dos cenários XML salvos).
 10. `future-g-10-productivity`
 11. `future-g-11-polish`
 12. `future-g-12-refine-interface-layout` --- refinamento consolidado de UI/UX

@@ -1,8 +1,10 @@
-# FUTURE G 10 — Produtividade
+# FUTURE G 10 — Produtividade (histórico)
 
-Fase concluída localmente em 28/09/2026, sem iniciar a mudança seguinte do roadmap.
+Este é o registro histórico da fase concluída localmente em 28/09/2026. Desde a unificação do catálogo, busca, favoritos, indicadores e atividade reúnem os dois domínios. O resumo atual mostra lotes recentes e não massas da antiga biblioteca operacional, ausente do runtime. Limpar atividade remove a lista conjunta; favoritos e históricos detalhados permanecem. Veja o [inventário vigente](current-capabilities.md#produtividade-disponível) e a [decisão de catálogo único](unified-catalog.md).
 
-## Entrega
+As entregas, projeções por ambiente, lista de arquivos e contagens abaixo são históricas. As referências ao antigo `assets/js/test-scenarios.js` e a cenários operacionais não indicam disponibilidade atual.
+
+## Entrega histórica — 28/09/2026
 
 - Busca global por `Ctrl+K` sobre ferramentas e áreas do ambiente ativo, com navegação por setas, abertura por Enter, fechamento por Escape, retorno do foco e contenção de Tab.
 - Favoritos e recentes continuam derivados do registry e agora alimentam também os indicadores do dashboard, sem apagar preferências incompatíveis ao trocar de ambiente.

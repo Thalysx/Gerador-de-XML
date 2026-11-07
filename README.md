@@ -2,7 +2,7 @@
 
 Plataforma de dados sintéticos para desenvolvimento e QA. Este diretório é a única fonte ativa do produto; versões anteriores são preservadas por tags Git e pacotes preparados para Releases, não por cópias paralelas de pastas.
 
-O catálogo agora reúne ferramentas gerais e portuárias, com busca e filtros por categoria, sem alternância de ambiente. Cadastro geral tem um único seletor de tipo de ficha. Veja [Catálogo único e direção visual](docs/unified-catalog.md) para compatibilidade, testes e a proposta visual seguinte.
+O catálogo reúne ferramentas gerais e portuárias, com busca e filtros por categoria, sem alternância de ambiente. Cadastro geral tem um único seletor de tipo de ficha. Veja [Catálogo único](docs/unified-catalog.md) para a decisão e compatibilidade e [DESIGN.md](DESIGN.md) para a referência visual vigente.
 
 O assistente da alpha.7 usa apenas [comandos locais](docs/local-commands.md), com catálogo, favoritos, geração e consultas XML. Os planos e testes antigos de IA são registros históricos. As rotas públicas de chat foram aposentadas; a API de validação XML permanece disponível.
 
@@ -10,11 +10,11 @@ Abra `index.html` no navegador para usar os geradores, editor e validação loca
 
 Bootstrap e fontes continuam sendo carregados de serviços externos e precisam de conexão para estar disponíveis. Os ícones Lucide usados pela aplicação são empacotados localmente.
 
-Veja [ATUALIZACOES.md](ATUALIZACOES.md) para as funcionalidades adicionadas, exemplos do chat, verificações e limitações. O andamento da revisão de interface está em [PLANO-VISUAL.md](PLANO-VISUAL.md), com as evidências em [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md) e o roteiro final em [CHECKLIST-LEITOR-TELA.md](CHECKLIST-LEITOR-TELA.md).
+Veja [ATUALIZACOES.md](ATUALIZACOES.md) para funcionalidades, comandos, verificações e limites. [DESIGN.md](DESIGN.md) consolida identidade, tokens, hierarquia, estados e responsividade atuais. [PLANO-VISUAL.md](PLANO-VISUAL.md) e [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md) preservam registros históricos; a escuta com leitor de tela segue pendente no [roteiro manual](CHECKLIST-LEITOR-TELA.md).
 
 O estado das fases concluídas e arquivadas está em [Roadmap consolidado](docs/roadmap-consolidado.md). A validação fiscal local da fase 13A está concluída; a integração SEFAZ da fase 13B foi cancelada por decisão do usuário.
 
-A identidade, os arquivos de logo, as regras de uso e a triagem pública do nome estão documentados em [IDENTIDADE.md](IDENTIDADE.md).
+A identidade, os arquivos de logo e as regras de uso estão documentados em [IDENTIDADE.md](IDENTIDADE.md). O histórico de nomenclatura ali registrado não é uma nova pesquisa de disponibilidade do nome.
 
 ## Organização
 
@@ -29,7 +29,7 @@ O fluxo OpenSpec deve permanecer uniforme: concluir checklist e relatório, inco
 | `assets/css/documentos.css` | Interface do gerador de documentos |
 | `assets/css/cadastro.css` | Cadastro, resultados, histórico e ajustes responsivos compartilhados |
 | `assets/css/editor-xml.css` | Interface do editor XML |
-| `assets/css/evolucao.css` | Chat, lotes, prévia XML, cenários e ajustes de organização |
+| `assets/css/evolucao.css` | Comandos locais, lotes, prévia XML e ajustes de organização |
 | `assets/js/aleatorio.js` | Aleatoriedade compartilhada e controle de repetições recentes |
 | `assets/js/catalogos.js` | Novos nomes, sobrenomes, marcas, setores e DDDs por UF |
 | `assets/js/storage.js` | Leitura e gravação no armazenamento local |
@@ -48,7 +48,6 @@ O fluxo OpenSpec deve permanecer uniforme: concluir checklist e relatório, inco
 | `assets/js/development-generators.js` | UUID v4, endereços de documentação IPv4/IPv6 e MAC local para testes |
 | `assets/js/finance-generators.js` | Valores BRL, chave Pix EVP não registrada e IDs fictícios de transação |
 | `assets/js/port-generators.js` | Perfis, empresas, veículos, contêineres, cargas e documentos sintéticos do QA Portuário |
-| `assets/js/test-scenarios.js` | Cenários operacionais coerentes, referências, modos de validade e histórico local |
 | `assets/js/chat.js` | Interface de comandos locais, conversa e lotes |
 | `assets/js/command-parser.js` | Gramática e catálogo dos comandos locais |
 | `assets/js/command-xml.js` | Geração isolada, consultas, validação e cópias XML |
@@ -58,7 +57,7 @@ O fluxo OpenSpec deve permanecer uniforme: concluir checklist e relatório, inco
 | `assets/css/validacao-xml.css` | Tela de validação XML |
 | `scripts/ai.cjs` | Motor histórico de IA, preservado para testes e recuperação; não usado pelo servidor padrão |
 | `scripts/engine.cjs` | Reutilização do gerador e validador no servidor |
-| `assets/js/xml-workflow.js` | Prévia, integração com editor/cadastro, cenários e comparação de XML |
+| `assets/js/xml-workflow.js` | Prévia, integração com editor/cadastro, cenários XML salvos e comparação de XML |
 | `assets/js/app.js` | Inicialização da aplicação e restauração do estado |
 | `assets/js/home-dashboard.js` | Descoberta, favoritos e recentes; navegação por ID |
 | `assets/js/productivity.js` | Busca global Ctrl+K, dashboards por ambiente e atividade resumida sem resultados |
@@ -118,7 +117,9 @@ node node_modules/@playwright/test/cli.js install chromium
 npm run test:e2e
 ```
 
-Consulte [Suíte E2E e resultados](docs/quality/e2e-smoke.md) para isolamento, evidências, repetição e limitações. Após as correções de [estados assíncronos](docs/quality/async-xml.md), `npm test` passou em **138/138** e os **14 E2E** passaram sem retries. BASE-01 permanece resolvido com os hashes originais; veja [Integridade dos schemas](docs/quality/fiscal-schema-integrity.md) e as demais [pendências conhecidas](docs/quality/known-issues.md). A cobertura dos testes não implica autorização fiscal oficial.
+Consulte [Suíte E2E e resultados](docs/quality/e2e-smoke.md) para isolamento, evidências, repetição e limitações. Após as correções de [estados assíncronos](docs/quality/async-xml.md), [teclado e composer](docs/quality/command-controls.md), [comunicação XML](docs/quality/validation-processing-copy.md), [lotes IPv4](docs/quality/ipv4-batches.md) e [capturas da auditoria](docs/quality/audit-capture-state.md), `npm test` passou em **145/145** e os **20 E2E** passaram sem retries. IPv4 mantém até 500 valores recentes e permite reutilização entre lotes após sair dessa janela; cada lote de até 500 permanece sem duplicatas. BASE-01 permanece resolvido com os hashes originais; veja [Integridade dos schemas](docs/quality/fiscal-schema-integrity.md) e as demais [pendências conhecidas](docs/quality/known-issues.md). A cobertura dos testes não implica autorização fiscal oficial.
+
+`npm run audit:browser` confere o estado antes de cada PNG salvo e gera `artifacts/visual-review/capture-manifest.json`, com painel, tema, catálogo, viewport, sidebar, recorte e hash. A matriz usa o mesmo manifesto no seu diretório de saída. Considere apenas os arquivos listados num manifesto completo da execução, junto do exit code e do relatório; imagens antigas remanescentes não integram esse conjunto. As capturas são diagnósticas, sem aprovação automática de baseline visual.
 
 Para recriar os PNGs da identidade em `assets/brand`:
 
@@ -134,16 +135,20 @@ A versão `3.0.0-alpha.7` substitui o chat com IA por comandos locais. Experimen
 
 A aba **Validação XML** aceita conteúdo colado, XML atual do gerador ou até 10 arquivos UTF-8 de 5 MB cada. O relatório estruturado classifica achados como Erro, Aviso ou Informação e, quando disponíveis, mostra tag, valor, caminho, linha e coluna. As visões Resumo, XML e Validação permanecem ligadas ao mesmo documento; a exportação JSON não inclui o XML-fonte.
 
-A mesma tela cria cópias intencionalmente inválidas de NF-e/CT-e para QA: CPF ou CNPJ inválido, chave inconsistente, campo obrigatório ausente, formato ou tag inválida e XML malformado. Essas cópias recebem identificação explícita, podem ser baixadas e nunca alteram o XML-base do gerador. A análise funciona localmente, sem IA, com XSD first-party para NF-e e CT-e 4.00 pela API da aplicação; não verifica assinatura digital, regras tributárias completas ou autorização SEFAZ. O anexo do chat tem um limite separado de 100 KB. Consulte [FUTURE G 07 — Validação XML avançada](docs/future-g-07-xml-validation.md).
+A mesma tela cria cópias intencionalmente inválidas de NF-e/CT-e para QA: CPF ou CNPJ inválido, chave inconsistente, campo obrigatório ausente, formato ou tag inválida e XML malformado. Essas cópias recebem identificação explícita, podem ser baixadas e nunca alteram o XML-base do gerador.
 
-## Cenários de teste
+Sintaxe e regras locais são verificadas no navegador, sem IA. Ao selecionar ou arrastar arquivos, ou acionar uma validação, NF-e e CT-e 4.00 compatíveis de até 4 MiB são enviados à API da aplicação para verificar o XSD. Esse serviço não armazena, registra ou devolve o XML-fonte. Se estiver indisponível, o relatório preserva as verificações locais e informa a cobertura reduzida. CT-e 3.00 tem apenas as verificações locais aplicáveis, sem cobertura XSD. A análise não verifica assinatura digital, regras tributárias completas ou autorização SEFAZ. O anexo dos comandos locais tem um limite separado de 100 KB. Consulte [FUTURE G 13A — Validação fiscal](docs/future-g-13a-local-fiscal-validation.md).
 
-O ambiente **QA Portuário** possui uma biblioteca de dez fluxos operacionais, de agendamento e Gate IN ao Gate OUT. Cada massa usa IDs internos estáveis para motorista, transportadora, veículo, contêiner e carga, preserva essas referências em todas as etapas e pode ser gerada nos modos Válido, Inválido intencional ou Aleatório. O resultado pode ser inspecionado, copiado, baixado e restaurado do histórico local. Consulte [FUTURE G 09 — Cenários de teste coerentes](docs/future-g-09-test-scenarios.md).
+## Cenários XML salvos e inventário atual
+
+**XML fiscal** permite salvar, carregar e excluir até 20 configurações neste navegador, incluindo campos, quantidade de produtos e dados dinâmicos da NF-e. Esses cenários XML salvos continuam disponíveis.
+
+A antiga biblioteca de dez fluxos operacionais portuários, com agendamento, Gate IN/Gate OUT e massas relacionadas, não integra o runtime atual. Seu [relatório da fase 09](docs/future-g-09-test-scenarios.md) é histórico. A interface atual usa um catálogo único, sem divisão global entre Geral e QA Portuário. Consulte o [inventário vigente](docs/current-capabilities.md) para distinguir funcionalidades disponíveis, ausentes e registros históricos.
 
 ## Produtividade
 
-`Ctrl+K` abre uma busca global por geradores e áreas do catálogo inteiro. A Home apresenta contadores e atividade recente conjunta de todas as ferramentas. Esse resumo guarda somente identificador, ambiente, tipo de ação, quantidade e horário — nunca valores gerados, prompts, anexos ou segredos. Lotes compatíveis podem ser copiados e baixados integralmente em JSON, CSV ou TXT, com nome contextual. Consulte [FUTURE G 10 — Produtividade](docs/future-g-10-productivity.md).
+`Ctrl+K` abre uma busca global por geradores e áreas do catálogo inteiro. A Home apresenta contadores e atividade recente conjunta de todas as ferramentas, incluindo lotes recentes. Esse resumo guarda até 50 entradas somente com identificador, ambiente, tipo de ação, quantidade e horário — nunca valores gerados, prompts, anexos ou segredos. Limpar atividade remove a lista conjunta, preservando favoritos e históricos detalhados. Lotes compatíveis podem ser copiados e baixados integralmente em JSON, CSV ou TXT, com nome contextual. Consulte a [produtividade atual](docs/current-capabilities.md#produtividade-disponível); a [fase 10](docs/future-g-10-productivity.md) registra a entrega histórica.
 
 Os testes históricos do motor IA continuam com provedores simulados. A versão atual não aciona esse motor ou seus endpoints públicos.
 
-Os testes Node abrangem geração geral e portuária por clique e atalho opcional, apresentação estruturada e rolagem do painel Resultado, ficha seletiva do Cadastro Geral, crachá sintético, cenários operacionais coerentes, busca global, dashboards, privacidade da atividade, home, favoritos e recentes, atalhos, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API, ativos PWA no servidor local, relatórios XML estruturados, destinatário de CT-e, variantes negativas e o estado de processamento do upload. A revisão visual foi conferida em Chromium em escala de 200%, na matriz atual de 112 combinações de painel, tema, largura e sidebar, em 28 estados com opções abertas e em quatro casos do Editor carregado no celular. Consulte [Revisão visual](docs/visual-system-refresh.md) e o marco anterior [FUTURE G 11 — Polimento e robustez](docs/future-g-11-polish.md).
+Os testes Node abrangem geração geral e portuária por clique e atalho opcional, apresentação estruturada e rolagem do painel Resultado, ficha seletiva do Cadastro Geral, crachá sintético, cenários XML salvos, ausência da antiga tela de cenários operacionais, busca global, resumo unificado, privacidade da atividade, Home, favoritos e recentes, atalhos, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API, ativos PWA no servidor local, relatórios XML estruturados, destinatário de CT-e, variantes negativas e o estado de processamento do upload. A revisão visual foi conferida em Chromium em escala de 200%, na matriz de 112 combinações de painel, tema, largura e sidebar, em 28 estados com opções abertas e em quatro casos do Editor carregado no celular. Consulte a [auditoria atual de capturas](docs/quality/audit-capture-state.md), a [revisão visual histórica](docs/visual-system-refresh.md) e o marco anterior [FUTURE G 11 — Polimento e robustez](docs/future-g-11-polish.md).

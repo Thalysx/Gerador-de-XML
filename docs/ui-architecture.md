@@ -1,5 +1,7 @@
 # Interface da FUTURE G
 
+O padrão visual vigente está em [DESIGN.md](../DESIGN.md). Este documento detalha as responsabilidades e contratos técnicos que o sustentam; planos e relatórios antigos não substituem essa referência.
+
 ## Responsabilidades
 
 - `interface.js`: shell FUTURE G, marca, catálogo, header, abas/teclado, tema e sidebar. A ordem, os rótulos, as descrições, os ícones, os grupos e a disponibilidade das abas vêm de `APP_NAVIGATION`. Um controle SVG com nome dinâmico, aria-expanded e tooltip CSS em hover/foco; navegação estreita fecha em rail após seleção, Escape devolve foco. A sidebar persiste em `thegenerator:sidebar-collapsed`; `futureg:environment` legado é preservado, mas não filtra ferramentas.
@@ -50,7 +52,7 @@ shadcn/ui não é compatível com a stack atual sem introduzir React/Tailwind e 
 
 ## Divulgação progressiva
 
-Home mantém busca, ferramentas e recentes; favoritos, painel e atividade ficam recolhidos. Dados mantém descoberta, configuração essencial e resultado; máscara/nome, lote, histórico e conferência de documentos usam disclosures. XML fiscal restaura a organização anterior: documento, geração, campos, cenários, NCMs e ações da prévia ficam diretamente disponíveis. Cadastro mantém grupos ou tipo de entidade e o resultado; Editar dados abre o formulário geral existente. O Assistente mantém mensagem, anexo e enviar; modo, máscara, nova conversa e privacidade ficam nas opções contextuais. Nenhum campo é clonado, desabilitado ou apagado ao recolher uma seção.
+Home mantém busca, ferramentas e recentes; favoritos, painel e atividade ficam recolhidos. Dados mantém descoberta, configuração essencial e resultado; máscara/nome, lote, histórico e conferência de documentos usam disclosures. XML fiscal restaura a organização anterior: documento, geração, campos, cenários XML salvos, NCMs e ações da prévia ficam diretamente disponíveis. Cadastro mantém grupos ou tipo de entidade e o resultado; Editar dados abre o formulário geral existente. Comandos locais mantém mensagem, anexo e enviar; catálogo, favoritos, máscara e nova conversa ficam nas opções contextuais, com privacidade nas configurações. Nenhum campo é clonado, desabilitado ou apagado ao recolher uma seção.
 
 O resultado estruturado preserva a prévia atual de até quatro campos e o conteúdo completo em detalhes/cópia/download/histórico. A auditoria usa uma fixture longa para verificar a rolagem interna sem impor que Motorista individual contenha os campos exclusivos do cadastro completo.
 
@@ -66,11 +68,11 @@ O Editor captura o grupo por lote de importação. Trocar de grupo mantém esse 
 
 As variantes negativas clonam `xmlsGerados` antes de qualquer alteração e retornam ao mesmo `analisarXml`. O XML-base, o editor e o gerador fiscal não recebem mutações. A exportação remove `texto`, `editavel` e `visao`; metadados identificam a variante, mas não carregam uma segunda cópia da fonte XML.
 
-## Recuperação do Assistente
+## Erros e anexos dos Comandos locais
 
-Falha de rede/configuração/serviço mostra indisponibilidade e modo local opcional; 429 explica limite, 410 explica sessão expirada, AbortError explica espera excedida. Recuperar mensagem respeita rascunho novo; anexos permanecem até sucesso ou remoção explícita. Nenhuma recuperação reenvia ou muda modo silenciosamente. Detalhes técnicos recebidos do servidor não são apresentados como mensagem principal.
+Comandos inválidos mostram orientação local e preservam rascunho/anexo para revisão. Não há modo remoto, sessão de provedor, streaming de IA ou recuperação por troca de modo. Mensagens e anexos não são enviados a chat/status remotos. A etapa de rede XSD pertence à tela de Validação XML e preserva o relatório local quando o serviço fica indisponível.
 
-O botão `+` no compositor concentra arquivo, XML atual e conteúdo colado. O conteúdo explícito continua sendo enviado somente com a próxima mensagem e aparece como item pendente removível. `renderizarChatPreservandoScroll` acompanha atualizações quando a conversa está até 80 px do fim; fora dessa faixa preserva a posição de leitura até o usuário retornar ao fim.
+O botão `+` concentra arquivo, XML atual e conteúdo colado como fonte disponível para os comandos. O chip pendente fica em uma linha própria e continua removível; nomes longos não disputam espaço com mensagem/Enviar. O anexo permanece até remoção ou Nova conversa, inclusive após um comando bem-sucedido. `renderizarChatPreservandoScroll` acompanha atualizações quando a conversa está até 80 px do fim; fora dessa faixa preserva a posição de leitura até o usuário retornar ao fim. A conversa mantém as dez últimas trocas nesta aba, sem persistir seus resultados.
 
 ## Verificação e recuperação da migração
 

@@ -1,6 +1,6 @@
-# Plano de evolução visual
+# Plano de evolução visual (histórico)
 
-> Diretriz vigente de 02/11/2026: catálogo único, sem separação Geral/QA Portuário. O roteiro abaixo é histórico quando depender dessa divisão. A organização e o próximo direcionamento estão em [Catálogo único](docs/unified-catalog.md); identidade, temas e contratos permanecem preservados.
+> Referência vigente em 07/11/2026: [DESIGN.md](DESIGN.md), com FUTURE G, superfícies neutras, interação azul, catálogo único e comandos locais. Este roteiro preserva marcos históricos, incluindo TheGenerator, roxo, divisão por ambiente e IA remota; essas descrições e checklists não são diretrizes de implementação atuais. Evidências e limitações pertencem às datas indicadas. A escuta com leitor de tela real continua pendente.
 
 ## 9. Experiência inicial compacta — concluída localmente em 24/09/2026
 
@@ -17,11 +17,11 @@
 
 Esta etapa preserva os geradores e fluxos atuais e não incorpora funcionalidades do FUTURE G. O resultado permanece local, sem publicação.
 
-## Direção aprovada
+## Direção aprovada no marco histórico do TheGenerator
 
 Manter roxo/preto no escuro, branco/roxo no claro e navegação vertical. Melhorar organização, legibilidade e uso no celular. Implementações começam localmente e precisam de revisão visual antes da publicação.
 
-## Marco atual — simplificação do TheGenerator
+## Marco histórico — simplificação do TheGenerator
 
 - [x] Unificar hierarquia de ações, campos, cards, tabelas e mensagens.
 - [x] Reduzir bordas, sombras, superfícies aninhadas e elementos decorativos.

@@ -1,13 +1,13 @@
 # Identidade da FUTURE G
 
-Status: identidade FUTURE G aplicada ao produto em 25/09/2026.
+Status: identidade FUTURE G aplicada ao produto em 25/09/2026; documentação alinhada ao shell vigente em 07/11/2026. O [guia de design](DESIGN.md) consolida tokens, componentes e contratos atuais.
 
 ![Logo da FUTURE G para fundos claros](assets/brand/future-g-logo-light.png)
 
 ## Nome e posicionamento
 
 **Nome:** FUTURE G<br>
-**Assinatura:** Dados sintéticos para desenvolvimento e QA.
+**Assinatura do shell:** Dados sintéticos para testes.
 
 A FUTURE G reúne geradores gerais, ferramentas de QA portuário, documentos brasileiros e XML fiscal. A comunicação deve deixar claro que os dados são fictícios e que a ferramenta não emite documentos fiscais nem consulta cadastros oficiais.
 
@@ -33,14 +33,14 @@ Os arquivos ficam em `assets/brand`. `npm run brand:export` recria os PNGs a par
 
 | Uso | Cor |
 | --- | --- |
-| Azul principal | `#2563EB` |
-| Azul de apoio | `#1D4ED8` |
-| Azul claro no tema escuro | `#60A5FA` |
-| Azul claro do símbolo | `#BFDBFE` |
-| Fundo azul-marinho | `#07111F` |
-| Superfície escura | `#0B1728` |
-| Fundo claro | `#F4F7FB` |
-| Texto principal claro | `#132238` |
+| Ação principal, nos dois temas | `#2563eb` |
+| Hover principal, nos dois temas | `#1d4ed8` |
+| Link/foco no tema escuro | `#7db6ff` |
+| Fundo claro / escuro | `#f7f8fa` / `#090d14` |
+| Superfície clara / escura | `#ffffff` / `#111925` |
+| Texto principal claro / escuro | `#172033` / `#f8fafc` |
+
+Esta é a base da interface em `assets/css/base.css`; a tabela completa e os tokens estão em [Cores e temas](DESIGN.md#cores-e-temas). Os SVGs de marca mantêm suas próprias aplicações existentes. A interface usa superfícies neutras, azul compartilhado nas ações e cores semânticas de feedback, inclusive nos Comandos locais. Paletas roxas e a antiga divisão de tema por ambiente pertencem ao histórico.
 
 - **Inter:** interface, títulos e nome da marca.
 - **DM Mono:** códigos, identificadores e detalhes técnicos.

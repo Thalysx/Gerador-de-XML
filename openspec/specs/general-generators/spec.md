@@ -7,11 +7,11 @@ Define the catalog direction and interaction rules for general-purpose synthetic
 ## Requirements
 
 ### Requirement: General generator categories
-The environment SHALL support progressive implementation of People, Companies, Addresses, Vehicles, Synthetic Finance, Development and Text/Utility generators. Generated values SHALL be synthetic and intended for testing.
+The unified catalog SHALL retain the existing People, Companies, Addresses, Vehicles, Synthetic Finance and Development categories and allow future Text/Utility tools. Values SHALL remain synthetic and intended for testing.
 
 #### Scenario: Discover a general generator
-- **WHEN** a supported general generator is implemented
-- **THEN** it appears in the corresponding category with synthetic-data context and a reachable workspace
+- **WHEN** a supported general-purpose tool is present
+- **THEN** it is reachable by category alongside port-domain tools.
 
 ### Requirement: Entity-oriented naming
 Generator section titles SHALL represent entities, including Pessoa física and Pessoa jurídica, while individual action labels such as CPF, RG, CNH and CNPJ remain explicit and independently controlled. Changing a section title MUST NOT implicitly change button labels.
@@ -53,15 +53,11 @@ A badge generator SHALL support a synthetic avatar or photo, name, badge code, c
 - **THEN** the badge exposes synthetic identity fields and regenerate and copy-code actions
 
 ### Requirement: Existing generator parity after migration
-Every generator available before the FUTURE G migration SHALL remain reachable through its canonical identifier in an appropriate environment and SHALL preserve its generation format, options, validation behavior, result actions and history behavior. Migration SHALL reuse the existing generation rules rather than introduce a parallel implementation.
-
-#### Scenario: Generate an existing individual document
-- **WHEN** the user opens an existing generator through Home or its workspace and requests a value with supported options
-- **THEN** the value follows the existing format and remains available to regenerate, copy, inspect, clear and restore from history as applicable
+Every existing generator SHALL remain reachable by canonical identifier in the unified catalog, preserving generation format, options, validation, result actions and history. Presentation SHALL reuse existing engines.
 
 #### Scenario: Open a generator variant
-- **WHEN** the user opens an existing variant such as old-pattern plate, Mercosul plate or alphanumeric CNPJ
-- **THEN** the canonical identifier selects the exact variant without depending on display text or duplicating its generation rule
+- **WHEN** the user opens an old plate, Mercosul plate or alphanumeric CNPJ variant
+- **THEN** its exact variant opens without duplicating generation rules.
 
 ### Requirement: Single migrated entry point
 Existing generator discovery and selection SHALL use the FUTURE G registry and workspaces. The application MUST NOT expose a second legacy shell, independent Home generator engine or duplicate catalog for the migrated functionality.
@@ -69,3 +65,14 @@ Existing generator discovery and selection SHALL use the FUTURE G registry and w
 #### Scenario: Discover and open a migrated generator
 - **WHEN** the user selects an existing generator from a discovery surface
 - **THEN** the shared workspace opens the registry destination and generation occurs only after an explicit user action
+
+### Requirement: Registration type selection
+Cadastro SHALL provide one explicit type selector for personal profiles and existing complete domain entities. Selecting a type SHALL choose the appropriate existing form without changing the catalog or discarding another profile. History restoration SHALL select the matching type and retain the original data shape.
+
+#### Scenario: Restore different registration types
+- **WHEN** the user restores a personal profile or a Transportadora history entry
+- **THEN** its type and existing values are restored without a global context switch.
+
+#### Scenario: Change type before generating
+- **WHEN** the user selects a different complete entity type
+- **THEN** an incompatible prior result is not offered as that selected type's copy output.

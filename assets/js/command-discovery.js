@@ -14,7 +14,7 @@ function renderCatalogoChat() {
     acoes.append(...botoesComandosChat(lista.filter(c=>c.categoria===categoria)));
     grupo.append(titulo,acoes);area.append(grupo);
   }
-  if(!lista.length)area.textContent='Nenhum comando encontrado. Tente outro nome ou troque o ambiente.';
+  if(!lista.length)area.textContent='Nenhum comando encontrado. Tente outro nome ou categoria.';
 }
 function abrirCatalogoChat() {
   document.querySelector('.chat-secondary').open=true;
@@ -28,13 +28,15 @@ function atualizarSugestoesComando() {
   area.replaceChildren(...botoesComandosChat(comandos));area.hidden=!comandos.length;
 }
 const favoritosChatTemporarios=new Map();
-function chaveFavoritosChat(ambiente=activeEnvironmentId()) { return `futureg:comandos-favoritos:${ambiente}`; }
+function chaveFavoritosChat() { return 'futureg:comandos-favoritos:unified'; }
 function favoritosComandosChat(ambiente=activeEnvironmentId()) {
-  const chave=chaveFavoritosChat(ambiente),valores=favoritosChatTemporarios.get(chave)||storageGet(chave,[]);
+  const chave=chaveFavoritosChat(),salvos=storageGet(chave,null);
+  const legado=['general','port'].flatMap(id=>{const lista=storageGet(`futureg:comandos-favoritos:${id}`,[]);return Array.isArray(lista)?lista:[];});
+  const valores=favoritosChatTemporarios.get(chave)||(Array.isArray(salvos)?salvos:legado);
   return Array.isArray(valores)?[...new Set(valores.filter(v=>{
     if(typeof v!=='string'||!v.trim()||v.length>500)return false;
     try { const c=interpretarComando(v);return c.acao!=='ajuda'&&c.acao!=='repetir'; } catch{return false;}
-  }))].slice(0,10):[];
+  }))].slice(0,20):[];
 }
 function salvarFavoritosChat(ambiente,textos) {
   const chave=chaveFavoritosChat(ambiente),persistiu=storageSet(chave,textos);
@@ -45,11 +47,11 @@ function favoritarComandoChat(idx) {
   const c=conversasChat[idx];if(!c?.comando)return;
   const favoritos=favoritosComandosChat(c.ambiente);
   if(!favoritos.includes(c.comando)) {
-    if(favoritos.length>=10){document.getElementById('chat-status').textContent='Limite de 10 favoritos por ambiente. Remova um favorito antes de adicionar outro.';return;}
+    if(favoritos.length>=20){document.getElementById('chat-status').textContent='Limite de 20 comandos favoritos. Remova um favorito antes de adicionar outro.';return;}
     const persistiu=salvarFavoritosChat(c.ambiente,[...favoritos,c.comando]);
-    document.getElementById('chat-status').textContent=persistiu?'Comando salvo nos favoritos deste ambiente.':'Favorito disponível nesta aba. O armazenamento do navegador está indisponível.';
+    document.getElementById('chat-status').textContent=persistiu?'Comando salvo nos favoritos.':'Favorito disponível nesta aba. O armazenamento do navegador está indisponível.';
   } else {
-    document.getElementById('chat-status').textContent='Este comando já está nos favoritos deste ambiente.';
+    document.getElementById('chat-status').textContent='Este comando já está nos favoritos.';
   }
   renderFavoritosChat();
 }

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define the synthetic people, companies, assets, cargo and documents available within the QA Portuário environment.
+Define the synthetic people, companies, assets, cargo and documents available in the unified catalog as port-domain tools.
 
 ## Requirements
 
@@ -25,18 +25,15 @@ QA Portuário SHALL support synthetic Driver, Operator, Visitor and Person profi
 - **THEN** it contains the applicable listed identity, contact, badge and qualification data
 
 ### Requirement: Concise generators and complete registration
+Individual port-domain tools SHALL retain concise identifiers. Cadastro SHALL offer complete entity data through its type selector, using the same engines.
 
-Individual QA Portuário generators SHALL show only the essential identifiers needed for quick use. General Registration SHALL remain available in QA Portuário and SHALL contain the complete profile, company, vehicle, container, cargo or cargo-document data produced by the same domain engines.
+#### Scenario: Generate a concise carrier
+- **WHEN** Carrier is activated in Dados cadastrais
+- **THEN** the result contains legal name and CNPJ.
 
-#### Scenario: Generate a carrier from the individual generator
-
-- **WHEN** a user activates Carrier in the data-generator workspace
-- **THEN** the result contains only legal name and CNPJ
-
-#### Scenario: Generate a complete carrier registration
-
-- **WHEN** a user selects Carrier in General Registration while QA Portuário is active
-- **THEN** the registration includes legal and trade names, CNPJ, IE, activity, contact, phone, e-mail, address and test attributes
+#### Scenario: Generate a complete carrier
+- **WHEN** Transportadora is selected and generated in Cadastro
+- **THEN** its legal/trade names, CNPJ, IE, activity, contact, phone, email, address and test attributes are present without a global context switch.
 
 ### Requirement: Companies
 
@@ -91,21 +88,15 @@ Users SHALL be able to manually add multiple NCMs, remove individual entries, va
 - **THEN** the remaining manually added values are available for generation instead of being restricted to presets
 
 ### Requirement: Port documents
+CT-e/XML, CT-e key, Booking, DI, DUIMP, DU-E, seal and cargo documents SHALL remain available in the unified catalog. NF-e and CT-e SHALL remain together without changing existing fiscal generation.
 
-Centralize CT-e/XML, CT-e key, Booking, DI, DUIMP, DU-E, seal and cargo documents. Existing CT-e XML generation SHALL remain available without functional loss. NF-e and CT-e XML forms SHALL remain together and SHALL NOT be divided by the active environment switch.
+#### Scenario: Access existing documents
+- **WHEN** a user accesses document tools
+- **THEN** their existing engines remain available and both fiscal forms remain together.
 
-#### Scenario: Access documents in each environment
-
-- **WHEN** a user accesses the centralized port-document tools
-- **THEN** CT-e/XML, CT-e key, Booking, DI, DUIMP, DU-E, seal and cargo documents are available without loss of existing CT-e generation
-- **AND** NF-e and CT-e remain available together in the XML workspace in either environment
-
-### Requirement: Environment boundary
-
-All port profiles, companies, vehicles, containers, cargo and port documents SHALL be discoverable only in QA Portuário. Registry, search, favorites, recent tools, batch generation, export and the Assistant SHALL honor the active environment without duplicating domain engines.
+### Requirement: Port tools in the unified catalog
+Port profiles, companies, vehicles, containers, cargo and documents SHALL be discoverable alongside general-purpose tools. Registry, search, favorites, recent tools, batches, export and commands SHALL reuse existing domain engines without a global environment boundary.
 
 #### Scenario: Discover port capabilities
-
-- **WHEN** registry-driven surfaces operate in either product environment
-- **THEN** port capabilities are discoverable only in QA Portuário
-- **AND** registry, search, favorites, recents, batches, exports and the Assistant honor the active environment without duplicate domain engines
+- **WHEN** a user searches or browses the unified catalog
+- **THEN** port tools are reachable without changing application context.

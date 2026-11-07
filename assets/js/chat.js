@@ -7,9 +7,8 @@ const SUGESTOES_CHAT_AMBIENTE = Object.freeze({
 });
 
 function atualizarChatPorAmbiente() {
-  const ambiente=activeEnvironmentId();
   const sugestoes=document.getElementById('chat-sugestoes');
-  sugestoes.replaceChildren(...SUGESTOES_CHAT_AMBIENTE[ambiente].map(pedido=>{
+  sugestoes.replaceChildren(...[...SUGESTOES_CHAT_AMBIENTE.general,...SUGESTOES_CHAT_AMBIENTE.port].map(pedido=>{
     const button=document.createElement('button');
     button.type='button';button.textContent=pedido;
     button.addEventListener('click',()=>sugerirChat(pedido));
@@ -88,7 +87,7 @@ function enviarChatLocal(event) {
       abrirCatalogoChat();resultado={titulo:'Comandos locais',texto:'Use o catálogo para escolher um comando. Aceitamos de 1 a 500 registros, máscara, UF, telefone fixo, placa antiga e crachá com ou sem código de barras. XML: gerar NF-e/CT-e, resumir, mostrar produtos/destinatário, validar e criar cópias de teste. Indique XML anexado, NF-e atual, CT-e atual ou XML resultado. Enter envia; Shift+Enter insere uma linha. Sugestões e favoritos aguardam sua revisão.'};
     } else if(comando.acao==='registros') {
       const indisponivel=comando.pedidos.find(item=>!generatorSupportsEnvironment(generatorById(item.tipo)));
-      if(indisponivel)throw new Error(`${generatorById(indisponivel.tipo)?.label || indisponivel.tipo} não está disponível em ${APP_ENVIRONMENTS[activeEnvironmentId()].label}. Troque o ambiente ou escolha um comando do catálogo.`);
+      if(indisponivel)throw new Error('Esta ferramenta não está disponível. Escolha um comando do catálogo.');
       const registros=gerarLoteDados(comando.pedidos,comando.opcoes);
       resultado={titulo:`${registros.length} registros gerados`,registros};
     } else resultado=executarXmlComando(comando);
@@ -168,7 +167,7 @@ function exportarLoteInterface(formato) {
   const type=document.getElementById('lote-tipo').value;
   const generator=generatorById(type);
   if(!generator?.capabilities.export){mostrarStatus('Este tipo não oferece exportação em lote.','error');return false;}
-  const exported=exportarRegistros(ultimoLote,formato,`lote-${activeEnvironmentId()}-${type}`);
+  const exported=exportarRegistros(ultimoLote,formato,`lote-${generator.environments[0]}-${type}`);
   if(exported) {
     recordProductivityActivity(type,{kind:'export',quantity:ultimoLote.length});
     mostrarStatus(`Lote de ${generator.label} exportado em ${formato.toUpperCase()}.`);

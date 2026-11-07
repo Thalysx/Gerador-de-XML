@@ -24,14 +24,14 @@
   <link rel="stylesheet" href="assets/css/evolucao.css">
   <link rel="stylesheet" href="assets/css/validacao-xml.css">
 </head>
-<body data-bs-theme="light" data-environment="general">
+<body data-bs-theme="light" data-environment="unified">
 <a class="skip-link" href="#conteudo-principal">Ir para o conteúdo</a>
 <main class="page-wrapper container-xxl px-0" id="conteudo-principal" tabindex="-1" aria-labelledby="app-title">
 
   <header class="page-header">
 
     <div class="page-header-logo">
-      <span class="environment-context-badge" id="active-environment-label">Geradores Gerais</span>
+      <span class="environment-context-badge" id="active-environment-label">Catálogo de ferramentas</span>
       <div class="page-header-text">
         <h1 id="app-title">Início</h1>
         <p>Escolha uma ferramenta e gere dados de teste com rapidez.</p>
@@ -60,7 +60,7 @@
   <div class="command-palette" id="command-palette" role="dialog" aria-modal="true" aria-labelledby="command-palette-title" hidden>
     <div class="command-palette-panel">
       <div class="command-palette-heading"><div><span>BUSCA GLOBAL</span><h2 id="command-palette-title">Ir para uma ferramenta</h2></div><button type="button" id="command-palette-close" aria-label="Fechar busca global"><i data-lucide="x" aria-hidden="true"></i></button></div>
-      <label class="command-palette-search" for="command-palette-input"><i data-lucide="search" aria-hidden="true"></i><span class="sr-only">Buscar ferramenta ou função</span><input type="search" id="command-palette-input" placeholder="Busque no ambiente atual..." autocomplete="off" aria-controls="command-palette-results" aria-activedescendant=""></label>
+      <label class="command-palette-search" for="command-palette-input"><i data-lucide="search" aria-hidden="true"></i><span class="sr-only">Buscar ferramenta ou função</span><input type="search" id="command-palette-input" placeholder="Busque em todas as ferramentas..." autocomplete="off" aria-controls="command-palette-results" aria-activedescendant=""></label>
       <p id="command-palette-status" class="texto-apoio" role="status"></p>
       <div id="command-palette-results" class="command-palette-results" role="listbox" aria-label="Resultados da busca global"></div>
       <p class="command-palette-help"><kbd>↑</kbd><kbd>↓</kbd> navegar <kbd>Enter</kbd> abrir <kbd>Esc</kbd> fechar</p>
@@ -70,20 +70,9 @@
   <nav class="workspace-nav" id="workspace-navigation" aria-label="Navegação principal da FUTURE G">
     <div class="sidebar-brand" aria-label="FUTURE G, plataforma de dados sintéticos para testes">
       <img id="sidebar-brand-mark" src="assets/brand/future-g-mark-general.svg" alt="" aria-hidden="true" />
-      <div><strong>FUTURE G</strong><span id="sidebar-environment-summary"><i aria-hidden="true"></i> Geradores Gerais</span></div>
+      <div><strong>FUTURE G</strong><span id="sidebar-environment-summary"><i aria-hidden="true"></i> Dados sintéticos para testes</span></div>
     </div>
     <button type="button" class="sidebar-collapse-btn" id="sidebar-collapse-btn" aria-label="Recolher navegação" aria-expanded="true" aria-controls="workspace-tabs" data-tooltip="Recolher navegação"><i data-lucide="panel-left-close" aria-hidden="true"></i></button>
-    <div class="environment-switcher" role="group" aria-labelledby="environment-switcher-label">
-      <p id="environment-switcher-label">Ambiente</p>
-      <button type="button" class="environment-option active" data-environment="general" aria-label="Selecionar ambiente Geradores Gerais" aria-pressed="true" data-tooltip="Geradores Gerais">
-        <i data-lucide="globe-2" aria-hidden="true"></i>
-        <span>Geradores Gerais</span>
-      </button>
-      <button type="button" class="environment-option" data-environment="port" aria-label="Selecionar ambiente QA Portuário" aria-pressed="false" data-tooltip="QA Portuário">
-        <i data-lucide="anchor" aria-hidden="true"></i>
-        <span>QA Portuário</span>
-      </button>
-    </div>
     <p class="workspace-nav-label">FERRAMENTAS</p>
     <div id="workspace-tabs" class="tab-nav" role="tablist" aria-label="Ferramentas da FUTURE G" aria-orientation="vertical">
       <button type="button" class="tab-btn active" id="tab-btn-home" role="tab" aria-selected="true" aria-controls="tab-home" tabindex="0" onclick="switchTab('home', this)"><i data-lucide="layout-grid" aria-hidden="true"></i> Início</button>
@@ -124,10 +113,10 @@
       </div>
 
 
-      <details class="productivity-dashboard ui-disclosure"><summary>Painel e atividade do ambiente</summary><div class="ui-disclosure-content">
-        <div class="home-section-heading"><div><h3 id="productivity-dashboard-title">Resumo de Geradores Gerais</h3></div><p id="productivity-dashboard-description" class="texto-apoio"></p></div>
+      <details class="productivity-dashboard ui-disclosure"><summary>Painel e atividade</summary><div class="ui-disclosure-content">
+        <div class="home-section-heading"><div><h3 id="productivity-dashboard-title">Resumo do catálogo</h3></div><p id="productivity-dashboard-description" class="texto-apoio"></p></div>
         <div class="productivity-metrics" id="productivity-dashboard-metrics"></div>
-        <div class="productivity-activity-heading"><strong>Atividade recente</strong><button type="button" id="productivity-activity-clear" class="btn-xs">Limpar deste ambiente</button></div>
+        <div class="productivity-activity-heading"><strong>Atividade recente</strong><button type="button" id="productivity-activity-clear" class="btn-xs">Limpar atividade</button></div>
         <div class="productivity-activity" id="productivity-activity" aria-live="polite"></div>
       </div></details>
     </div>
@@ -437,37 +426,10 @@
   <div class="tab-panel" id="tab-cadastro" role="tabpanel" aria-labelledby="tab-btn-cadastro" tabindex="0" hidden>
     <div class="cadastro-wrapper">
 
-      <section class="cadastro-group-selector" id="cadastro-general-selector" aria-labelledby="cadastro-group-title">
-        <div class="cadastro-group-header">
-          <div>
-            <h2 id="cadastro-group-title">Grupos da ficha</h2>
-            <p>Escolha quais seções sintéticas serão geradas no próximo cadastro.</p>
-          </div>
-          <div class="cadastro-group-actions" role="group" aria-label="Ações da seleção de grupos">
-            <button type="button" class="btn-sm" onclick="selecionarGruposCadastro(true)">Selecionar tudo</button>
-            <button type="button" class="btn-sm" onclick="selecionarGruposCadastro(false)">Limpar seleção</button>
-          </div>
-        </div>
-        <div class="cadastro-group-options" role="group" aria-label="Grupos disponíveis" aria-describedby="cadastro-group-status">
-          <label><input type="checkbox" name="cadastro-grupo" value="identificacao" checked onchange="atualizarSelecaoGruposCadastro()"> Identificação</label>
-          <label><input type="checkbox" name="cadastro-grupo" value="documentos" checked onchange="atualizarSelecaoGruposCadastro()"> Documentos</label>
-          <label><input type="checkbox" name="cadastro-grupo" value="contato" checked onchange="atualizarSelecaoGruposCadastro()"> Contato</label>
-          <label><input type="checkbox" name="cadastro-grupo" value="endereco" checked onchange="atualizarSelecaoGruposCadastro()"> Endereço</label>
-          <label><input type="checkbox" name="cadastro-grupo" value="profissionais" checked onchange="atualizarSelecaoGruposCadastro()"> Dados profissionais</label>
-        </div>
-        <div class="cadastro-group-footer">
-          <p id="cadastro-group-status" role="status" aria-live="polite">5 de 5 grupos selecionados.</p>
-          <button type="button" class="btn-accent ui-primary" onclick="gerarCadastroCompleto()" aria-label="Gerar ficha com os grupos selecionados"><i data-lucide="sparkles" aria-hidden="true"></i> Gerar cadastro</button>
-        </div>
-      </section>
-
-          <section class="cadastro-form shadow-sm cadastro-portuario-form" id="cadastro-portuario-form" aria-labelledby="cadastro-portuario-title" hidden>
-            <div class="cadastro-section">
-              <div class="cadastro-section-title" id="cadastro-portuario-title"><span class="section-dot" aria-hidden="true"></span>Ficha portuária completa</div>
-              <p class="texto-apoio">Escolha a entidade que deseja cadastrar. Aqui ficam contato, endereço e atributos operacionais; os geradores individuais entregam somente os identificadores principais.</p>
-              <div class="campo-novo">
+      <div class="campo-novo">
                 <label for="cad-port-tipo">Tipo de cadastro</label>
-                <select id="cad-port-tipo">
+                <select id="cad-port-tipo" aria-controls="cadastro-general-selector cadastro-general-form cadastro-portuario-form">
+                  <option value="perfil" selected>Perfil pessoal</option>
                   <optgroup label="Pessoas">
                     <option value="motorista">Motorista</option>
                     <option value="operador-portuario">Operador portuário</option>
@@ -496,6 +458,36 @@
                   </optgroup>
                 </select>
               </div>
+
+      <section class="cadastro-group-selector" id="cadastro-general-selector" aria-labelledby="cadastro-group-title">
+        <div class="cadastro-group-header">
+          <div>
+            <h2 id="cadastro-group-title">Grupos da ficha</h2>
+            <p>Escolha quais seções sintéticas serão geradas no próximo cadastro.</p>
+          </div>
+          <div class="cadastro-group-actions" role="group" aria-label="Ações da seleção de grupos">
+            <button type="button" class="btn-sm" onclick="selecionarGruposCadastro(true)">Selecionar tudo</button>
+            <button type="button" class="btn-sm" onclick="selecionarGruposCadastro(false)">Limpar seleção</button>
+          </div>
+        </div>
+        <div class="cadastro-group-options" role="group" aria-label="Grupos disponíveis" aria-describedby="cadastro-group-status">
+          <label><input type="checkbox" name="cadastro-grupo" value="identificacao" checked onchange="atualizarSelecaoGruposCadastro()"> Identificação</label>
+          <label><input type="checkbox" name="cadastro-grupo" value="documentos" checked onchange="atualizarSelecaoGruposCadastro()"> Documentos</label>
+          <label><input type="checkbox" name="cadastro-grupo" value="contato" checked onchange="atualizarSelecaoGruposCadastro()"> Contato</label>
+          <label><input type="checkbox" name="cadastro-grupo" value="endereco" checked onchange="atualizarSelecaoGruposCadastro()"> Endereço</label>
+          <label><input type="checkbox" name="cadastro-grupo" value="profissionais" checked onchange="atualizarSelecaoGruposCadastro()"> Dados profissionais</label>
+        </div>
+        <div class="cadastro-group-footer">
+          <p id="cadastro-group-status" role="status" aria-live="polite">5 de 5 grupos selecionados.</p>
+          <button type="button" class="btn-accent ui-primary" onclick="gerarCadastroCompleto()" aria-label="Gerar ficha com os grupos selecionados"><i data-lucide="sparkles" aria-hidden="true"></i> Gerar cadastro</button>
+        </div>
+      </section>
+
+          <section class="cadastro-form shadow-sm cadastro-portuario-form" id="cadastro-portuario-form" aria-labelledby="cadastro-portuario-title" hidden>
+            <div class="cadastro-section">
+              <div class="cadastro-section-title" id="cadastro-portuario-title"><span class="section-dot" aria-hidden="true"></span>Ficha completa</div>
+              <p class="texto-apoio">Escolha a entidade que deseja cadastrar. Aqui ficam contato, endereço e atributos operacionais; os geradores individuais entregam somente os identificadores principais.</p>
+
               <button type="button" class="btn-accent ui-primary" onclick="gerarCadastroCompleto()"><i data-lucide="sparkles" aria-hidden="true"></i> Gerar ficha completa</button>
               <p id="cad-port-status" class="texto-apoio" role="status" aria-live="polite">Escolha um tipo para gerar a ficha completa.</p>
             </div>
@@ -787,10 +779,10 @@
       <div class="chat-composer-region">
         <div id="chat-sugestoes" class="chat-sugestoes" role="group" aria-label="Sugestões de pedido"><button type="button" onclick="sugerirChat('3 CPFs e 2 CNPJs')">3 CPFs e 2 CNPJs</button><button type="button" onclick="sugerirChat('2 cadastros')">2 cadastros</button><button type="button" onclick="sugerirChat('3 nomes e 2 empresas')">3 nomes e 2 empresas</button><button type="button" onclick="sugerirChat('5 telefones fixos UF SP')">5 telefones fixos UF SP</button></div>
         <form class="chat-form" onsubmit="return enviarChat(event)">
+          <div id="chat-anexo-pendente" class="chat-attachment-chip" hidden><span id="chat-anexo-nome">XML pendente</span><button type="button" id="chat-anexo-limpar" onclick="limparAnexoChat()" aria-label="Remover anexo">×</button></div>
           <div class="chat-compose-main">
             <div id="chat-anexo-fluxo" class="chat-attachment-tools">
               <details id="chat-anexo-area" class="chat-attachment-menu"><summary aria-label="Adicionar anexo" data-tooltip="Adicionar anexo"><i data-lucide="plus" aria-hidden="true"></i></summary><div class="chat-attachment-popover"><strong>Adicionar anexo</strong><p class="texto-apoio">O XML fica neste navegador para consultas e testes. Até 100 KB.</p><div class="acoes-inline"><label class="btn" for="chat-anexo-arquivo">Adicionar arquivo</label><input class="sr-only" type="file" id="chat-anexo-arquivo" accept=".xml,text/xml,application/xml"><select id="chat-anexo-tipo" aria-label="Tipo de XML atual"><option value="nfe">NF-e atual</option><option value="cte">CT-e atual</option></select><button type="button" onclick="anexarXmlAtualChat()">Adicionar XML atual</button></div><label for="chat-anexo">Ou cole o conteúdo XML</label><textarea id="chat-anexo" spellcheck="false" placeholder="Cole o XML que deseja consultar" aria-describedby="chat-anexo-status"></textarea><p id="chat-anexo-status" class="texto-apoio" role="status">Nenhum anexo pendente.</p></div></details>
-              <div id="chat-anexo-pendente" class="chat-attachment-chip" hidden><span id="chat-anexo-nome">XML pendente</span><button type="button" id="chat-anexo-limpar" onclick="limparAnexoChat()" aria-label="Remover anexo">×</button></div>
             </div>
             <label class="sr-only" for="chat-pedido">Mensagem</label><textarea id="chat-pedido" rows="1" maxlength="500" autocomplete="off" placeholder="Pergunte ou peça para gerar algo..." aria-describedby="chat-status" required></textarea>
             <button id="chat-enviar" type="submit" class="btn-accent ui-primary" aria-label="Enviar mensagem"><span class="sr-only">Enviar</span><i data-lucide="arrow-up" aria-hidden="true"></i></button>

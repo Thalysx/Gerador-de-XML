@@ -54,7 +54,7 @@ test('comandos rejeitam pedidos inteiros, preservam rascunho e respeitam opçõe
     assert.equal(registros.filter(r=>r.tipo==='cracha').every(r=>r.valor.codigo_barras===''),true);
     const antes=run("JSON.stringify(storageGet(RECENTS_KEY,[]))");
     const anexo='<raiz/>';w.document.getElementById('chat-anexo').value=anexo;
-    for(const texto of ['3 CPFs e 2 unicórnios','3 CPFs e 2 transportadoras','501 CPFs','gerar NF-e com 0 produtos','gerar CT-e com 2 produtos']) {
+    for(const texto of ['3 CPFs e 2 unicórnios','501 CPFs','gerar NF-e com 0 produtos','gerar CT-e com 2 produtos']) {
       input.value=texto;w.enviarChat();assert.ok(run('conversasChat.at(-1).erro'),texto);
       assert.equal(input.value,texto);assert.equal(w.document.getElementById('chat-anexo').value,anexo);
       assert.equal(run("JSON.stringify(storageGet(RECENTS_KEY,[]))"),antes);
@@ -126,7 +126,7 @@ test('resultados locais escapam comandos, conteúdo e nomes de arquivos', async 
   } finally {dom.window.close();}
 });
 
-test('repetição, favoritos e catálogo preservam revisão e isolamento por ambiente', async () => {
+test('repetição, favoritos e catálogo preservam revisão no catálogo único', async () => {
   const {dom,w,run}=await abrir();
   try {
     const input=w.document.getElementById('chat-pedido');
@@ -135,21 +135,21 @@ test('repetição, favoritos e catálogo preservam revisão e isolamento por amb
     w.favoritarComandoChat(1);const chave=run('chaveFavoritosChat()');assert.deepEqual(JSON.parse(w.localStorage.getItem(chave)),['3 CPFs']);
     w.document.querySelector('#chat-favoritos-lista button').click();assert.equal(input.value,'3 CPFs');assert.equal(run('conversasChat.length'),2);
     input.value='repetir último comando';w.enviarChat();assert.equal(run('conversasChat.at(-1).registros.length'),3);assert.notEqual(run('conversasChat.at(-1).registros[0].valor'),primeiro);
-    w.definirAmbiente('port');assert.equal(w.document.querySelectorAll('#chat-favoritos-lista button').length,0);
-    input.value='repetir último comando';w.enviarChat();assert.match(run('conversasChat.at(-1).erro'),/não está disponível/);
+    w.definirAmbiente('port');assert.equal(w.document.querySelectorAll('#chat-favoritos-lista button').length,2);
+    input.value='repetir último comando';w.enviarChat();assert.equal(run('conversasChat.at(-1).registros.length'),3);
     w.definirAmbiente('general');w.document.getElementById('chat-catalogo-busca').value='UUID';w.renderCatalogoChat();
     const comandos=w.document.querySelectorAll('#chat-catalogo-lista button');assert.equal(comandos.length,1);comandos[0].click();assert.equal(input.value,'3 UUIDs');
     input.value='uuid';input.dispatchEvent(new w.Event('input'));assert.equal(w.document.getElementById('chat-completar').hidden,false);
     input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true}));assert.equal(w.document.activeElement.parentElement.id,'chat-completar');w.document.activeElement.click();assert.equal(w.document.activeElement,input);
     w.limparChat();assert.equal(run('ultimoComandoChat'),'');assert.equal(run('conversasChat.length'),0);assert.equal(w.document.getElementById('chat-anexo').value,'');assert.deepEqual(JSON.parse(w.localStorage.getItem(chave)),['3 CPFs']);
     assert.equal(w.document.getElementById('chat-modo'),null);assert.equal(run('typeof enviarChatIa'),'undefined');
-    const recarregado=await abrir({[chave]:['3 CPFs','<script>alert(1)</script>','501 CPFs',...Array.from({length:12},(_,i)=>`${i+1} UUIDs`)]});
+    const recarregado=await abrir({[chave]:['3 CPFs','<script>alert(1)</script>','501 CPFs',...Array.from({length:19},(_,i)=>`${i+1} UUIDs`)]});
     try {
-      assert.equal(recarregado.run('favoritosComandosChat().length'),10);
+      assert.equal(recarregado.run('favoritosComandosChat().length'),20);
       recarregado.w.document.querySelector('#chat-favoritos-lista button').click();
       assert.equal(recarregado.w.document.getElementById('chat-pedido').value,'3 CPFs');assert.equal(recarregado.run('conversasChat.length'),0);
       recarregado.w.document.getElementById('chat-pedido').value='20 UUIDs';recarregado.w.enviarChat();recarregado.w.favoritarComandoChat(0);
-      assert.match(recarregado.w.document.getElementById('chat-status').textContent,/Limite de 10/);
+      assert.match(recarregado.w.document.getElementById('chat-status').textContent,/Limite de 20/);
     } finally {recarregado.dom.window.close();}
     run('storageSet=()=>false');input.value='5 UUIDs';w.enviarChat();w.favoritarComandoChat(0);
     assert.ok(run("favoritosComandosChat().includes('5 UUIDs')"));assert.match(w.document.getElementById('chat-status').textContent,/nesta aba/);
@@ -326,86 +326,58 @@ test('cabeçalho permanece direto sem gaveta de atalhos', async () => {
   } finally {dom.window.close();}
 });
 
-test('shell FUTURE G alterna ambiente sem reload e persiste a escolha', async () => {
-  const {dom,w}=await abrir({'futureg:environment':'port'});
-  try {
-    const documentBefore=w.document;
-    const general=w.document.querySelector('.environment-option[data-environment="general"]');
-    const port=w.document.querySelector('.environment-option[data-environment="port"]');
-    assert.equal(w.document.body.dataset.environment,'port');
-    assert.equal(port.getAttribute('aria-pressed'),'true');
-    assert.equal(w.document.getElementById('active-environment-label').textContent,'QA Portuário');
-    general.click();
-    assert.equal(w.document,documentBefore);
-    assert.equal(w.document.body.dataset.environment,'general');
-    assert.equal(general.getAttribute('aria-pressed'),'true');
-    assert.equal(port.getAttribute('aria-pressed'),'false');
-    assert.equal(JSON.parse(w.localStorage.getItem('futureg:environment')),'general');
-    assert.match(w.document.getElementById('app-status-live').textContent,/Geradores Gerais/);
-  } finally {dom.window.close();}
+test('shell oferece catálogo único e preserva preferência legada sem reativar divisão', async () => {
+  for(const legacy of ['general','port']) {
+    const {dom,w}=await abrir({'futureg:environment':legacy});
+    try {
+      const original=w.document;
+      assert.equal(w.document.querySelector('.environment-switcher'),null);
+      assert.equal(w.document.body.dataset.environment,'unified');
+      assert.equal(w.document.getElementById('active-environment-label').textContent,'Catálogo de ferramentas');
+      w.definirAmbiente(legacy);
+      assert.equal(w.document,original);
+      assert.equal(w.document.body.dataset.environment,'unified');
+      assert.equal(JSON.parse(w.localStorage.getItem('futureg:environment')),legacy);
+      for(const id of ['cpf','conteiner','transportadora'])assert.ok(w.document.querySelector('[data-generator-id="'+id+'"]'));
+    } finally {dom.window.close();}
+  }
 });
 
-test('registry projeta navegação, descoberta, favoritos e lote por ambiente', async () => {
-  const state={
-    'thegenerator:registry-version':1,
-    'thegenerator:favorite-generators':['conteiner','cpf','rg'],
-    'futureg:environment':'general'
-  };
-  const {dom,w,run}=await abrir(state);
+test('registry reúne descoberta, favoritos, categorias e lote sem duplicar geradores', async () => {
+  const ids=['conteiner','cpf','rg'];
+  const {dom,w,run}=await abrir({'thegenerator:registry-version':1,'thegenerator:favorite-generators':ids});
   try {
-    assert.equal(run("GENERATORS.every(g=>g.id&&g.label&&g.description&&g.category&&g.route&&g.keywords.length&&g.environments.length&&g.capabilities)"),true);
-    assert.equal(run("new Set(GENERATORS.map(g=>g.id)).size"),run('GENERATORS.length'));
-    assert.equal(run("generatorsForEnvironment('general').some(g=>g.id==='conteiner')"),false);
-    assert.equal(run("generatorsForEnvironment('general').some(g=>g.id==='rg')"),true);
-    assert.equal([...w.document.getElementById('lote-tipo').options].some(option=>option.value==='conteiner'),false);
-    assert.doesNotMatch(w.document.getElementById('home-favorites').textContent,/Contêiner/);
-    assert.deepEqual(JSON.parse(w.localStorage.getItem('thegenerator:favorite-generators')),['conteiner','cpf','rg']);
-
-    w.definirAmbiente('port');
-    assert.equal(w.document.getElementById('tab-btn-cadastro').hidden,false);
-    assert.equal(run("generatorsForEnvironment('port').some(g=>g.id==='conteiner')"),true);
-    assert.equal(run("generatorsForEnvironment('port').some(g=>g.id==='rg')"),false);
-    assert.equal([...w.document.getElementById('lote-tipo').options].some(option=>option.value==='conteiner'),true);
-    assert.match(w.document.getElementById('home-favorites').textContent,/Contêiner/);
-    assert.doesNotMatch(w.document.getElementById('home-favorites').textContent,/RG/);
-
+    assert.equal(run('new Set(GENERATORS.map(g=>g.id)).size'),run('GENERATORS.length'));
+    assert.equal(run('generatorsForEnvironment().length'),run('GENERATORS.length'));
+    for(const id of ids) {
+      assert.ok([...w.document.getElementById('lote-tipo').options].some(option=>option.value===id));
+      assert.ok(w.document.querySelector('#home-favorites [data-home-select="'+id+'"]'));
+    }
+    assert.deepEqual(JSON.parse(w.localStorage.getItem('thegenerator:favorite-generators')),ids);
     w.openGenerator('conteiner');w.generateSelectedDocument();
     const result=w.document.getElementById('output-val').textContent;
     w.definirAmbiente('general');
-    assert.equal(w.document.getElementById('tab-home').hidden,false);
-    assert.equal(run('selectedGeneratorId'),null);
+    assert.equal(w.document.getElementById('tab-docs').hidden,false);
+    assert.equal(run('selectedGeneratorId'),'conteiner');
     assert.equal(w.document.getElementById('output-val').textContent,result);
     assert.equal(w.document.getElementById('tab-btn-cadastro').hidden,false);
   } finally {dom.window.close();}
 });
 
-test('ambientes compartilham NF-e, CT-e e Cadastro geral e isolam os demais dados', async () => {
+test('catálogo único mantém XML compartilhado e permite comandos de diferentes domínios', async () => {
   const {dom,w,run}=await abrir();
   try {
-    assert.equal(run("JSON.stringify(GENERATORS.filter(generator=>generator.environments.length>1).map(generator=>generator.id))"),'["nfe","cadastro","cte"]');
-    assert.equal(run("JSON.stringify(generatorsForEnvironment('general').filter(generator=>generator.environments.includes('port')).map(generator=>generator.id))"),'["nfe","cadastro","cte"]');
-    assert.equal(run("JSON.stringify(generatorsForEnvironment('port').filter(generator=>generator.environments.includes('general')).map(generator=>generator.id))"),'["nfe","cadastro","cte"]');
     assert.deepEqual([...w.document.getElementById('xml-form-tipo').options].map(option=>option.value),['nfe','cte','ambos']);
     for(const id of ['xml-preview-tipo','validacao-gerado-tipo','validacao-negativa-tipo','chat-anexo-tipo'])assert.deepEqual([...w.document.getElementById(id).options].map(option=>option.value),['nfe','cte'],id);
-    assert.doesNotMatch(w.document.getElementById('chat-sugestoes').textContent,/contêiner|booking|motorista/i);
-    assert.match(w.document.getElementById('sidebar-brand-mark').src,/future-g-mark-general\.svg$/);
-    assert.equal(w.document.getElementById('theme-color').content,'#0d131d');
+    assert.match(w.document.getElementById('chat-sugestoes').textContent,/CPF/);
+    assert.match(w.document.getElementById('chat-sugestoes').textContent,/cargas conteinerizadas/);
     const cadastro=run("gerarRegistro('cadastro').valor");
     assert.equal(Object.hasOwn(cadastro,'conteiner'),false);
     assert.equal(Object.hasOwn(cadastro,'lacre'),false);
-
-    w.document.getElementById('chat-pedido').value='5 contêineres';
-    w.enviarChatLocal();
-    assert.match(w.document.getElementById('chat-status').textContent,/não está disponível em Geradores Gerais/);
-
-    w.definirAmbiente('port');
-    assert.deepEqual([...w.document.getElementById('xml-form-tipo').options].map(option=>option.value),['nfe','cte','ambos']);
-    for(const id of ['xml-preview-tipo','validacao-gerado-tipo','validacao-negativa-tipo','chat-anexo-tipo'])assert.deepEqual([...w.document.getElementById(id).options].map(option=>option.value),['nfe','cte'],id);
-    assert.doesNotMatch(w.document.getElementById('chat-sugestoes').textContent,/CPF|CNPJ|cadastro|empresa/i);
-    assert.match(w.document.getElementById('sidebar-brand-mark').src,/future-g-mark\.svg$/);
-    assert.equal(w.document.getElementById('theme-color').content,'#0d131d');
-    assert.equal(w.document.querySelector('[data-generator-id="cpf"]'),null);
-    assert.ok(w.document.querySelector('[data-generator-id="conteiner"]'));
+    w.document.getElementById('chat-pedido').value='3 CPFs e 2 transportadoras';w.enviarChatLocal();
+    assert.equal(run('conversasChat.at(-1).erro'),undefined);
+    assert.equal(run('conversasChat.at(-1).registros.length'),5);
+    for(const id of ['cpf','conteiner'])assert.ok(w.document.querySelector('[data-generator-id="'+id+'"]'));
   } finally {dom.window.close();}
 });
 
@@ -413,7 +385,7 @@ test('home filtra geradores portuários, fixa favoritos e salva somente identifi
   const {dom,w}=await abrir({'futureg:environment':'port'});
   try {
     const cards=()=>[...w.document.querySelectorAll('[data-home-card]')];
-    assert.equal(cards().length,7);
+    assert.equal(cards().length,w.generatorsForEnvironment().filter(g=>g.priority&&g.discoverable!==false).length);
     const search=w.document.getElementById('home-generator-search');
     search.value='conteiner';search.dispatchEvent(new w.Event('input',{bubbles:true}));
     assert.equal(cards().length,w.generatorsForEnvironment('port').filter(generator=>generator.discoverable!==false&&w.matchesGenerator(generator,'conteiner')).length);
@@ -516,7 +488,7 @@ test('placa gera ao ativar opção, Home e busca com padrão escolhido e histór
   } finally {dom.window.close();}
 });
 
-test('fase 5 usa o espaço do assistente e adapta Cadastro geral ao ambiente', async () => {
+test('Cadastro seleciona o tipo de ficha sem alterar o catálogo', async () => {
   const {dom,w}=await abrir();
   try {
     const chat=w.document.querySelector('.chat-painel');
@@ -529,7 +501,7 @@ test('fase 5 usa o espaço do assistente e adapta Cadastro geral ao ambiente', a
     assert.doesNotMatch(cadastro.querySelector('#cad_nome').getAttribute('placeholder'),/motorista/i);
     assert.doesNotMatch(cadastro.querySelector('#cad_empresa').getAttribute('placeholder'),/transportadora/i);
 
-    w.definirAmbiente('port');
+    w.document.getElementById('cad-port-tipo').value='motorista';w.atualizarCadastroPorAmbiente();
     assert.equal(w.document.getElementById('cadastro-general-selector').hidden,true);
     assert.equal(w.document.getElementById('cadastro-general-form').hidden,true);
     assert.equal(w.document.getElementById('cadastro-portuario-form').hidden,false);
@@ -659,29 +631,31 @@ test('busca de geradores ignora acentos e limpar restaura opções', async () =>
     const input=w.document.getElementById('docs-search');
     const buttons=()=>[...w.document.querySelectorAll('#docs-generator-list button')].filter(b=>!b.hidden);
     const total=buttons().length;
-    assert.equal(total,run("generatorsForEnvironment('general').filter(g=>g.route==='docs'&&g.discoverable!==false).length"));
+    assert.equal(total,run("generatorsForEnvironment().filter(g=>g.route==='docs'&&g.discoverable!==false).length"));
     const groups=[...w.document.querySelectorAll('#docs-generator-list [role="group"]')];
-    assert.equal(groups.length,Object.keys(JSON.parse(run("JSON.stringify(generatorCategoriesForEnvironment('general','docs'))"))).length);
+    assert.equal(groups.length,Object.keys(JSON.parse(run("JSON.stringify(generatorCategoriesForEnvironment('unified','docs'))"))).length);
     for(const group of groups) {
       assert.ok(group.getAttribute('aria-label'));
       assert.equal(new Set([...group.querySelectorAll('button')].map(b=>b.dataset.category)).size,1);
     }
     const category=w.document.getElementById('docs-category');
     category.value='empresa';category.dispatchEvent(new w.Event('change'));
-    assert.equal(buttons().length,run("generatorsForEnvironment('general').filter(g=>g.route==='docs'&&g.category==='empresa'&&g.discoverable!==false).length"));
+    assert.equal(buttons().length,run("generatorsForEnvironment().filter(g=>g.route==='docs'&&g.category==='empresa'&&g.discoverable!==false).length"));
     input.value='cnpj';input.dispatchEvent(new w.Event('input'));
-    assert.equal(buttons().length,2);
+    assert.equal(buttons().length,run("generatorsForEnvironment().filter(g=>g.route==='docs'&&g.discoverable!==false&&matchesGenerator(g,'cnpj','empresa')).length"));
+    assert.ok(buttons().some(button=>button.dataset.generatorId==='cnpj'));
+    assert.ok(buttons().some(button=>button.dataset.generatorId==='cnpj-alfa'));
     w.document.getElementById('docs-search-clear').click();
     assert.equal(category.value,'todas');
     w.definirAmbiente('port');
     input.value='CONTEINER';input.dispatchEvent(new w.Event('input'));
-    assert.equal(buttons().length,run("generatorsForEnvironment('port').filter(g=>g.route==='docs'&&g.discoverable!==false&&matchesGenerator(g,'CONTEINER')).length"));
+    assert.equal(buttons().length,run("generatorsForEnvironment().filter(g=>g.route==='docs'&&g.discoverable!==false&&matchesGenerator(g,'CONTEINER')).length"));
     assert.ok(buttons().some(button=>/Contêiner/.test(button.textContent)));
     input.value='inexistente';input.dispatchEvent(new w.Event('input'));
     assert.equal(buttons().length,0);
     assert.match(w.document.getElementById('docs-search-status').textContent,/Nenhum/);
     w.document.getElementById('docs-search-clear').click();
-    assert.equal(buttons().length,run("generatorsForEnvironment('port').filter(g=>g.route==='docs'&&g.discoverable!==false).length"));
+    assert.equal(buttons().length,run("generatorsForEnvironment().filter(g=>g.route==='docs'&&g.discoverable!==false).length"));
     assert.equal(w.document.activeElement,input);
   } finally {dom.window.close();}
 });
@@ -781,7 +755,7 @@ test('fase 6 inicia Pessoas com RG paulista e CNH válidos, distintos e disponí
   try {
     const grupos=[...w.document.querySelectorAll('#docs-generator-list .docs-generator-group')];
     assert.equal(grupos[0].querySelector('.section-label').textContent,'Pessoa física');
-    assert.deepEqual([...grupos[0].querySelectorAll('button')].map(button=>button.textContent),['CPF','Nome completo','RG','CNH','Crachá']);
+    assert.deepEqual([...grupos[0].querySelectorAll('button')].map(button=>button.textContent),['CPF','Nome completo','RG','CNH','Crachá','Motorista','Operador portuário','Visitante portuário','Pessoa portuária']);
     assert.equal(run("generatorById('rg').description"),'Registro de identidade no padrão de São Paulo');
     assert.equal(run("generatorById('rg').capabilities.validate"),true);
     assert.equal(run("generatorById('cnh').capabilities.validate"),true);
@@ -1024,9 +998,10 @@ test('fase 6 registra todos os novos geradores para busca, favoritos e recentes'
     }
     w.definirAmbiente('port');
     for(const id of ids) {
-      assert.equal(w.document.querySelector(`[data-home-card="${id}"]`),null,`port-home:${id}`);
-      assert.equal(w.document.querySelector(`[data-generator-id="${id}"]`),null,`port-docs:${id}`);
-      assert.equal([...w.document.getElementById('lote-tipo').options].some(option=>option.value===id),false,`port-batch:${id}`);
+      homeSearch.value=w.generatorById(id).label;homeSearch.dispatchEvent(new w.Event('input',{bubbles:true}));
+      assert.ok(w.document.querySelector(`[data-home-card="${id}"]`),`catalog-home:${id}`);
+      assert.ok(w.document.querySelector(`[data-generator-id="${id}"]`),`catalog-docs:${id}`);
+      assert.equal([...w.document.getElementById('lote-tipo').options].some(option=>option.value===id),true,`catalog-batch:${id}`);
     }
     assert.equal(run(`JSON.stringify(readGeneratorIds(RECENTS_KEY).slice(0,5))`),JSON.stringify(ids.slice(-5).reverse()));
   } finally { dom.window.close(); }
@@ -1160,8 +1135,8 @@ test('fase 8 usa NCMs manuais em cargas e relaciona contêiner quando aplicável
     assert.equal(run(`conferirDocumento(${JSON.stringify(conteinerizada.conteiner)}).ok`),true);
     assert.match(conteinerizada.lacre,/^[A-Z]{2}\d{7}$/);
     w.definirAmbiente('port');
-    assert.equal(w.document.getElementById('ncm-manual-aplicar').hidden,true);
-    assert.match(w.document.getElementById('ncm-manual-help').textContent,/geradores de carga/);
+    assert.equal(w.document.getElementById('ncm-manual-aplicar').hidden,false);
+    assert.match(w.document.getElementById('ncm-manual-help').textContent,/ordem dos produtos atuais/);
     w.definirAmbiente('general');
     assert.equal(w.document.getElementById('ncm-manual-aplicar').hidden,false);
   } finally {dom.window.close();}
@@ -1277,10 +1252,10 @@ test('Cadastro geral do QA Portuário concentra a ficha completa e restaura pelo
   const {dom,w,run}=await abrir({'futureg:environment':'port'});
   try {
     assert.equal(w.document.getElementById('tab-btn-cadastro').hidden,false);
-    assert.equal(w.document.getElementById('cadastro-portuario-form').hidden,false);
-    assert.equal(w.document.getElementById('cadastro-general-form').hidden,true);
+    assert.equal(w.document.getElementById('cadastro-portuario-form').hidden,true);
+    assert.equal(w.document.getElementById('cadastro-general-form').hidden,false);
 
-    w.document.getElementById('cad-port-tipo').value='transportadora';
+    w.document.getElementById('cad-port-tipo').value='transportadora';w.atualizarCadastroPorAmbiente();
     w.gerarCadastroCompleto();
     const campos=JSON.parse(run('JSON.stringify(Object.keys(cadastroPortuarioAtual.dados))'));
     assert.ok(campos.includes('razao_social'));
@@ -1288,7 +1263,7 @@ test('Cadastro geral do QA Portuário concentra a ficha completa e restaura pelo
     assert.ok(campos.includes('nome_fantasia'));
     assert.ok(campos.includes('endereco'));
     assert.ok(campos.includes('recinto_teste'));
-    assert.equal(w.document.getElementById('cadastro-result-badge').textContent,'QA Portuário');
+    assert.equal(w.document.getElementById('cadastro-result-badge').textContent,'Transportadora');
     assert.match(w.document.getElementById('result-grid-items').textContent,/Nome fantasia/);
     assert.match(w.document.getElementById('result-grid-items').textContent,/Recinto de teste/);
     const botoesCampo=[...w.document.querySelectorAll('#result-grid-items .field-copy-action')];
@@ -1300,10 +1275,10 @@ test('Cadastro geral do QA Portuário concentra a ficha completa e restaura pelo
     assert.equal(cadastroCampoCopiado,run('cadastroPortuarioAtual.dados.cnpj'));
     assert.equal(run("historicoList[0].dados.tipo_cadastro"),'portuario');
 
-    w.definirAmbiente('general');
+    w.document.getElementById('cad-port-tipo').value='perfil';w.atualizarCadastroPorAmbiente();
     assert.equal(w.document.getElementById('cadastro-general-form').hidden,false);
     w.restaurarDoHistorico(0);
-    assert.equal(run('activeEnvironmentId()'),'port');
+    assert.equal(run('activeEnvironmentId()'),'unified');
     assert.equal(w.document.getElementById('cad-port-tipo').value,'transportadora');
     assert.match(w.document.getElementById('cad-port-status').textContent,/restaurada/);
     assert.equal(w.document.getElementById('cadastro-result').classList.contains('visible'),true);
@@ -1364,7 +1339,7 @@ test('Cenários de teste não fazem parte da navegação nem do runtime público
   } finally {dom.window.close();}
 });
 
-test('fase 10 abre busca global com Ctrl+K e limita resultados ao ambiente ativo', async () => {
+test('busca global reúne destinos do catálogo e preserva teclado', async () => {
   const {dom,w}=await abrir();
   try {
     const origem=w.document.getElementById('theme-btn');origem.focus();
@@ -1378,7 +1353,7 @@ test('fase 10 abre busca global com Ctrl+K e limita resultados ao ambiente ativo
     w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Tab',shiftKey:true,bubbles:true}));
     assert.equal(w.document.activeElement,input);
     input.value='transportadora';input.dispatchEvent(new w.Event('input',{bubbles:true}));
-    assert.equal(w.document.querySelectorAll('#command-palette-results [role="option"]').length,0);
+    assert.equal(w.document.querySelectorAll('#command-palette-results [role="option"]').length,1);
     w.definirAmbiente('port');
     assert.match(w.document.getElementById('command-palette-results').textContent,/Transportadora/);
     input.value='motorista';input.dispatchEvent(new w.Event('input',{bubbles:true}));
@@ -1392,41 +1367,62 @@ test('fase 10 abre busca global com Ctrl+K e limita resultados ao ambiente ativo
   } finally {dom.window.close();}
 });
 
-test('fase 10 registra atividade sem conteúdo gerado e projeta o dashboard por ambiente', async () => {
+test('Enter da busca só intercepta o campo e respeita composição e botões nativos', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    const origin=w.document.getElementById('theme-btn');origin.focus();w.openCommandPalette();
+    const input=w.document.getElementById('command-palette-input');
+    input.value='CPF';input.dispatchEvent(new w.Event('input',{bubbles:true}));
+    const close=w.document.getElementById('command-palette-close');close.focus();
+    const enter=new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true});
+    close.dispatchEvent(enter);
+    assert.equal(enter.defaultPrevented,false,'Enter do botão deve conservar ativação nativa');
+    assert.equal(w.document.getElementById('command-palette').hidden,false);
+    assert.equal(run('selectedGeneratorId'),null);
+    close.click();assert.equal(w.document.activeElement,origin);
+    w.openCommandPalette();
+    const composing=new w.KeyboardEvent('keydown',{key:'Enter',isComposing:true,bubbles:true,cancelable:true});
+    input.dispatchEvent(composing);
+    assert.equal(composing.defaultPrevented,false);
+    assert.equal(w.document.getElementById('command-palette').hidden,false);
+  } finally {dom.window.close();}
+});
+
+test('atividade unificada preserva privacidade e apresenta os dois domínios', async () => {
   const {dom,w,run}=await abrir();
   try {
     w.activateGenerator('cpf');
     let activity=JSON.parse(w.localStorage.getItem('futureg:activity-v1'));
     assert.equal(activity[0].target,'cpf');
-    assert.equal(activity[0].environment,'general');
+    assert.equal(activity[0].environment,'unified');
     assert.deepEqual(Object.keys(activity[0]).sort(),['environment','kind','quantity','target','timestamp']);
     assert.equal(JSON.stringify(activity).includes('valor'),false);
-    assert.match(w.document.getElementById('productivity-dashboard-title').textContent,/Geradores Gerais/);
+    assert.match(w.document.getElementById('productivity-dashboard-title').textContent,/catálogo/);
     assert.match(w.document.getElementById('productivity-activity').textContent,/CPF/);
     w.definirAmbiente('port');
     run("recordProductivityActivity('transportadora',{kind:'single',quantity:1,result:'não persistir',apiKey:'segredo'})");
     activity=JSON.parse(w.localStorage.getItem('futureg:activity-v1'));
     assert.equal(JSON.stringify(activity).includes('segredo'),false);
     assert.equal(JSON.stringify(activity).includes('não persistir'),false);
-    assert.match(w.document.getElementById('productivity-dashboard-title').textContent,/QA Portuário/);
+    assert.match(w.document.getElementById('productivity-dashboard-title').textContent,/catálogo/);
     assert.match(w.document.getElementById('productivity-activity').textContent,/Transportadora/);
-    assert.doesNotMatch(w.document.getElementById('productivity-activity').textContent,/CPF/);
+    assert.match(w.document.getElementById('productivity-activity').textContent,/CPF/);
   } finally {dom.window.close();}
 });
 
-test('fase 10 mantém favoritos por projeção e atualiza contadores do dashboard', async () => {
+test('favoritos dos dois domínios aparecem juntos com contagem correta', async () => {
   const {dom,w,run}=await abrir();
   try {
     run("storageSet(FAVORITES_KEY,['cpf','motorista']);renderHomeGenerators();renderHomeContext();renderProductivityDashboard()");
     let metricas=[...w.document.querySelectorAll('#productivity-dashboard-metrics article')];
-    assert.equal(metricas[1].querySelector('strong').textContent,'1');
+    assert.equal(metricas[1].querySelector('strong').textContent,'2');
     assert.match(w.document.getElementById('home-favorites').textContent,/CPF/);
-    assert.doesNotMatch(w.document.getElementById('home-favorites').textContent,/Motorista/);
+    assert.match(w.document.getElementById('home-favorites').textContent,/Motorista/);
     w.definirAmbiente('port');
     metricas=[...w.document.querySelectorAll('#productivity-dashboard-metrics article')];
-    assert.equal(metricas[1].querySelector('strong').textContent,'1');
+    assert.equal(metricas[1].querySelector('strong').textContent,'2');
     assert.match(w.document.getElementById('home-favorites').textContent,/Motorista/);
-    assert.doesNotMatch(w.document.getElementById('home-favorites').textContent,/CPF/);
+    assert.match(w.document.getElementById('home-favorites').textContent,/CPF/);
     assert.deepEqual(JSON.parse(w.localStorage.getItem('thegenerator:favorite-generators')),['cpf','motorista']);
   } finally {dom.window.close();}
 });
@@ -1574,7 +1570,7 @@ test('restaurar contêiner com lacre mantém resultado, seleção e ações sem 
   try {
     w.gerarConteinerComLacre();const value=run('currentValue');
     w.gerarCPFComToggle();w.restaurarHistoricoDocs(1);
-    assert.equal(w.document.body.dataset.environment,'port');
+    assert.equal(w.document.body.dataset.environment,'unified');
     assert.equal(run('selectedGeneratorId'),'conteiner-lacre');
     assert.equal(w.document.getElementById('output-val').textContent,value);
     assert.equal(w.document.getElementById('docs-output-box').style.display,'');
@@ -2177,6 +2173,148 @@ test('fase 11 anuncia e bloqueia a entrada enquanto o XML é processado', async 
   } finally {dom.window.close();}
 });
 
+test('substituir upload pendente libera entrada e não publica nem valida o arquivo antigo', async () => {
+  for (const replacement of ['colado','gerador','negativo','recusado','limpar']) {
+    const {dom,w,run}=await abrir();
+    let pending;
+    try {
+      run('var terminarLeitura; var xsdIniciados=0; lerArquivoValidacao=()=>new Promise(resolve=>{terminarLeitura=resolve}); completarRelatorioXsd=async r=>{xsdIniciados++;return r;};');
+      pending=w.validarArquivosXml([new w.File(['<antigo/>'],'antigo.xml')]);
+      assert.equal(w.document.getElementById('validacao-arquivos').disabled,true);
+      if(replacement==='colado') { w.document.getElementById('validacao-texto').value='<novo/>';w.validarXmlColado(); }
+      if(replacement==='gerador') w.validarXmlDoGerador();
+      if(replacement==='negativo') w.gerarXmlNegativo();
+      if(replacement==='recusado') await w.validarArquivosXml(Array.from({length:11},(_,i)=>new w.File(['<novo/>'],`${i}.xml`)));
+      if(replacement==='limpar') w.limparValidacaoXml();
+      const report=run('JSON.stringify(relatoriosXml)');
+      const xsdBefore=run('xsdIniciados');
+      assert.equal(w.document.getElementById('validacao-arquivos').disabled,false,replacement);
+      assert.equal(w.document.querySelector('.validacao-dropzone-inner').disabled,false,replacement);
+      assert.equal(w.document.querySelector('.validacao-entrada').getAttribute('aria-busy'),'false',replacement);
+      assert.doesNotMatch(w.document.getElementById('validacao-upload-status').textContent,/Analisando.*antigo/,replacement);
+      run("terminarLeitura('<antigo/>')");await pending;
+      assert.equal(run('JSON.stringify(relatoriosXml)'),report,replacement);
+      assert.equal(run('xsdIniciados'),xsdBefore,replacement);
+    } finally {
+      if(pending) { run("terminarLeitura('<antigo/>')");await pending; }
+      dom.window.close();
+    }
+  }
+});
+
+test('upload substituído não libera controles ocupados pelo upload novo', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    run('var leitoresPendentes=[];lerArquivoValidacao=()=>new Promise(resolve=>leitoresPendentes.push(resolve));');
+    const first=w.validarArquivosXml([new w.File(['<antigo/>'],'antigo.xml')]);
+    const second=w.validarArquivosXml([new w.File(['<novo/>'],'novo.xml')]);
+    run("leitoresPendentes[0]('<antigo/>')");await first;
+    assert.equal(w.document.getElementById('validacao-arquivos').disabled,true);
+    assert.equal(w.document.querySelector('.validacao-entrada').getAttribute('aria-busy'),'true');
+    run("leitoresPendentes[1]('<novo/>')");await second;
+    assert.equal(w.document.getElementById('validacao-arquivos').disabled,false);
+    assert.equal(run('relatoriosXml[0].texto'),'<novo/>');
+    assert.match(w.document.getElementById('validacao-upload-status').textContent,/novo.xml.*substituir/);
+  } finally {dom.window.close();}
+});
+
+test('Editor mantém o grupo de destino da leitura sem roubar a seleção atual', async()=>{
+  const {dom,w,run}=await abrir();const readers=[];
+  try {
+    w.FileReader=class {constructor(){readers.push(this);}readAsText(){}};
+    w.editorGarantirGrupoPadrao();const original=run('editorGrupoAtivo');
+    w.editorCarregarArquivos([new w.File(['<raiz/>'],'atrasado.xml')]);
+    w.editorNovoGrupo();const selected=run('editorGrupoAtivo');
+    readers[0].onload({target:{result:'<raiz/>'}});
+    readers[0].onload({target:{result:'<raiz/>'}});
+    assert.equal(run('editorArquivos.length'),1);
+    assert.equal(run('editorArquivos[0].grupoId'),original);
+    assert.equal(run('editorGrupoAtivo'),selected);
+    assert.equal(run('editorArquivoAtivoId'),null);
+    assert.equal(w.document.querySelectorAll('#editor-abas-arquivos .editor-file-select').length,0);
+    w.editorSelecionarGrupo(original);
+    assert.equal(w.document.getElementById('editor-nome-arquivo').value,'atrasado.xml');
+  } finally {dom.window.close();}
+});
+
+test('reset do Editor descarta leitores antigos mesmo após nova importação', async()=>{
+  const {dom,w,run}=await abrir();const readers=[];
+  try {
+    w.FileReader=class {constructor(){this.readyState=1;readers.push(this);}readAsText(){}abort(){this.readyState=2;this.onabort?.();}};
+    w.editorCarregarArquivos([new w.File(['<antigo/>'],'antigo.xml')]);
+    const stale=readers[0].onload;
+    w.editorMostrarDropzone();
+    w.editorCarregarArquivos([new w.File(['<novo/>'],'novo.xml')]);
+    const target=run('editorGrupoAtivo');
+    stale({target:{result:'<antigo/>'}});
+    assert.equal(run('editorArquivos.length'),0);
+    assert.equal(run('editorGrupoAtivo'),target);
+    assert.equal(w.document.getElementById('editor-workspace').style.display,'none');
+    readers[1].onload({target:{result:'<novo/>'}});
+    assert.equal(run('editorArquivos.length'),1);
+    assert.equal(run('editorArquivos[0].nome'),'novo.xml');
+  } finally {dom.window.close();}
+});
+
+test('limpar grupo cancela suas leituras e preserva arquivos de outro grupo', async()=>{
+  const {dom,w,run}=await abrir();const readers=[];
+  try {
+    w.FileReader=class {constructor(){this.readyState=1;readers.push(this);}readAsText(){}abort(){this.readyState=2;this.onabort?.();}};
+    w.editorCarregarArquivos([new w.File(['<base/>'],'base.xml')]);
+    readers[0].readyState=2;readers[0].onload({target:{result:'<base/>'}});
+    const original=run('editorGrupoAtivo');
+    w.editorCarregarArquivos([new w.File(['<preservado/>'],'preservado.xml')]);
+    w.editorNovoGrupo();const cleared=run('editorGrupoAtivo');
+    w.editorCarregarArquivos([new w.File(['<atrasado/>'],'atrasado.xml')]);
+    const stale=readers[2].onload;w.editorLimparGrupo();
+    stale({target:{result:'<atrasado/>'}});
+    assert.equal(run('editorArquivos.length'),1);
+    assert.equal(run('editorArquivos[0].grupoId'),original);
+    assert.equal(run('editorGrupoAtivo'),cleared);
+    assert.equal(run('editorArquivoAtivoId'),null);
+    readers[1].onload({target:{result:'<preservado/>'}});
+    assert.equal(run('editorArquivos.length'),2);
+    assert.equal(run('editorArquivos.every(file=>file.grupoId===editorGrupos[0].id)'),true);
+    assert.equal(run('editorGrupoAtivo'),cleared);
+  } finally {dom.window.close();}
+});
+
+test('Editor conclui lote misto após erro, abort ou exceção de leitura sem perder XML válido', async()=>{
+  for(const failure of ['error','abort','throw']) {
+    const {dom,w,run}=await abrir();const readers=[];
+    try {
+      w.FileReader=class {constructor(){readers.push(this);}readAsText(file){if(failure==='throw'&&file.name==='ruim.xml')throw Error('Erro sintético');}};
+      w.editorCarregarArquivos([new w.File(['<ok/>'],'bom.xml'),new w.File(['<ruim/>'],'ruim.xml')]);
+      readers[0].onload({target:{result:'<ok/>'}});
+      if(failure==='error'){assert.equal(typeof readers[1].onerror,'function');readers[1].onerror();}
+      if(failure==='abort'){assert.equal(typeof readers[1].onabort,'function');readers[1].onabort();}
+      assert.equal(run('editorArquivos.length'),1,failure);
+      assert.equal(w.document.getElementById('editor-workspace').style.display,'',failure);
+      assert.equal(w.document.getElementById('editor-nome-arquivo').value,'bom.xml',failure);
+      assert.equal(run('editorArquivoAtivoId'),run('editorArquivos[0].id'),failure);
+    } finally {dom.window.close();}
+  }
+});
+
+test('limpar grupo vazio não cancela importação pendente de outro grupo sem arquivos prontos', async()=>{
+  const {dom,w,run}=await abrir();const readers=[];
+  try {
+    w.FileReader=class {constructor(){this.readyState=1;readers.push(this);}readAsText(){}abort(){this.readyState=2;this.onabort?.();}};
+    w.editorCarregarArquivos([new w.File(['<invalido>'],'invalido.xml')]);
+    readers[0].readyState=2;readers[0].onload({target:{result:'<invalido>'}});
+    assert.equal(run('editorArquivos.length'),0);
+    const original=run('editorGrupoAtivo');
+    w.editorCarregarArquivos([new w.File(['<preservado/>'],'preservado.xml')]);
+    w.editorNovoGrupo();const selected=run('editorGrupoAtivo');
+    w.editorLimparGrupo();
+    assert.equal(run(`editorGrupos.some(group=>group.id===${original})`),true);
+    readers[1].onload({target:{result:'<preservado/>'}});
+    assert.equal(run('editorArquivos.length'),1);
+    assert.equal(run('editorArquivos[0].grupoId'),original);
+    assert.equal(run('editorGrupoAtivo'),selected);
+  } finally {dom.window.close();}
+});
+
 test('fase 11 mantém ícones, estilos e auditoria dentro dos limites operacionais', () => {
   const lucide=fs.statSync(path.join(root,'assets/js/lucide.min.js')).size;
   const cssValidacao=fs.readFileSync(path.join(root,'assets/css/validacao-xml.css'),'utf8');
@@ -2185,5 +2323,59 @@ test('fase 11 mantém ícones, estilos e auditoria dentro dos limites operaciona
   assert.match(cssValidacao,/\.validacao-negativa\s*>\s*button\s*\{[^}]*max-width:\s*100%[^}]*white-space:\s*normal/s);
   assert.match(auditor,/Runtime\.exceptionThrown/);
   assert.match(auditor,/localJavaScriptBytes:\s*assetBytes\('js'\)/);
-  assert.match(auditor,/commandPalette\.portCount\s*>\s*0/);
+  assert.match(auditor,/commandPalette\.generalCount\s*>\s*0/);
+  assert.match(auditor,/commandPalette\.portCount\s*===\s*commandPalette\.generalCount/);
+});
+
+test('favoritos de comandos legados são reunidos sem perda e remoção sobrevive a reload', async () => {
+  const general=Array.from({length:10},(_,i)=>`${i+1} CPFs`);
+  const port=Array.from({length:10},(_,i)=>`${i+1} transportadoras`);
+  const state={'futureg:comandos-favoritos:general':general,'futureg:comandos-favoritos:port':port};
+  const {dom,w,run}=await abrir(state);
+  let unified;
+  try {
+    assert.deepEqual(JSON.parse(run('JSON.stringify(favoritosComandosChat())')),[...general,...port]);
+    assert.equal(w.document.querySelectorAll('#chat-favoritos-lista .chat-favorito').length,20);
+    w.removerFavoritoChat('1 CPF'); // A nonmatching request must not remove another command.
+    assert.equal(run('favoritosComandosChat().length'),20);
+    w.removerFavoritoChat('1 CPFs');
+    unified=JSON.parse(w.localStorage.getItem('futureg:comandos-favoritos:unified'));
+    assert.equal(unified.length,19);
+    for(const [key,value] of Object.entries(state))assert.deepEqual(JSON.parse(w.localStorage.getItem(key)),value);
+  } finally {dom.window.close();}
+  const reload=await abrir({...state,'futureg:comandos-favoritos:unified':unified});
+  try {
+    assert.equal(reload.run("favoritosComandosChat().includes('1 CPFs')"),false);
+    assert.equal(reload.run("favoritosComandosChat().includes('10 transportadoras')"),true);
+  } finally {reload.dom.window.close();}
+});
+
+test('atividade legada dos dois domínios aparece junta sem regravar os registros', async () => {
+  const entries=[{target:'cpf',environment:'general',kind:'single',quantity:1,timestamp:1000},{target:'motorista',environment:'port',kind:'single',quantity:1,timestamp:2000}];
+  const {dom,w}=await abrir({'futureg:activity-v1':entries});
+  try {
+    const area=w.document.getElementById('productivity-activity');
+    assert.match(area.textContent,/CPF/);assert.match(area.textContent,/Motorista/);
+    assert.deepEqual(JSON.parse(w.localStorage.getItem('futureg:activity-v1')),entries);
+    w.document.getElementById('productivity-activity-clear').click();
+    assert.deepEqual(JSON.parse(w.localStorage.getItem('futureg:activity-v1')),[]);
+  } finally {dom.window.close();}
+});
+
+test('trocar tipo de Cadastro preserva perfil e restaura ambos os formatos de histórico', async () => {
+  const {dom,w,run}=await abrir();
+  try {
+    const selector=w.document.getElementById('cad-port-tipo');
+    const select=value=>{selector.value=value;selector.dispatchEvent(new w.Event('change'));};
+    w.gerarCadastroCompleto();const nome=w.document.getElementById('cad_nome').value;
+    select('transportadora');w.gerarCadastroCompleto();
+    assert.equal(w.document.querySelector('.cadastro-col-left').hidden,true);
+    select('perfil');assert.equal(w.document.getElementById('cad_nome').value,nome);
+    w.restaurarDoHistorico(0);assert.equal(selector.value,'transportadora');
+    assert.equal(w.document.getElementById('cadastro-general-selector').hidden,true);
+    w.restaurarDoHistorico(1);assert.equal(selector.value,'perfil');
+    assert.equal(w.document.querySelector('.cadastro-col-left').hidden,false);
+    assert.equal(w.document.getElementById('cad_nome').value,nome);
+    assert.equal(run('activeEnvironmentId()'),'unified');
+  } finally {dom.window.close();}
 });

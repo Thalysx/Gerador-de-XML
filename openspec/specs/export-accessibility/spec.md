@@ -7,34 +7,23 @@ Define cross-cutting export, local persistence, accessibility and operational-qu
 ## Requirements
 
 ### Requirement: Export
+Compatible results SHALL retain complete copy and CSV, JSON, XML or TXT downloads. Batch filenames SHALL retain their existing domain/generator identifiers for compatibility; no visible environment switch is required. Preview limits SHALL NOT truncate exports and unsupported actions SHALL give understandable feedback.
 
-Where compatible, results SHALL export to CSV, JSON, XML and TXT and retain copy/copy-field/copy-complete actions. Output structures SHOULD be useful in Postman, Cypress, Playwright and QA workflows.
+#### Scenario: Export a full batch
+- **WHEN** a batch is exported from either domain
+- **THEN** every record is included in the existing format and contextual filename.
 
-Batch-capable registry entries SHALL expose complete JSON, CSV and TXT downloads. Filenames SHALL identify the active environment and generator, visual preview limits MUST NOT truncate exported records, and unsupported formats or generators SHALL fail with understandable feedback.
-
-#### Scenario: Export a compatible result
-
-- **WHEN** a user exports a compatible individual or batch result
-- **THEN** the available download contains every requested record in the supported format
-- **AND** its filename identifies the active environment and generator
-
-#### Scenario: Request an unsupported export
-
-- **WHEN** a format or generator cannot be exported
-- **THEN** the application provides understandable feedback
+#### Scenario: Reject an unsupported export
+- **WHEN** a generator or format is unsupported
+- **THEN** understandable guidance is shown.
 
 ### Requirement: Persistence
+Sidebar, theme, favorites and existing histories SHALL remain compatible. Legacy environment preferences SHALL NOT filter the catalog or be erased. Activity SHALL retain its explicit allowlist and present both legacy domains together. API keys, sensitive tokens and unnecessary data MUST NOT be persisted insecurely.
 
-Suitable local persistence includes sidebar state, selected environment, favorites, UI preferences and optionally history. API keys, sensitive tokens and unnecessary data MUST NOT be persisted insecurely.
-
-The productivity activity ledger SHALL use an explicit field allowlist and ignore extra fields supplied by callers or found in storage.
-
-#### Scenario: Restore suitable local state
-
-- **WHEN** the application restores locally persisted state
-- **THEN** only suitable UI and productivity data is used
-- **AND** the activity ledger ignores fields outside its explicit allowlist
-- **AND** API keys, sensitive tokens and unnecessary data are not persisted insecurely
+#### Scenario: Load existing state
+- **WHEN** saved general and port preferences and activity are loaded
+- **THEN** their data remains available together without preserving a UI split
+- **AND** extra activity fields and secrets are not retained.
 
 ### Requirement: Accessibility
 
@@ -55,14 +44,9 @@ Long-running local file operations SHALL expose a visible live status and `aria-
 - **AND** duplicate activation is prevented without adding artificial loading to synchronous generators
 
 ### Requirement: Operational quality
+The browser audit SHALL check all panels for overflow, accessible names, focus, reduced motion, runtime/console errors, unified search and first-party budgets. The matrix SHALL cover light/dark, 360/768/1280/1920 CSS pixels and expanded/collapsed sidebar states.
 
-The browser audit SHALL exercise every application panel for horizontal overflow, accessible names, visible focus and reduced motion. It SHALL also fail on uncaught exceptions, console errors or warnings, a broken environment-aware command palette, or exceeded documented first-party resource budgets.
-
-The responsive matrix SHALL cover every panel in light and dark themes at 360, 768, 1280 and 1920 CSS pixels with both expanded and collapsed sidebar states.
-
-#### Scenario: Audit the complete interface
-
-- **WHEN** the browser audit and responsive matrix run
-- **THEN** every panel is checked for overflow, accessible names, visible focus and reduced motion
-- **AND** all documented viewport, theme and sidebar combinations are covered
-- **AND** runtime errors, console warnings, command-palette regressions or exceeded resource budgets fail the audit
+#### Scenario: Audit the unified interface
+- **WHEN** the audit and matrix run
+- **THEN** all panels and documented viewport/theme/sidebar combinations are checked
+- **AND** errors, warnings, search regressions and exceeded budgets fail the audit.

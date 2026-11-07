@@ -2,56 +2,63 @@
 
 ## Purpose
 
-Define accessible, environment-aware navigation and discovery behavior for the shared FUTURE G application shell.
+Define accessible unified navigation and discovery behavior for the shared FUTURE G application shell.
 
 ## Requirements
 
 ### Requirement: Expandable sidebar
-The expanded sidebar SHALL show FUTURE G identity, environment selector, global search, icon and module name, settings and an icon-based collapse control. The collapsed sidebar SHALL show icons only, keep an icon-based expand control, expose function names through accessible tooltips and automatically increase usable content width. Collapse state SHALL persist between navigations when appropriate. The collapse control MUST NOT be represented as a large textual button or as a replacement for the FUTURE G identity.
+The sidebar SHALL show FUTURE G identity, named tool groups and an icon-based collapse control. Its compact state SHALL show icons with accessible names/tooltips and increase usable content width. Collapse state SHALL persist without an environment selector.
 
 #### Scenario: Collapse and restore navigation
-- **WHEN** the user collapses the sidebar and navigates or reloads the application
-- **THEN** the compact state remains usable with accessible names, tooltips and an icon-based expand control
+- **WHEN** the user collapses navigation and reloads
+- **THEN** the compact state remains usable by keyboard with an accessible expand control.
 
-### Requirement: Environment selector
-The sidebar SHALL provide Geradores Gerais and QA Portuário. Changing environment SHALL update palette, brand mark, sidebar items, dashboard, search results, shortcuts, favorites, fiscal-document choices, assistant suggestions and application context without a full-page reload.
+### Requirement: Unified catalog navigation
+The shell SHALL expose one catalog containing existing general-purpose and port-domain tools. It SHALL NOT offer a global Geral/QA Portuario switch.
 
-#### Scenario: Change active environment
-- **WHEN** the user selects the other environment
-- **THEN** all environment-sensitive navigation and discovery surfaces update without replacing the document
+#### Scenario: Open with a legacy environment preference
+- **WHEN** saved preferences contain general or port
+- **THEN** the same unified catalog opens without hiding tools or erasing that preference.
 
 ### Requirement: Global search
-The application SHALL support generator and function search, with `Ctrl + K` as the preferred shortcut when compatible with the stack. Search SHALL respect the active environment, while the architecture SHALL permit future cross-environment search.
+Global search SHALL discover tools and destinations across the whole catalog. Ctrl+K, Arrow keys, Enter, Escape, focus containment and focus restoration SHALL remain supported.
 
-#### Scenario: Search within active environment
-- **WHEN** the user searches for a generator or function
-- **THEN** results contain only destinations available in the active environment
+#### Scenario: Find tools across domains
+- **WHEN** the user searches for CPF or Transportadora
+- **THEN** the matching tool is reachable without a context switch.
 
 #### Scenario: Navigate global search by keyboard
-- **WHEN** the user opens search with `Ctrl + K`
-- **THEN** focus moves to the query, Arrow keys change the active result, Enter opens it, Escape restores prior focus and Tab remains contained in the modal search
+- **WHEN** the user opens search with Ctrl+K
+- **THEN** focus moves to the query, Arrow keys change the result, Enter opens it, Escape restores prior focus and Tab stays contained.
 
-### Requirement: Environment-aware navigation
-Changing between Geradores Gerais and QA Portuário SHALL update the visible navigation destinations, Home discovery, categories, favorites, recent tools, workspace choices and batch choices from the active registry projection without a full-page reload.
+### Requirement: Native search button activation
+Global search SHALL intercept Enter for result selection only from the query field outside text composition. Buttons SHALL retain native keyboard activation and their own click handlers. Closing search SHALL restore prior focus without navigating or generating data.
 
-#### Scenario: Change environment from Home
-- **WHEN** the user changes the environment while Home is active
-- **THEN** the environment label, navigation and discovery surfaces update immediately and retain only destinations available in the selected environment
+#### Scenario: Close without executing the selected result
+- **WHEN** the user focuses Close and presses Enter or Space
+- **THEN** search closes and prior focus returns without opening a tool or generating data.
 
-#### Scenario: Personalized item is unavailable
-- **WHEN** a favorite or recent generator does not support the active environment
-- **THEN** it is omitted from the active environment view without deleting the persisted preference
+#### Scenario: Activate a focused result
+- **WHEN** the user tabs to a result different from the query selection and presses Enter
+- **THEN** that focused result is activated once through its own click handler.
 
-### Requirement: Safe environment transition
-If the current workspace or selected generator is unavailable in the newly selected environment, the application SHALL navigate to Home and announce the transition while preserving generated results, history and preferences. A destination shared by both environments SHALL remain active.
+#### Scenario: Confirm composed query text
+- **WHEN** Enter is received while the query is composing text
+- **THEN** no result is activated and search remains open.
 
-#### Scenario: Switch away from a port-only generator
-- **WHEN** the user is viewing a port-only generator and changes to Geradores Gerais
-- **THEN** Home becomes active, the environment change is announced and previously generated or persisted data is not erased
+### Requirement: Shared discovery and personalization
+Home, categories, favorites, recent tools, workspace choices and batch choices SHALL consume the unified registry without deleting saved IDs or duplicating generators.
 
-#### Scenario: Switch while using a shared destination
-- **WHEN** the active destination is supported by both environments
-- **THEN** the destination remains active and its available generator choices are refreshed for the selected environment
+#### Scenario: Read existing favorites
+- **WHEN** saved IDs include CPF and Motorista
+- **THEN** both are available together and their saved identifiers remain unchanged.
+
+### Requirement: Stable catalog context
+Opening a tool or restoring a history entry SHALL NOT switch the catalog or erase other results and preferences. Legacy environment entry points SHALL NOT reintroduce a split.
+
+#### Scenario: Open a port tool after a general tool
+- **WHEN** the user opens Conteiner after CPF
+- **THEN** its existing workspace opens and both tools remain discoverable.
 
 ### Requirement: Reachable navigation and predictable panel position
 Every visible navigation destination SHALL remain reachable by keyboard and scrolling when the sidebar is taller than the viewport. Opening another primary panel SHALL place the document at the top instead of preserving an unrelated scroll position from the previous panel.

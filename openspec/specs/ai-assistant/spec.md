@@ -6,6 +6,14 @@ Define deterministic local commands for synthetic data, isolated XML generation,
 
 ## Requirements
 
+### Requirement: Reachable attached command controls
+The local command composer SHALL display a pending attachment on its own row within the existing form. Long filenames MAY truncate, while Remove and Send SHALL remain reachable and the message SHALL retain usable width on narrow screens. Clicking Send SHALL preserve the same command and error behavior as Enter.
+
+#### Scenario: Send with a long attachment filename
+- **WHEN** an XML attachment has a long name and the user clicks Send on a narrow screen
+- **THEN** Send remains inside the form without overlap and the command executes normally
+- **AND** rejected commands preserve the draft and attachment for review.
+
 ### Requirement: Chat auto-scroll respects user position
 New local command messages and result updates SHALL auto-follow while the user remains near the bottom of the active conversation. If the user manually scrolls upward, rendering MUST preserve that reading position and SHALL resume following only after the user returns near the bottom.
 
@@ -52,15 +60,15 @@ Privacy, retention and local processing information SHALL remain accessible outs
 - **AND** the conversation is not interrupted by a permanent drawer or availability bar
 
 ### Requirement: Local command execution
-The assistant SHALL complete supported commands in the browser without model or chat/status requests. All available batch generators SHALL support quantity, accent-insensitive names and documented options. Unsupported text, unavailable environments and totals outside 1 to 500 MUST fail before generation. Public remote assistant endpoints SHALL return a retirement response without creating sessions.
+Supported commands SHALL execute locally across the whole catalog without model or chat/status requests. Quantities, accent-insensitive names and existing options SHALL remain supported. Unknown text and totals outside 1 to 500 MUST fail before generation. Remote assistant endpoints SHALL remain retired.
 
-#### Scenario: Generate badges and developer data
-- **WHEN** a general-environment user requests 10 badges without barcodes and 5 UUIDs
-- **THEN** all 15 records are available for copying and JSON, CSV and TXT export without remote calls.
+#### Scenario: Generate across domains
+- **WHEN** the user requests 3 CPFs and 2 Transportadoras
+- **THEN** all five records are available without switching context or contacting a remote assistant.
 
 #### Scenario: Reject partial commands
-- **WHEN** a request contains a supported generator and unknown text or an unavailable generator
-- **THEN** nothing is generated and the draft and attachment remain editable with contextual guidance.
+- **WHEN** a request contains unknown text or an unsupported generator
+- **THEN** no partial data is generated and the draft and attachment remain editable.
 
 ### Requirement: XML command artifacts
 The assistant SHALL generate isolated NF-e with 1 to 20 products and CT-e test artifacts; summarize XML; show products or recipients; validate syntax and local rules; and optionally show only errors. Source selection SHALL distinguish attached XML, current fiscal XML and the latest local XML result. Missing or unsupported sources MUST produce actionable guidance. Generation SHALL preserve fiscal form values and generated source XML. Results SHALL expose copy, download, local validation and editor actions. Validation MUST state its local scope without claiming XSD or SEFAZ approval.
@@ -81,12 +89,16 @@ The assistant SHALL create clearly identified negative copies using the existing
 - **THEN** a separately named negative XML removes that field and the source remains intact.
 
 ### Requirement: Discoverable reusable commands
-The assistant SHALL provide an environment-aware searchable catalog, reviewable typing suggestions, command examples, help, repeat-last-successful-command and up to 10 favorite command texts per environment. Selecting a suggestion or favorite MUST only fill the composer until explicit submission. Repeat MUST revalidate the active environment and must not recurse. Favorites MUST persist only bounded command text, never XML or generated results. Conversations SHALL retain at most 10 exchanges and clearing SHALL discard the repeat context and pending attachment.
+The assistant SHALL provide one searchable catalog, reviewable suggestions, examples, help, repeat-last-successful-command and up to 20 favorite command texts. Selection SHALL only fill the composer. Repeat SHALL NOT recurse. Favorites SHALL contain bounded command text only. Conversation retention SHALL remain ten exchanges; clearing SHALL discard repeat context and attachments.
 
-#### Scenario: Use a favorite
-- **WHEN** the user saves a successful command and selects it after reopening
-- **THEN** its text is restored for review in the same environment without executing it automatically.
+#### Scenario: Consolidate legacy favorites
+- **WHEN** unified favorites have not been saved
+- **THEN** the distinct valid texts of both legacy lists are available without deleting those lists or losing their twenty supported entries.
 
-#### Scenario: Repeat in another environment
-- **WHEN** the last successful command is unavailable in the current environment and the user repeats it
-- **THEN** the request fails without generating partial results.
+#### Scenario: Remove a migrated favorite
+- **WHEN** a favorite is removed from the unified list and the application reloads
+- **THEN** that item does not reappear from its legacy list.
+
+#### Scenario: Review a favorite
+- **WHEN** the user selects a saved command
+- **THEN** its text fills the composer without automatic execution.

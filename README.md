@@ -2,6 +2,8 @@
 
 Plataforma de dados sintéticos para desenvolvimento e QA. Este diretório é a única fonte ativa do produto; versões anteriores são preservadas por tags Git e pacotes preparados para Releases, não por cópias paralelas de pastas.
 
+O catálogo agora reúne ferramentas gerais e portuárias, com busca e filtros por categoria, sem alternância de ambiente. Cadastro geral tem um único seletor de tipo de ficha. Veja [Catálogo único e direção visual](docs/unified-catalog.md) para compatibilidade, testes e a proposta visual seguinte.
+
 O assistente da alpha.7 usa apenas [comandos locais](docs/local-commands.md), com catálogo, favoritos, geração e consultas XML. Os planos e testes antigos de IA são registros históricos. As rotas públicas de chat foram aposentadas; a API de validação XML permanece disponível.
 
 Abra `index.html` no navegador para usar os geradores, editor e validação local. Mantenha a pasta `assets` ao lado do HTML. Os comandos locais também funcionam sem servidor. A verificação XSD da tela de Validação usa a API da aplicação.
@@ -16,7 +18,7 @@ A identidade, os arquivos de logo, as regras de uso e a triagem pública do nome
 
 ## Organização
 
-A Home reúne descoberta, busca, ferramentas e recentes, com favoritos e atividade acessíveis sob demanda. Cada ferramenta abre pelo ID do registry único e executa no seu workspace. Os ambientes compartilham superfícies neutras e interação azul nos dois temas; os comandos usam o azul compartilhado. A sidebar mantém a marca FUTURE G e o contexto ativo. Os seis arquivos CSS têm responsabilidades definidas. Crachá e Placa geram automaticamente ao selecionar a opção; XML Fiscal recupera os campos e ações visíveis da organização anterior. Veja [Placa automática](docs/direct-plate-generation.md), [Correção XML e crachá](docs/xml-layout-and-direct-badge.md) e [Arquitetura da interface](docs/ui-architecture.md) para contratos, persistência, estilos e verificações e [Revisão visual](docs/visual-system-refresh.md) para as mudanças e evidências.
+A Home reúne descoberta, busca, ferramentas e recentes, com favoritos e atividade acessíveis sob demanda. Cada ferramenta abre pelo ID do registry único e executa no seu workspace. As ferramentas compartilham superfícies neutras e interação azul nos dois temas; os comandos usam o azul compartilhado. A sidebar mantém a marca FUTURE G. Os seis arquivos CSS têm responsabilidades definidas. Crachá e Placa geram automaticamente ao selecionar a opção; XML Fiscal recupera os campos e ações visíveis da organização anterior. Veja [Placa automática](docs/direct-plate-generation.md), [Correção XML e crachá](docs/xml-layout-and-direct-badge.md) e [Arquitetura da interface](docs/ui-architecture.md) para contratos, persistência, estilos e verificações e [Revisão visual](docs/visual-system-refresh.md) para as mudanças e evidências.
 
 O fluxo OpenSpec deve permanecer uniforme: concluir checklist e relatório, incorporar as decisões às especificações canônicas, executar testes/build/auditoria pertinentes e mover a mudança para `openspec/changes/archive/AAAA-MM-DD-nome-da-mudanca`. A etapa seguinte só começa depois desse arquivamento.
 
@@ -108,6 +110,16 @@ O comando cria um servidor temporário sem dependências externas, grava as evid
 
 `npm run build` recria antes da distribuição o subset local de 51 ícones. Para executar somente essa etapa, use `npm run icons:build`. A matriz responsiva completa dos dois ambientes e temas, incluindo disclosures abertos, pode ser repetida com `$env:AUDIT_MATRIX='1'; npm run audit:browser` no PowerShell.
 
+Para os cinco fluxos de regressão em Chromium desktop/mobile, instale o navegador do executor fixado no lockfile e execute a suíte:
+
+```sh
+npm ci
+node node_modules/@playwright/test/cli.js install chromium
+npm run test:e2e
+```
+
+Consulte [Suíte E2E e resultados](docs/quality/e2e-smoke.md) para isolamento, evidências, repetição e limitações. Após as correções de [estados assíncronos](docs/quality/async-xml.md), `npm test` passou em **138/138** e os **14 E2E** passaram sem retries. BASE-01 permanece resolvido com os hashes originais; veja [Integridade dos schemas](docs/quality/fiscal-schema-integrity.md) e as demais [pendências conhecidas](docs/quality/known-issues.md). A cobertura dos testes não implica autorização fiscal oficial.
+
 Para recriar os PNGs da identidade em `assets/brand`:
 
 ```sh
@@ -116,7 +128,7 @@ npm run brand:export
 
 ## Comandos locais
 
-A versão `3.0.0-alpha.7` substitui o chat com IA por comandos locais. Experimente `10 crachás sem código de barras`, `5 UUIDs`, `gerar NF-e com 3 produtos`, `resumir XML anexado` e `repetir último comando`. Use o catálogo nas Opções do assistente para consultar todos os exemplos. Favoritos guardam somente comandos, separados por ambiente. Veja [guia completo](docs/local-commands.md). A publicação usa a integração Git da [Vercel](https://gerador-de-xml.vercel.app/).
+A versão `3.0.0-alpha.7` substitui o chat com IA por comandos locais. Experimente `10 crachás sem código de barras`, `5 UUIDs`, `gerar NF-e com 3 produtos`, `resumir XML anexado` e `repetir último comando`. Use o catálogo nas Opções do assistente para consultar todos os exemplos. Favoritos guardam somente comandos, em uma lista unificada. Veja [guia completo](docs/local-commands.md). A publicação usa a integração Git da [Vercel](https://gerador-de-xml.vercel.app/).
 
 ## Validação XML
 
@@ -130,8 +142,8 @@ O ambiente **QA Portuário** possui uma biblioteca de dez fluxos operacionais, d
 
 ## Produtividade
 
-`Ctrl+K` abre uma busca global por geradores e áreas disponíveis no ambiente atual. A Home apresenta contadores e atividade recente específica de Geradores Gerais ou QA Portuário. Esse resumo guarda somente identificador, ambiente, tipo de ação, quantidade e horário — nunca valores gerados, prompts, anexos ou segredos. Lotes compatíveis podem ser copiados e baixados integralmente em JSON, CSV ou TXT, com nome contextual. Consulte [FUTURE G 10 — Produtividade](docs/future-g-10-productivity.md).
+`Ctrl+K` abre uma busca global por geradores e áreas do catálogo inteiro. A Home apresenta contadores e atividade recente conjunta de todas as ferramentas. Esse resumo guarda somente identificador, ambiente, tipo de ação, quantidade e horário — nunca valores gerados, prompts, anexos ou segredos. Lotes compatíveis podem ser copiados e baixados integralmente em JSON, CSV ou TXT, com nome contextual. Consulte [FUTURE G 10 — Produtividade](docs/future-g-10-productivity.md).
 
 Os testes históricos do motor IA continuam com provedores simulados. A versão atual não aciona esse motor ou seus endpoints públicos.
 
-Os 124 testes abrangem geração geral e portuária por clique e atalho opcional, apresentação estruturada e rolagem do painel Resultado, ficha seletiva do Cadastro Geral, crachá sintético, cenários operacionais coerentes, busca global, dashboards, privacidade da atividade, home, favoritos e recentes, atalhos, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API, ativos PWA no servidor local, relatórios XML estruturados, destinatário de CT-e, variantes negativas e o estado de processamento do upload. A revisão visual foi conferida em Chromium em escala de 200%, em 224 combinações de painel, ambiente, tema, largura e sidebar, em 56 estados com opções abertas e em quatro casos do Editor carregado no celular. Consulte [Revisão visual](docs/visual-system-refresh.md) e o marco anterior [FUTURE G 11 — Polimento e robustez](docs/future-g-11-polish.md).
+Os testes Node abrangem geração geral e portuária por clique e atalho opcional, apresentação estruturada e rolagem do painel Resultado, ficha seletiva do Cadastro Geral, crachá sintético, cenários operacionais coerentes, busca global, dashboards, privacidade da atividade, home, favoritos e recentes, atalhos, interpretação de pedidos, exportações, downloads, persistência, temas, nomes acessíveis dos controles, API, ativos PWA no servidor local, relatórios XML estruturados, destinatário de CT-e, variantes negativas e o estado de processamento do upload. A revisão visual foi conferida em Chromium em escala de 200%, na matriz atual de 112 combinações de painel, tema, largura e sidebar, em 28 estados com opções abertas e em quatro casos do Editor carregado no celular. Consulte [Revisão visual](docs/visual-system-refresh.md) e o marco anterior [FUTURE G 11 — Polimento e robustez](docs/future-g-11-polish.md).

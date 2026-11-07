@@ -1,5 +1,7 @@
 # Plano de evolução visual
 
+> Diretriz vigente de 02/11/2026: catálogo único, sem separação Geral/QA Portuário. O roteiro abaixo é histórico quando depender dessa divisão. A organização e o próximo direcionamento estão em [Catálogo único](docs/unified-catalog.md); identidade, temas e contratos permanecem preservados.
+
 ## 9. Experiência inicial compacta — concluída localmente em 24/09/2026
 
 - [x] Criar uma home com busca, filtros e cards compactos ligados aos geradores existentes.

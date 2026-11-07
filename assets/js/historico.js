@@ -243,16 +243,16 @@ function restaurarDoHistorico(idx) {
   if (!entry) return;
   const d = entry.dados;
   if(d.tipo_cadastro==='portuario'&&d.estrutura_portuaria) {
-    if(activeEnvironmentId()!=='port')definirAmbiente('port');
     document.getElementById('cad-port-tipo').value=d.tipo_portuario;
     cadastroPortuarioAtual={tipo:d.tipo_portuario,rotulo:d.rotulo_portuario||rotuloCadastroPortuario(d.tipo_portuario),dados:d.estrutura_portuaria};
-    renderizarCadastroPortuario();
+    atualizarCadastroPorAmbiente();
     document.getElementById('cad-port-status').textContent=`Ficha completa de ${cadastroPortuarioAtual.rotulo} restaurada.`;
     atualizarStatusResultadoCadastro(`Ficha completa de ${cadastroPortuarioAtual.rotulo} restaurada.`);
     mostrarStatus(`Cadastro de ${cadastroPortuarioAtual.rotulo} restaurado.`);
     return;
   }
-  if(activeEnvironmentId()!=='general')definirAmbiente('general');
+  document.getElementById('cad-port-tipo').value='perfil';
+  atualizarCadastroPorAmbiente();
   document.getElementById('cad_doc_pessoa_tipo').value = valorDocumentoEstrangeiro(d.documento_estrangeiro_pessoa_tipo);
   document.getElementById('cad_cnpj_tipo').value = valorTipoCNPJ(d.cnpj_tipo);
   document.getElementById('cad_doc_empresa_tipo').value = valorDocumentoEstrangeiro(d.documento_estrangeiro_empresa_tipo);

@@ -28,15 +28,15 @@ A visible Limpar lote action SHALL clear only the generated batch and its export
 - **THEN** batch state is removed while the individual value and configuration remain available
 
 ### Requirement: Existing batch parity after migration
-Every existing batch-capable generator SHALL remain available from the active environment projection. Batch generation SHALL preserve quantities from 1 through 500, non-repetition within a batch, existing generator options and an explicit error for unsupported or invalid requests.
+All existing batch-capable tools SHALL be available together. Quantities 1 through 500, non-repetition within a batch, supported options and errors for invalid requests SHALL remain unchanged.
 
 #### Scenario: Generate a valid batch
-- **WHEN** the user requests between 1 and 500 records for a batch-capable generator
-- **THEN** the application produces the requested number without duplicates in that batch and applies the existing format options
+- **WHEN** a batch-capable tool receives 1 to 500 records
+- **THEN** generation uses existing format options and batch uniqueness rules.
 
 #### Scenario: Reject an invalid batch request
-- **WHEN** the quantity is outside the supported range or the type is unavailable
-- **THEN** no partial batch is produced and the user receives an understandable error
+- **WHEN** quantity or type is unsupported
+- **THEN** no partial batch is produced and understandable guidance is shown.
 
 ### Requirement: Batch copy and export parity
 The migrated batch workspace SHALL preserve complete copy and TXT, CSV and JSON export behavior. A limited visual preview MUST NOT truncate copied or exported records, and clearing a batch MUST NOT erase the individual result or generator configuration.

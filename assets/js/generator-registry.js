@@ -1,5 +1,6 @@
 // Canonical tool identities. Adapters call existing engines; no generation algorithm lives here.
 const APP_ENVIRONMENTS = Object.freeze({
+  unified: Object.freeze({ label: 'Catálogo de ferramentas', summary: 'Dados sintéticos para testes', documentTypes: Object.freeze(['nfe','cte']), brandMark: 'assets/brand/future-g-mark-general.svg', themeColor: '#071a33' }),
   general: Object.freeze({ label: 'Geradores Gerais', summary: 'Geradores Gerais', documentTypes: Object.freeze(['nfe','cte']), brandMark: 'assets/brand/future-g-mark-general.svg', themeColor: '#2d1b45' }),
   port: Object.freeze({ label: 'QA Portuário', summary: 'QA Portuário', documentTypes: Object.freeze(['nfe','cte']), brandMark: 'assets/brand/future-g-mark.svg', themeColor: '#071a33' })
 });
@@ -27,7 +28,7 @@ const GENERATORS = Object.freeze([
   {id:'telefone',label:'Telefone',description:'Fixo ou celular, com DDD por UF',category:'contato',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarTelefone(),mask:true,requiresConfiguration:true},
   {id:'placa',label:'Placa',description:'Padrões Mercosul e antigo',category:'veiculo',environments:GENERAL_ENVIRONMENT,priority:true,run:()=>gerarPlaca(document.getElementById('gerador-placa-tipo')?.value || 'mercosul'),validate:true},
   {id:'nfe',label:'NF-e',description:'Nota fiscal eletrônica de teste',category:'xml',environments:SHARED_ENVIRONMENTS,route:'xml',batch:false,priority:true},
-  {id:'cadastro',label:'Cadastro completo',description:'Ficha sintética completa do ambiente atual',category:'pessoa',environments:SHARED_ENVIRONMENTS,route:'cadastro',priority:true},
+  {id:'cadastro',label:'Cadastro completo',description:'Perfis pessoais e fichas de pessoas, empresas, veículos e cargas',category:'pessoa',environments:SHARED_ENVIRONMENTS,route:'cadastro',priority:true},
   {id:'rg',label:'RG',description:'Registro de identidade no padrão de São Paulo',category:'pessoa',environments:GENERAL_ENVIRONMENT,run:()=>gerarDocumentoExtra('rg'),mask:true,validate:true},
   {id:'cnh',label:'CNH',description:'Número de registro nacional com dois dígitos verificadores',category:'pessoa',environments:GENERAL_ENVIRONMENT,run:()=>gerarCNH(),validate:true},
   {id:'cracha',label:'Crachá',description:'Identificação funcional sintética com avatar e validade',category:'pessoa',environments:GENERAL_ENVIRONMENT,keywords:['badge','funcionario','identificacao funcional'],run:()=>gerarCrachaIndividual()},
@@ -82,12 +83,13 @@ const GENERATORS = Object.freeze([
 }));
 
 const TIPOS_DADOS = Object.freeze(Object.fromEntries(GENERATORS.filter(g=>g.batch||g.legacyEngine).map(g=>[g.id,g.id==='placa'?'Placa':g.id==='nome'?'Nome':g.id==='due'?'DU-E (exemplo)':g.label])));
-function activeEnvironmentId() { return APP_ENVIRONMENTS[document.body?.dataset.environment] ? document.body.dataset.environment : 'general'; }
+// Legacy domain metadata remains readable; the application has one visible catalog.
+function activeEnvironmentId() { return 'unified'; }
 function generatorById(id) { return GENERATORS.find(g=>g.id===id); }
 function generatorNeedsConfiguration(generator) { return !!(generator?.requiresConfiguration || generator?.batchOnly || !generator?.run); }
 function navigationById(id) { return APP_NAVIGATION.find(item=>item.id===id); }
-function generatorSupportsEnvironment(generator,environment=activeEnvironmentId()) { return !!generator?.environments?.includes(environment); }
-function navigationSupportsEnvironment(item,environment=activeEnvironmentId()) { return !!item?.environments?.includes(environment); }
+function generatorSupportsEnvironment(generator,environment=activeEnvironmentId()) { return !!generator && (environment==='unified' || generator.environments?.includes(environment)); }
+function navigationSupportsEnvironment(item,environment=activeEnvironmentId()) { return !!item && (environment==='unified' || item.environments?.includes(environment)); }
 function generatorsForEnvironment(environment=activeEnvironmentId()) { return GENERATORS.filter(generator=>generatorSupportsEnvironment(generator,environment)); }
 function navigationForEnvironment(environment=activeEnvironmentId()) { return APP_NAVIGATION.filter(item=>navigationSupportsEnvironment(item,environment)); }
 function generatorCategoriesForEnvironment(environment=activeEnvironmentId(),route) {

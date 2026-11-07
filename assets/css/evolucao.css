@@ -53,7 +53,7 @@
 .chat-catalogo-acoes button { max-width:100%; white-space:normal; overflow-wrap:anywhere; text-align:left; font-size:.8125rem; }
 .chat-favorito { display:flex; gap:8px; margin-block:8px; }
 .chat-favorito button:first-child { flex:1; min-width:0; text-align:left; overflow-wrap:anywhere; }
-#chat-enviar { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; gap: 7px; }
+#chat-enviar { display: inline-flex; flex: 0 0 auto; width: 44px; min-width: 44px; min-height: 44px; padding: 0; align-items: center; justify-content: center; gap: 7px; }
 #chat-enviar :is(i,svg) { width: 17px; height: 17px; }
 .xml-workbench { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); gap: 24px; align-items: start; }
 .xml-workbench>.xml-grid-2 { display: flex; flex-direction: column-reverse; gap: 1.25rem; }
@@ -84,9 +84,9 @@
 .chat-attachment-popover { position: absolute; z-index: 20; left: 0; bottom: calc(100% + 10px); width: min(520px, calc(100vw - 140px)); padding: 16px; border: 1px solid var(--border); border-radius: var(--ui-radius); background: var(--surface); box-shadow: var(--shadow-soft); }
 .chat-attachment-popover > .texto-apoio { margin: 6px 0 12px; }
 .chat-attachment-popover label:not(.btn) { display: block; margin-top: 12px; font-size: .8rem; font-weight: 600; }
-.chat-attachment-chip { display: flex; max-width: 240px; min-height: 36px; align-items: center; gap: 8px; padding: 5px 6px 5px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--info-bg); color: var(--text); font-size: .75rem; }
+.chat-attachment-chip { display: flex; align-self: flex-start; min-width: 0; max-width: min(240px, 100%); min-height: 36px; align-items: center; gap: 8px; padding: 5px 6px 5px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--info-bg); color: var(--text); font-size: .75rem; }
 .chat-attachment-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chat-attachment-chip button { min-width: 28px; min-height: 28px; padding: 0; border-radius: 50%; }
+.chat-attachment-chip button { flex: 0 0 auto; min-width: 28px; min-height: 28px; padding: 0; border-radius: 50%; }
 .xml-card { border-radius: 12px; }
 #chat-status { margin: 6px 4px 0; color: var(--text-muted); font-size: .75rem; }
 #chat-status:empty { display: none; }

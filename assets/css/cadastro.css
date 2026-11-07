@@ -81,7 +81,7 @@
 }
 .cadastro-primary-action { min-height: auto; margin: 0 0 12px; padding: 0; justify-content: flex-end; border: 0; background: transparent; }
 .cadastro-section + .cadastro-section { border-top: 1px solid var(--border); }
-.result-profile-badge { background:var(--surface); }
+.result-profile-badge { background:var(--surface); max-width:100%; white-space:normal; overflow-wrap:anywhere; }
 .result-new-button { background:transparent; border-color:transparent; color:var(--text-secondary); }
 .result-new-button:hover { background:var(--surface-hover); border-color:transparent; color:var(--text); }
 .cadastro-history { margin-top: 0; overflow: hidden; }
@@ -98,6 +98,5 @@
 .cadastro-layout:has(#cadastro-edit[open]) { grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); }
 .cadastro-layout:has(#cadastro-edit[open]) .cadastro-col-left { order:1; }
 .cadastro-layout:has(#cadastro-edit[open]) .cadastro-col-right { order:2; }
-body[data-environment="port"] [data-edit-cadastro], body[data-environment="port"] .cadastro-col-left { display:none; }
 .cadastro-portuario-form { margin-bottom:24px; }
 @media(max-width:1100px) { .cadastro-layout:has(#cadastro-edit[open]) { grid-template-columns:minmax(0,1fr); } }

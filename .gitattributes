@@ -1,0 +1,3 @@
+# Vendored fiscal schemas are hashed as raw bytes. Preserve original package EOLs.
+# Official trailing spaces are also immutable; SHA-256 is the integrity check.
+schemas/fiscal/**/*.xsd -text whitespace=-blank-at-eol,cr-at-eol

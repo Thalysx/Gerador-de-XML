@@ -20,9 +20,10 @@ context: |
   - Generated data must be synthetic and intended for testing.
   - Every change must be validated before proceeding to another change.
 
-  Product environments:
-  - Geradores Gerais
-  - QA Portuário
+  Product catalog:
+  - One unified catalog, filtered by category
+  - General-purpose and port-domain tools remain available together
+  - Registration type is selected inside Cadastro, never by global environment
 
   UI direction:
   - Modern and minimal interface without becoming visually sparse.

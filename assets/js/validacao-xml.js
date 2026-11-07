@@ -6,6 +6,13 @@ const VISAO_VALIDACAO_PADRAO = 'resumo';
 let relatoriosXml = [];
 let validacaoXmlVersao = 0;
 
+function iniciarAnaliseValidacaoXml() {
+  const versao=++validacaoXmlVersao;
+  definirValidacaoOcupada(false);
+  document.getElementById('validacao-upload-status').textContent='Até 10 arquivos, com no máximo 5 MB cada';
+  return versao;
+}
+
 function normalizarDocumentoValidacao(original) {
   const copia = document.implementation.createDocument(null, null);
   function copiar(no) {
@@ -336,7 +343,7 @@ function navegarAbasValidacao(event,idx) {
 }
 
 function validarXmlColado(event) {
-  event?.preventDefault(); const versao=++validacaoXmlVersao;
+  event?.preventDefault(); const versao=iniciarAnaliseValidacaoXml();
   const relatorio=analisarXml(document.getElementById('validacao-texto').value);
   relatoriosXml = [relatorio]; renderValidacaoXml();
   completarRelatorioXsd(relatorio).then(()=>{if(versao===validacaoXmlVersao && typeof document!=='undefined')renderValidacaoXml();});
@@ -344,7 +351,7 @@ function validarXmlColado(event) {
 }
 
 function validarXmlDoGerador() {
-  const versao=++validacaoXmlVersao; gerarXMLComCampos();
+  const versao=iniciarAnaliseValidacaoXml(); gerarXMLComCampos();
   const tipo = document.getElementById('validacao-gerado-tipo').value;
   const doc = xmlsGerados[tipo];
   if (!doc) { mostrarStatus('Gere um XML primeiro.','error'); return; }
@@ -403,7 +410,7 @@ function criarVarianteNegativaXml(tipo,variante,documentoBase=xmlsGerados[tipo])
 }
 
 function gerarXmlNegativo() {
-  const versao=++validacaoXmlVersao; gerarXMLComCampos();
+  const versao=iniciarAnaliseValidacaoXml(); gerarXMLComCampos();
   const tipo=document.getElementById('validacao-negativa-tipo').value;
   const variante=document.getElementById('validacao-negativa-variante').value;
   const negativo=criarVarianteNegativaXml(tipo,variante);
@@ -447,7 +454,7 @@ function definirValidacaoOcupada(ocupada) {
 async function validarArquivosXml(files) {
   const arquivos = Array.from(files);
   if (!arquivos.length) return;
-  const versao = ++validacaoXmlVersao;
+  const versao = iniciarAnaliseValidacaoXml();
   const uploadStatus=document.getElementById('validacao-upload-status');
   const nomes=arquivos.map(file=>file.name).join(', ');
   if (arquivos.length > 10) { uploadStatus.textContent='Seleção recusada: mais de 10 arquivos.';renderValidacaoXml(); mostrarStatus('Selecione no máximo 10 arquivos por análise.','error'); return; }
@@ -461,7 +468,9 @@ async function validarArquivosXml(files) {
       try {
         if (!/\.xml$/i.test(file.name)) throw new Error('Selecione um arquivo com extensão .xml.');
         if (file.size > LIMITE_XML_BYTES) throw new Error('O limite é de 5 MB por XML.');
-        resultados.push(await completarRelatorioXsd(analisarXml(await lerArquivoValidacao(file),file.name)));
+        const texto=await lerArquivoValidacao(file);
+        if (versao !== validacaoXmlVersao) return;
+        resultados.push(await completarRelatorioXsd(analisarXml(texto,file.name)));
       } catch (erro) {
         resultados.push({ nome:file.name,tipo:'Não identificado',status:'erro',resumo:{tipo:'Não identificado'},texto:'',editavel:false,visao:VISAO_VALIDACAO_PADRAO,intencional:false,varianteNegativa:null,verificacoes:[{id:'achado-1',nivel:'erro',severidade:'erro',etapa:'Leitura',mensagem:erro.message,problema:erro.message}] });
       }
@@ -475,8 +484,7 @@ async function validarArquivosXml(files) {
 }
 
 function limparValidacaoXml() {
-  validacaoXmlVersao++; relatoriosXml = [];
-  definirValidacaoOcupada(false);
+  iniciarAnaliseValidacaoXml(); relatoriosXml = [];
   document.getElementById('validacao-filtro').value = 'todos';
   document.getElementById('validacao-texto').value = '';
   document.getElementById('validacao-arquivos').value = '';

@@ -159,8 +159,9 @@ body.dark .lock-badge.active { background: var(--info-bg); color: var(--accent);
 .status.valid { background: var(--accent-green-bg); color: var(--success); border: 1px solid var(--accent-green-border); }
 .status.invalid { background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger-border); }
 .status.idle { background: var(--info-bg); color: var(--text-muted); border: 1px solid var(--border); }
-.result-header { background:var(--surface-elevated); color:var(--text); padding:16px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--border); }
-.result-header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.result-header { background:var(--surface-elevated); color:var(--text); padding:16px 24px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--border); }
+.result-header-left { display:flex; flex:1 1 220px; flex-wrap:wrap; align-items:center; gap:10px; min-width:0; }
+.result-header-left > div:last-child { flex:1 1 120px; min-width:0; }
 .result-title { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0; overflow: hidden; text-overflow: ellipsis; }
 .result-subtitle { font-size: 12px; opacity: 0.65; overflow: hidden; text-overflow: ellipsis; }
 .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }

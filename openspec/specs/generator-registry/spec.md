@@ -45,28 +45,20 @@ Every available generator SHALL have one unique registry entry containing its st
 - **WHEN** a generator is available in the active environment
 - **THEN** Home discovery, the destination workspace and batch selection expose it according to its declared capabilities without maintaining a second generator catalog
 
-### Requirement: Environment-aware catalog projections
-The registry SHALL expose generators and categories for the active `general` or `port` environment. Domain-specific generators SHALL belong to exactly one environment and SHALL NOT appear in the other environment's discovery, workspace, batch or assistant choices. NF-e, CT-e and General Registration SHALL be explicit shared capabilities.
+### Requirement: Unified catalog projection
+The registry SHALL expose all existing discoverable generators and categories in one active catalog. Legacy domain metadata MAY remain for compatibility but SHALL NOT filter UI discovery, search, workspace, batch or commands. Non-discoverable variants SHALL remain compatible without becoming duplicate entries.
 
-#### Scenario: General environment projection
-- **WHEN** the user selects Geradores Gerais
-- **THEN** discovery, categories, workspace choices, XML choices, assistant suggestions and batch choices contain only general generators
+#### Scenario: Browse the catalog
+- **WHEN** discovery or batch choices are rendered
+- **THEN** general-purpose and port-domain tools appear together according to existing capabilities.
 
-#### Scenario: Port environment projection
-- **WHEN** the user selects QA Portuário
-- **THEN** discovery, categories, workspace choices, XML choices, assistant suggestions and batch choices contain only port generators
-
-#### Scenario: Environment-specific fiscal document
-- **WHEN** the active environment changes
-- **THEN** both environments expose NF-e and CT-e together in the shared XML workspace
-
-#### Scenario: Environment-specific complete registration
-- **WHEN** the user opens General Registration in either environment
-- **THEN** the shared route presents the complete form appropriate to that environment
+#### Scenario: Reach shared tools
+- **WHEN** the user opens XML or Cadastro
+- **THEN** NF-e, CT-e and all existing registration types remain available without an environment switch.
 
 ### Requirement: Generator behavior remains compatible
-Environment classification and shared presentation patterns SHALL NOT duplicate or alter the existing generation, validation, formatting, history or export rules. Opening a registered generator by identifier SHALL continue to reach its declared workspace and variant.
+Catalog unification SHALL preserve IDs and existing generation, validation, formatting, history and export formats. Opening by identifier SHALL reach the declared workspace and variant without implicit generation.
 
-#### Scenario: Open a generator after changing environment
-- **WHEN** the user opens an available generator from an environment-filtered discovery surface
-- **THEN** the declared workspace and variant open without generating implicitly or changing the generator's existing output rules
+#### Scenario: Open an existing tool
+- **WHEN** the user opens an existing generator by identifier
+- **THEN** its workspace and variant are selected without changing its output rules or generating solely for navigation.

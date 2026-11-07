@@ -19,7 +19,7 @@ function normalizeProductivityActivityEntry(entry) {
   const quantity = Math.min(500, Math.max(1, Number(entry.quantity) || 1));
   if (!environment || !kind || !Number.isFinite(timestamp)) return null;
   const target = productivityTarget(entry.target);
-  if (!target.environments?.includes(environment)) return null;
+  if (!generatorSupportsEnvironment(target,environment)) return null;
   return { target: entry.target, environment, kind, quantity, timestamp };
 }
 
@@ -33,7 +33,7 @@ function readProductivityActivity() {
 function recordProductivityActivity(target, options = {}) {
   const item = productivityTarget(target);
   if (!item) return false;
-  const environment = item.environments?.includes(activeEnvironmentId()) ? activeEnvironmentId() : item.environments?.[0];
+  const environment = activeEnvironmentId();
   const inferredKind = generatorById(target)?.route === 'xml' ? 'xml' : 'single';
   const entry = normalizeProductivityActivityEntry({
     target,
@@ -62,15 +62,12 @@ function renderProductivityDashboard() {
   const metrics = document.getElementById('productivity-dashboard-metrics');
   if (!metrics) return;
   const environment = activeEnvironmentId();
-  const environmentConfig = APP_ENVIRONMENTS[environment];
   const available = generatorsForEnvironment(environment).filter(item => item.discoverable !== false);
   const favorites = generatorIdsForEnvironment(readGeneratorIds(FAVORITES_KEY), environment);
-  const activity = productivityActivity.filter(item => item.environment === environment);
+  const activity = productivityActivity;
   const specialized = {label:'Lotes recentes',value:activity.filter(item => item.kind === 'batch').length};
-  document.getElementById('productivity-dashboard-title').textContent = `Resumo de ${environmentConfig.label}`;
-  document.getElementById('productivity-dashboard-description').textContent = environment === 'port'
-    ? 'Ferramentas e operações recentes do contexto portuário.'
-    : 'Ferramentas e gerações recentes do contexto de dados gerais.';
+  document.getElementById('productivity-dashboard-title').textContent = 'Resumo do catálogo';
+  document.getElementById('productivity-dashboard-description').textContent = 'Todas as ferramentas e atividades recentes, sem armazenar os dados gerados.';
   metrics.innerHTML = [
     ['Ferramentas disponíveis',available.length],
     ['Favoritos',favorites.length],
@@ -88,11 +85,10 @@ function renderProductivityDashboard() {
 }
 
 function clearProductivityActivityForEnvironment() {
-  const environment = activeEnvironmentId();
-  productivityActivity = productivityActivity.filter(item => item.environment !== environment);
+  productivityActivity = [];
   storageSet(PRODUCTIVITY_ACTIVITY_KEY, productivityActivity);
   renderProductivityDashboard();
-  mostrarStatus(`Atividade de ${APP_ENVIRONMENTS[environment].label} limpa.`);
+  mostrarStatus('Atividade recente limpa.');
 }
 
 function openProductivityTarget(target) {
@@ -135,8 +131,8 @@ function renderCommandPalette() {
   commandPaletteIndex = Math.min(commandPaletteIndex, Math.max(0, commandPaletteItems.length - 1));
   results.innerHTML = commandPaletteItems.length
     ? commandPaletteItems.map((item,index) => `<button type="button" role="option" id="command-option-${index}" data-command-index="${index}" aria-selected="${index===commandPaletteIndex}">${item.icon}<span><strong>${escapeHtml(item.label)}</strong><small>${escapeHtml(item.description)}</small></span><em>${item.kind==='generator'?'Gerador':'Área'}</em></button>`).join('')
-    : '<p class="command-palette-empty">Nenhuma ferramenta encontrada neste ambiente.</p>';
-  document.getElementById('command-palette-status').textContent = `${commandPaletteItems.length} ${commandPaletteItems.length === 1 ? 'resultado' : 'resultados'} em ${APP_ENVIRONMENTS[activeEnvironmentId()].label}.`;
+    : '<p class="command-palette-empty">Nenhuma ferramenta encontrada no catálogo.</p>';
+  document.getElementById('command-palette-status').textContent = `${commandPaletteItems.length} ${commandPaletteItems.length === 1 ? 'resultado' : 'resultados'} no catálogo.`;
   input.setAttribute('aria-activedescendant', commandPaletteItems.length ? `command-option-${commandPaletteIndex}` : '');
   renderLucideIcons(results);
 }
@@ -211,9 +207,8 @@ document.addEventListener('keydown',event => {
   else if (event.key === 'Escape') {event.preventDefault();closeCommandPalette();}
   else if (event.key === 'ArrowDown') {event.preventDefault();setCommandPaletteIndex(commandPaletteIndex+1);}
   else if (event.key === 'ArrowUp') {event.preventDefault();setCommandPaletteIndex(commandPaletteIndex-1);}
-  else if (event.key === 'Enter') {
-    const focused = document.activeElement.closest?.('[data-command-index]');
-    event.preventDefault();activateCommandPaletteItem(focused?Number(focused.dataset.commandIndex):commandPaletteIndex);
+  else if (event.key === 'Enter' && event.target.id === 'command-palette-input' && !event.isComposing) {
+    event.preventDefault();activateCommandPaletteItem(commandPaletteIndex);
   }
 });
 document.addEventListener('productivity-activity',renderProductivityDashboard);

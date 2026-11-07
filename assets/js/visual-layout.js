@@ -11,16 +11,11 @@ function selecionarFormularioXml() {
 seletorFormularioXml.addEventListener('change',selecionarFormularioXml);
 
 function atualizarInterfacePorAmbiente() {
-  const general=activeEnvironmentId()==='general';
-  document.getElementById('docs-search').placeholder=general?'Ex.: CPF, CNPJ, e-mail ou UUID':'Ex.: contêiner, lacre, booking ou IMO';
-  document.getElementById('validate-input').placeholder=general?'CPF, RG, CNH, CNPJ, RENAVAM ou placa...':'Contêiner ou IMO...';
-  document.getElementById('docs-environment-note').textContent=general
-    ? 'Os dados são sintéticos e não representam registros oficiais.'
-    : 'Booking e DU-E são referências fictícias. Os dados não representam registros oficiais.';
-  document.getElementById('ncm-manual-help').textContent=general
-    ? 'Adicione códigos de 8 dígitos separados por espaço, vírgula ou linha. Ao aplicar, eles seguem a ordem dos produtos atuais.'
-    : 'Adicione códigos de 8 dígitos para usar nos geradores de carga do QA Portuário.';
-  document.getElementById('ncm-manual-aplicar').hidden=!general;
+  document.getElementById('docs-search').placeholder='Ex.: CPF, CNPJ, contêiner ou transportadora';
+  document.getElementById('validate-input').placeholder='CPF, CNPJ, placa, contêiner ou IMO...';
+  document.getElementById('docs-environment-note').textContent='Os dados são sintéticos e não representam registros oficiais.';
+  document.getElementById('ncm-manual-help').textContent='Adicione códigos de 8 dígitos separados por espaço, vírgula ou linha. Ao aplicar, eles seguem a ordem dos produtos atuais.';
+  document.getElementById('ncm-manual-aplicar').hidden=false;
   selecionarFormularioXml();
 }
 window.addEventListener('futureg:environmentchange',atualizarInterfacePorAmbiente);

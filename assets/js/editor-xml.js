@@ -9,6 +9,7 @@ let editorArquivoAtivoId = null;
 let editorSubTabAtual = 'produtos';
 let editorProxId = 1;
 let editorProxGrupoId = 1;
+const editorLeiturasPendentes = new Set();
 
 const PRODUTO_CAMPOS_PRINCIPAIS = ['prod>cProd','prod>NCM','prod>CFOP','prod>qCom','prod>vUnCom','prod>vProd'];
 const VOLUME_CAMPOS_PRINCIPAIS = ['qVol','esp','marca','nVol','pesoL','pesoB'];
@@ -49,28 +50,65 @@ function editorInicializar() {
 }
 
 /* ── Carregamento de arquivos ── */
+function editorCancelarLeituras(grupoId) {
+  for (const operacao of editorLeiturasPendentes) {
+    if (grupoId !== undefined && operacao.grupoId !== grupoId) continue;
+    operacao.cancelada = true;
+    editorLeiturasPendentes.delete(operacao);
+    for (const leitor of [...operacao.leitores]) {
+      if (leitor.readyState === 1) leitor.abort();
+    }
+  }
+}
+
 function editorCarregarArquivos(files) {
   const xmlFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.xml'));
   if (!xmlFiles.length) return;
   editorGarantirGrupoPadrao();
+  const operacao = { grupoId:editorGrupoAtivo, cancelada:false, leitores:new Set() };
+  editorLeiturasPendentes.add(operacao);
+  const operacaoValida = () => !operacao.cancelada && editorGrupos.some(grupo => grupo.id === operacao.grupoId);
   const parser = new DOMParser();
   let loaded = 0;
   let ultimoId = null;
 
   xmlFiles.forEach(file => {
     const reader = new FileReader();
-    reader.onload = e => {
-      const doc = parser.parseFromString(e.target.result, 'text/xml');
-      if (!doc.querySelector('parsererror')) {
-        const id = editorProxId++;
-        editorArquivos.push({ id, nome: file.name, doc, original: serializarXml(doc), modificado: false, grupoId: editorGrupoAtivo, _estrutura: null });
-        ultimoId = id;
-      } else {
-        mostrarStatus(`Erro: ${file.name} não é um XML válido.`);
-      }
-      if (++loaded === xmlFiles.length) editorPosCarga(ultimoId);
+    operacao.leitores.add(reader);
+    let finalizado = false;
+    const concluir = () => {
+      if (finalizado) return;
+      finalizado = true;
+      operacao.leitores.delete(reader);
+      if (++loaded !== xmlFiles.length) return;
+      editorLeiturasPendentes.delete(operacao);
+      if (!operacaoValida()) return;
+      if (editorGrupoAtivo === operacao.grupoId) editorPosCarga(ultimoId);
+      else if (ultimoId !== null) mostrarStatus('Arquivos carregados no grupo de origem.');
     };
-    reader.readAsText(file, 'UTF-8');
+    reader.onload = e => {
+      if (finalizado) return;
+      if (operacaoValida()) {
+        const doc = parser.parseFromString(e.target.result, 'text/xml');
+        if (!doc.querySelector('parsererror')) {
+          const id = editorProxId++;
+          editorArquivos.push({ id, nome:file.name, doc, original:serializarXml(doc), modificado:false, grupoId:operacao.grupoId, _estrutura:null });
+          ultimoId = id;
+        } else {
+          mostrarStatus(`Erro: ${file.name} não é um XML válido.`);
+        }
+      }
+      concluir();
+    };
+    const falhar = mensagem => {
+      if (finalizado) return;
+      if (operacaoValida()) mostrarStatus(`${mensagem}: ${file.name}.`, 'error');
+      concluir();
+    };
+    reader.onerror = () => falhar('Não foi possível ler o arquivo');
+    reader.onabort = () => falhar('Leitura interrompida');
+    try { reader.readAsText(file, 'UTF-8'); }
+    catch { falhar('Não foi possível ler o arquivo'); }
   });
 }
 
@@ -84,6 +122,7 @@ function editorPosCarga(ultimoId) {
 }
 
 function editorMostrarDropzone() {
+  editorCancelarLeituras();
   editorArquivos = [];
   editorGrupos = [];
   editorGrupoAtivo = null;
@@ -178,9 +217,10 @@ function editorRenomearArquivoAtivo(valor) {
 
 function editorLimparGrupo() {
   if (editorGrupoAtivo == null) return;
+  editorCancelarLeituras(editorGrupoAtivo);
   editorArquivos = editorArquivos.filter(a => a.grupoId !== editorGrupoAtivo);
   editorArquivoAtivoId = null;
-  if (!editorArquivos.length) { editorMostrarDropzone(); return; }
+  if (!editorArquivos.length && !editorLeiturasPendentes.size) { editorMostrarDropzone(); return; }
   editorRenderizarAbasArquivos();
   editorRenderizarConteudo();
 }

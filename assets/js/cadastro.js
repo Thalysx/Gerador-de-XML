@@ -10,7 +10,7 @@ const CADASTRO_GRUPOS = [
 ];
 let cadastroPortuarioAtual = null;
 
-function cadastroPortuarioAtivo() { return activeEnvironmentId()==='port'; }
+function cadastroPortuarioAtivo() { return document.getElementById('cad-port-tipo').value !== 'perfil'; }
 
 function rotuloCadastroPortuario(tipo) {
   return PORT_CADASTRO_TIPOS.find(item=>item.id===tipo)?.label || generatorById(tipo)?.label || 'Cadastro portuário';
@@ -23,7 +23,7 @@ function valorCadastroPortuario(valor) {
 function renderizarCadastroPortuario() {
   const atual=cadastroPortuarioAtual;
   const result=document.getElementById('cadastro-result');
-  if(!atual?.dados) {
+  if(!atual?.dados || atual.tipo!==document.getElementById('cad-port-tipo').value) {
     result.classList.remove('visible');
     atualizarStatusResultadoCadastro('Resultado do cadastro portuário vazio.');
     return;
@@ -32,7 +32,7 @@ function renderizarCadastroPortuario() {
   const titulo=dados.nome || dados.razao_social || dados.conteiner || dados.descricao || atual.rotulo;
   const identificador=dados.cpf || dados.cnpj || dados.placa || dados.placa_cavalo || dados.ncm || dados.manifesto || '';
   result.classList.add('visible');
-  document.getElementById('cadastro-result-badge').textContent='QA Portuário';
+  document.getElementById('cadastro-result-badge').textContent=atual.rotulo;
   document.getElementById('res-nome-title').textContent=titulo;
   document.getElementById('res-nome').textContent=titulo;
   document.getElementById('res-empresa-sub').textContent=atual.rotulo;
@@ -71,6 +71,8 @@ function atualizarCadastroPorAmbiente() {
   document.getElementById('cadastro-general-selector').hidden=port;
   document.getElementById('cadastro-general-form').hidden=port;
   document.getElementById('cadastro-portuario-form').hidden=!port;
+  document.querySelector('.cadastro-col-left').hidden=port;
+  document.querySelectorAll('[data-edit-cadastro]').forEach(button=>{button.hidden=port;});
   document.getElementById('cadastro-empty-title').textContent=port?'Sua ficha portuária aparece aqui':'Seu cadastro aparece aqui';
   document.getElementById('cadastro-empty-description').textContent=port
     ? 'Escolha uma entidade para gerar todos os dados cadastrais e operacionais em uma ficha completa.'
@@ -471,7 +473,7 @@ function formatarCadastroTexto(dados) {
 }
 
 function copiarCadastroTexto() {
-  if(cadastroPortuarioAtivo()&&!cadastroPortuarioAtual){mostrarStatus('Gere uma ficha portuária antes de copiar.','error');return;}
+  if(cadastroPortuarioAtivo()&&cadastroPortuarioAtual?.tipo!==document.getElementById('cad-port-tipo').value){mostrarStatus('Gere a ficha do tipo selecionado antes de copiar.','error');return;}
   const texto = formatarCadastroTexto(getCadastroDados());
   copiarTexto(texto, 'Cadastro copiado.').then((ok) => {
     if (ok) mostrarFeedbackCadastroCopiado();
@@ -479,7 +481,7 @@ function copiarCadastroTexto() {
 }
 
 function copiarCadastroJSON() {
-  if(cadastroPortuarioAtivo()&&!cadastroPortuarioAtual){mostrarStatus('Gere uma ficha portuária antes de copiar.','error');return;}
+  if(cadastroPortuarioAtivo()&&cadastroPortuarioAtual?.tipo!==document.getElementById('cad-port-tipo').value){mostrarStatus('Gere a ficha do tipo selecionado antes de copiar.','error');return;}
   const dados = cadastroPortuarioAtivo()
     ? {tipo:cadastroPortuarioAtual.tipo,rotulo:cadastroPortuarioAtual.rotulo,...cadastroPortuarioAtual.dados}
     : getCadastroDados();
@@ -488,7 +490,7 @@ function copiarCadastroJSON() {
   });
 }
 
-window.addEventListener('futureg:environmentchange',atualizarCadastroPorAmbiente);
+document.getElementById('cad-port-tipo').addEventListener('change',atualizarCadastroPorAmbiente);
 document.getElementById('result-grid-items').addEventListener('click',(event)=>{
   const botao=event.target.closest('.field-copy-action');
   if(!botao)return;

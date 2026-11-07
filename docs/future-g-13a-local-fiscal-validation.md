@@ -15,6 +15,8 @@ Cada relatório separa os estados de sintaxe, schema XSD, regras locais e valida
 
 Os arquivos ficam em `schemas/fiscal/` e são carregados sem rede em runtime. O `manifest.json` registra pacote, fonte oficial, publicação, SHA-256 do ZIP e SHA-256 de cada XSD incorporado.
 
+Os XSDs vendorizados preservam bytes e fins de linha originais por `.gitattributes` (`-text`). A manutenção de 02/11/2026 restaurou sete arquivos normalizados incorretamente, mantendo os hashes e pacotes originais. A verificação rejeita qualquer alteração de bytes; não normalize, formate ou reserialize esses arquivos. Evidências em [Integridade dos schemas fiscais](quality/fiscal-schema-integrity.md).
+
 - NF-e: `PL_010f_v1.04`, publicado em 31/08/2026.
 - CT-e: `PL_CTe_400_NT2026.002_RTC_1.01_corr`, publicado em 24/08/2026.
 

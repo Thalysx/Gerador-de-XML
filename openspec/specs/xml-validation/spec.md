@@ -121,3 +121,59 @@ The application SHALL send XML to XSD processing only after an explicit validati
 - **WHEN** the user explicitly validates a supported XML within the operational limit
 - **THEN** the endpoint returns findings and coverage without the source XML
 - **AND** the existing report views, redacted export and editor-copy workflow remain consumers of the same report
+
+### Requirement: Byte-preserving fiscal schema packaging
+Vendored fiscal XSDs SHALL retain the exact bytes identified by the existing manifest, independently of Git newline conversion settings. Restoration SHALL use packages matching recorded hashes and SHALL NOT change fiscal rules, recorded hashes or weaken integrity verification.
+
+#### Scenario: Restore normalized source files
+- **WHEN** local XSD bytes differ only by newline normalization from the verified official package
+- **THEN** original package bytes are restored without changing the manifest or derived schemas.
+
+#### Scenario: Checkout or archive schemas
+- **WHEN** Git prepares a fresh checkout or archive with different autocrlf settings
+- **THEN** all packaged XSD bytes still match their recorded hashes.
+
+#### Scenario: Detect altered schema bytes
+- **WHEN** an incorporated schema differs from the recorded bytes
+- **THEN** integrity verification rejects it instead of accepting a changed hash or normalized comparison.
+
+### Requirement: Validation upload ownership
+Starting a replacement analysis SHALL invalidate previous upload results and release its busy controls. Only the current upload SHALL publish results or release controls of that upload. A stale file read SHALL NOT initiate XSD processing after replacement.
+
+#### Scenario: Replace upload with pasted XML
+- **WHEN** file reading is pending and the user validates pasted XML
+- **THEN** upload controls become available and the pasted report remains authoritative after the old read completes.
+
+#### Scenario: Finish an old upload during a new one
+- **WHEN** a second upload is reading and the superseded upload finishes
+- **THEN** the second upload retains its busy state until its own completion.
+
+### Requirement: Atomic XSD admission
+The first-party XSD handler SHALL reserve one of its two per-instance slots before awaiting request-body reading. Body failures and synchronous engine errors SHALL release the slot. A timed-out response SHALL retain its slot until the underlying validation actually settles. Admission errors SHALL retain the existing 429 response and Retry-After contract.
+
+#### Scenario: Hold two request bodies
+- **WHEN** two accepted requests are still reading bodies and a third request arrives
+- **THEN** the third request is rejected with 429 without starting another validation.
+
+#### Scenario: Fail before validation
+- **WHEN** reading, JSON validation or synchronous engine invocation fails
+- **THEN** the reserved slot becomes available without a leak or double release.
+
+#### Scenario: Respond before computation finishes
+- **WHEN** an XSD response times out while its engine operation remains pending
+- **THEN** that operation still counts against capacity until it settles.
+
+### Requirement: Stable editor import ownership
+An asynchronous editor import SHALL retain its initial destination group. Completion SHALL NOT switch a different selected group. Clearing a group SHALL invalidate only its pending imports; resetting the editor SHALL invalidate all pending imports. Every file SHALL settle once on success, failure or abort without hiding valid files in that batch.
+
+#### Scenario: Change group during reading
+- **WHEN** a user starts importing into one group and selects another before completion
+- **THEN** imported files belong to the original group and the current selection remains unchanged.
+
+#### Scenario: Discard pending imports
+- **WHEN** a group is cleared or the editor resets before FileReader finishes
+- **THEN** stale callbacks do not recreate discarded files or replace the new session.
+
+#### Scenario: Read a mixed batch
+- **WHEN** one file fails or is aborted while another contains valid XML
+- **THEN** the valid file remains accessible and the batch reaches a completed state.

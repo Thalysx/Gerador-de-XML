@@ -34,16 +34,20 @@ function validateOrigin(req) {
 
 async function fiscalValidationRuntime(req,res) {
   const json=(status,value)=>{res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');res.end(JSON.stringify(value));};
+  let reserved=false;
   try {
     if(req.method!=='POST')throw Object.assign(new Error('Método não permitido.'),{status:405});
     if(!String(req.headers['content-type']||'').toLowerCase().startsWith('application/json'))throw Object.assign(new Error('Tipo de conteúdo não permitido.'),{status:415});
     validateOrigin(req);
     if(active>=MAX_ACTIVE)throw Object.assign(new Error('Validador ocupado. Tente novamente.'),{status:429});
+    active++;
+    reserved=true;
     const body=await readBody(req);
     if(!body||typeof body!=='object'||Array.isArray(body)||typeof body.xml!=='string')throw Object.assign(new Error('Pedido inválido.'),{status:400});
-    active++;
     const operation=validateFiscalXml(body.xml);
     operation.finally(()=>{active--;}).catch(()=>{});
+    // The engine owns this slot until it settles, even after an HTTP timeout.
+    reserved=false;
     let timer;
     const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(Object.assign(new Error('A validação XSD excedeu 15 segundos.'),{status:504})),TIMEOUT_MS);});
     let result;
@@ -53,6 +57,8 @@ async function fiscalValidationRuntime(req,res) {
     const status=Number.isInteger(error.status)?error.status:503;
     if(status===429)res.setHeader('Retry-After','5');
     return json(status,{error:error.status?error.message:'A validação XSD está indisponível.',codigo:error.code||'xsd-indisponivel'});
+  } finally {
+    if(reserved)active--;
   }
 }
 

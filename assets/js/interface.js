@@ -84,7 +84,7 @@ function toggleTheme() {
   storageSet('gerador:tema', document.body.classList.contains('dark') ? 'dark' : 'light');
 }
 
-// Registry metadata owns order, labels, groups, descriptions and environment availability.
+// Registry metadata owns order, labels, groups and descriptions.
 const listaNavegacao=document.querySelector('.tab-nav');
 for(const nome of [...new Set(APP_NAVIGATION.map(item=>item.group))]) {
   const label=document.createElement('div');
@@ -108,7 +108,8 @@ function renderEnvironmentNavigation(environmentId=activeEnvironmentId()) {
 }
 
 function definirAmbiente(id, persist = true, announce = true) {
-  const environmentId = APP_ENVIRONMENTS[id] ? id : 'general';
+  // Compatibility entry point: old callers must never hide tools or restore a split.
+  const environmentId = 'unified';
   const environment = APP_ENVIRONMENTS[environmentId];
   document.body.dataset.environment = environmentId;
   const brandMark=document.getElementById('sidebar-brand-mark');
@@ -123,9 +124,8 @@ function definirAmbiente(id, persist = true, announce = true) {
   });
   document.getElementById('active-environment-label').textContent = environment.label;
   document.getElementById('sidebar-environment-summary').lastChild.textContent = ` ${environment.summary}`;
-  if (persist) storageSet('futureg:environment', environmentId);
   if (announce) {
-    document.getElementById('app-status-live').textContent = `Ambiente alterado para ${environment.label}.`;
+    document.getElementById('app-status-live').textContent = 'Todas as ferramentas estão disponíveis no catálogo.';
     window.dispatchEvent(new CustomEvent('futureg:environmentchange', { detail: { id: environmentId, ...environment } }));
   }
   return environmentId;
@@ -134,7 +134,7 @@ function definirAmbiente(id, persist = true, announce = true) {
 document.querySelectorAll('.environment-option[data-environment]').forEach(button => {
   button.addEventListener('click', () => definirAmbiente(button.dataset.environment));
 });
-definirAmbiente(storageGet('futureg:environment', 'general'), false, false);
+definirAmbiente('unified', false, false);
 
 function atualizarCabecalhoLayout() {
   if (!window.document?.documentElement) return;

@@ -1,3 +1,26 @@
+# Em desenvolvimento — estados assíncronos — 02/11/2026
+
+- BASE-05: substituir upload por outra análise libera a entrada; leitura antiga não publica nem inicia XSD obsoleto.
+- BASE-06: API reserva vaga antes de ler o corpo, libera falhas preliminares e mantém trabalho ativo contado após timeout HTTP. Limites e contrato JSON preservados.
+- BASE-07: importação mantém o grupo inicial, respeita limpeza/reset e conclui lotes mistos após erro ou abort sem perder arquivos válidos.
+- Três changes sequenciais; testes vermelhos antes da correção. Resultado final: Node 138/138, E2E 14/14 sem retries, build/auditoria aprovados; hashes fiscais intactos.
+- Relatório e limites em [Estados assíncronos](docs/quality/async-xml.md). Sem publicação nesta etapa.
+
+# Em desenvolvimento — integridade XSD — 02/11/2026
+
+- BASE-01 resolvido: sete XSDs restaurados por bytes a partir dos ZIPs oficiais, com SHA-256 idêntico ao manifesto existente. Regras fiscais, hashes e testes não foram alterados.
+- Atributos Git preservam os bytes originais; doze schemas conferidos em três configurações de checkout e em archive ZIP. O verificador continua recusando adulteração.
+- Node 127/127; build, auditoria e E2E 10/10 aprovados. Fluxo real de validação XSD pelo navegador conferido com XML sintético positivo e negativo.
+- Evidências e limites em [Integridade dos schemas fiscais](docs/quality/fiscal-schema-integrity.md). Sem deploy nesta etapa.
+
+# Em desenvolvimento — catálogo único — 02/11/2026
+
+- Retirada a divisão global Geradores Gerais/QA Portuário; busca, categorias, favoritos, lotes e comandos reúnem as ferramentas existentes.
+- Cadastro mantém Perfil pessoal e fichas completas em um único seletor de tipo; históricos preservam seus dados e formato.
+- Favoritos de comandos legados são reunidos sem apagar suas origens; limite unificado de vinte textos.
+- Motores, modelos fiscais, schemas, APIs e rolagem preservados. Esta entrega é local, sem publicação.
+- Detalhes, evidências e próximo direcionamento visual em [Catálogo único](docs/unified-catalog.md).
+
 # FUTURE G 3.0.0-alpha.4 — 05/10/2026
 
 - Botão Gerar disponível por clique para todos os geradores individuais selecionados; Ctrl+Enter permanece opcional, sem selo no texto do botão.

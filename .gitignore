@@ -9,3 +9,9 @@ artifacts/
 
 # Local Netlify folder
 .netlify
+
+# Local browser sessions and fallback Playwright output
+.playwright/
+.playwright-cli/
+test-results/
+playwright-report/

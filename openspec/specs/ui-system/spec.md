@@ -1,7 +1,7 @@
 # ui-system Specification
 
 ## Purpose
-Define the FUTURE G interaction system for direct and configured generation, persistent results, visible discovery, full-area assistance, functional feedback, accessibility and separation between general and port-specific experiences.
+Define the FUTURE G interaction system for direct and configured generation, persistent results, visible discovery, full-area assistance, functional feedback, accessibility and a shared catalog with explicit registration types.
 
 ## Requirements
 
@@ -72,22 +72,15 @@ Every result content replacement SHALL reset the internal scroll to zero immedia
 - AND no animated outline is shown around the result.
 
 ### Requirement: Search placement
+Search and category filtering SHALL precede configuration and results, operate on the whole catalog and expose contextual clearing only while a query exists.
 
-Search and category filtering SHALL appear in a shared horizontal region before the configuration/result workspace, SHALL respect the active environment and SHALL expose contextual clearing only while a query exists.
+#### Scenario: Search tools
+- **WHEN** a category or query is applied
+- **THEN** only matching catalog entries appear.
 
-#### Scenario: Search the active environment
-- GIVEN the user is viewing Dados cadastrais
-- WHEN the user enters a search term
-- THEN search and category are positioned above both configuration and result
-- AND only matching generators available in the active environment are shown
-- AND a named clear action is available in the field while text exists.
-
-#### Scenario: Clear a generator query
-- GIVEN the search field contains text
-- WHEN the contextual clear action is activated
-- THEN the query and category filter are reset
-- AND the complete generator collection for the active environment is restored
-- AND focus returns to the search field.
+#### Scenario: Clear a filter
+- **WHEN** search is cleared
+- **THEN** category filtering resets and the complete discoverable workspace collection is restored.
 
 ### Requirement: Primary content visibility
 Primary categories SHALL remain directly discoverable. Accordions SHALL be reserved for secondary or advanced content.
@@ -143,18 +136,16 @@ The production build SHALL generate a local Lucide runtime containing only icons
 - AND its size remains within the documented 20 KB budget
 - AND the interface does not depend on an icon CDN.
 
-### Requirement: Environment isolation
-General and port-specific generator composition SHALL remain separated. Cadastro Geral SHALL NOT include port-specific fields unless explicitly required.
+### Requirement: Registration composition by type
+The personal profile SHALL retain its existing groups without receiving domain-specific fields. Complete domain entities SHALL use their existing forms and engines, selected inside Cadastro without a global environment switch.
 
-#### Scenario: Use Cadastro Geral
-- GIVEN the active environment is Geradores Gerais
-- WHEN the user opens Cadastro Geral or searches its available components
-- THEN port-specific registration fields are not included.
+#### Scenario: Select a personal profile
+- **WHEN** Perfil pessoal is selected
+- **THEN** the five existing groups and retained values are available.
 
-#### Scenario: Use a port-specific generator
-- GIVEN the active environment is QA Portuário
-- WHEN the user browses or searches port-specific generators
-- THEN the appropriate port registration options remain available in that environment.
+#### Scenario: Select a complete entity
+- **WHEN** Transportadora or another supported entity is selected
+- **THEN** its complete form is available without changing the catalog.
 
 ### Requirement: Compact XML dropzone
 
@@ -169,7 +160,7 @@ The Editor XML SHALL expose one compact visual dropzone while retaining the exis
 
 ### Requirement: Task-first workspaces
 
-Each workspace SHALL keep its primary task, essential configuration and persistent result directly available. Optional settings, full cadastro editing, dashboards and complementary result actions outside XML Fiscal SHALL use named secondary disclosures closed by default. Closing a disclosure SHALL NOT disable its controls, change their values or remove them from generation, validation, exports or restoration. Existing primary generator discovery and environment isolation SHALL be preserved.
+Each workspace SHALL keep its primary task, essential configuration and persistent result directly available. Optional settings, full cadastro editing, dashboards and complementary result actions outside XML Fiscal SHALL use named secondary disclosures closed by default. Closing a disclosure SHALL NOT disable its controls, change their values or remove them from generation, validation, exports or restoration. Existing primary generator discovery and category filtering SHALL be preserved.
 
 #### Scenario: Generate with advanced settings collapsed
 - **WHEN** the user generates a document while optional controls are collapsed
@@ -192,14 +183,14 @@ Each workspace SHALL keep its primary task, essential configuration and persiste
 #### Scenario: Discover tools from a simplified Home
 - **WHEN** the user opens Home
 - **THEN** search, tools and recent destinations are directly available
-- **AND** favorites, environment metrics and activity remain accessible in secondary disclosures
+- **AND** favorites, catalog metrics and activity remain accessible in secondary disclosures
 - **AND** no stored personalization or activity is removed.
 
 #### Scenario: Use the restored XML Fiscal workspace
 - **WHEN** the user opens XML Fiscal
 - **THEN** document selection, saved scenarios, manual NCM and applicable XML fields are directly available in the previous workspace organization
 - **AND** Copy, Download, Validate and Open Editor are visible without a secondary disclosure
-- **AND** edited fields, validation, exports, history and both environments retain their existing behavior
+- **AND** edited fields, validation, exports, history and the unified catalog retain their existing behavior
 - **AND** the workspace adapts to narrow screens without horizontal overflow.
 
 ### Requirement: Contextual action hierarchy

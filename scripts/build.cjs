@@ -21,4 +21,8 @@ const speedInsightsDestination=path.join(output,'assets','vendor','vercel-speed-
 if(!fs.existsSync(speedInsightsSource))throw Error('Execute npm install antes do build: @vercel/speed-insights não encontrado');
 fs.mkdirSync(path.dirname(speedInsightsDestination),{recursive:true});
 fs.copyFileSync(speedInsightsSource,speedInsightsDestination);
+const analyticsSource=path.join(root,'node_modules','@vercel','analytics','dist','index.mjs');
+const analyticsDestination=path.join(output,'assets','vendor','vercel-analytics.mjs');
+if(!fs.existsSync(analyticsSource))throw Error('Execute npm install antes do build: @vercel/analytics não encontrado');
+fs.copyFileSync(analyticsSource,analyticsDestination);
 console.log('Arquivos públicos preparados em .generated-public');

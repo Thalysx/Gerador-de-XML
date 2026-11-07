@@ -101,6 +101,6 @@ O runtime usa HTML e scripts clássicos, Lucide vanilla empacotado e Bootstrap p
 
 As specs vigentes de [shell](openspec/specs/app-shell/spec.md), [interface](openspec/specs/ui-system/spec.md), [navegação](openspec/specs/navigation/spec.md), [comandos locais](openspec/specs/ai-assistant/spec.md) e [acessibilidade/exportação](openspec/specs/export-accessibility/spec.md) preservam os contratos. Planos e relatos antigos mantêm cores, nomes e contagens da época; não substituem este guia.
 
-Mudanças futuras de UI devem verificar os fluxos afetados, temas, teclado e recortes relevantes. Capturas devem ter estado e origem conferidos no [manifesto da auditoria](docs/quality/audit-capture-state.md). Estado e geometria corretos não aprovam automaticamente pixels, contraste efetivo ou fontes. A escuta com leitor de tela continua pendente no [roteiro manual](CHECKLIST-LEITOR-TELA.md).
+Mudanças futuras de UI devem verificar os fluxos afetados, temas, teclado e recortes relevantes. Capturas devem ter estado e origem conferidos no [manifesto da auditoria](docs/quality/audit-capture-state.md). Estado e geometria corretos não aprovam automaticamente pixels, contraste efetivo ou fontes. A escuta com leitor de tela continua pendente; o arquivo do roteiro anterior foi removido na limpeza da documentação.
 
 Esta consolidação não executou nova matriz visual nem aprovou snapshots. [Relatório BASE-10](docs/quality/design-documentation.md) registra os checks documentais e a preservação do código. Os resultados anteriores continuam vinculados às respectivas entregas.

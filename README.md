@@ -12,7 +12,7 @@ Abra `index.html` no navegador para usar os geradores, editor e validação loca
 
 Bootstrap e fontes continuam sendo carregados de serviços externos e precisam de conexão para estar disponíveis. Os ícones Lucide usados pela aplicação são empacotados localmente.
 
-Veja [ATUALIZACOES.md](ATUALIZACOES.md) para funcionalidades, comandos, verificações e limites. [DESIGN.md](DESIGN.md) consolida identidade, tokens, hierarquia, estados e responsividade atuais. [PLANO-VISUAL.md](PLANO-VISUAL.md) e [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md) preservam registros históricos; a escuta com leitor de tela segue pendente no [roteiro manual](CHECKLIST-LEITOR-TELA.md).
+Veja [ATUALIZACOES.md](ATUALIZACOES.md) para funcionalidades, comandos, verificações e limites. [DESIGN.md](DESIGN.md) consolida identidade, tokens, hierarquia, estados e responsividade atuais. [PLANO-VISUAL.md](PLANO-VISUAL.md) e [AUDITORIA-VISUAL.md](AUDITORIA-VISUAL.md) preservam registros históricos; a escuta com leitor de tela segue pendente. O arquivo do roteiro anterior foi removido na limpeza da documentação.
 
 O estado das fases concluídas e arquivadas está em [Roadmap consolidado](docs/roadmap-consolidado.md). A validação fiscal local da fase 13A está concluída; a integração SEFAZ da fase 13B foi cancelada por decisão do usuário.
 

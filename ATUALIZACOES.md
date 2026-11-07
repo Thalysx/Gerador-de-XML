@@ -188,7 +188,7 @@ A identidade TheGenerator foi aprovada depois de uma nova triagem pública. Não
 
 Adicionados adaptadores Groq/OpenAI, rotas Vercel, sessões Redis, cookies assinados e cotas por visitante, IP e aplicação. O chat informa o provedor, exclui a sessão no servidor ao limpar e aplica tempo limite também à consulta inicial. O build separa arquivos públicos do backend.
 
-A ativação real foi concluída na Netlify e o fluxo principal com Groq foi verificado em produção. Consulte [ATIVACAO-IA.md](ATIVACAO-IA.md), [PLANO-IA-PUBLICA.md](PLANO-IA-PUBLICA.md) e [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md). A concorrência isolada e a expiração real dos scripts Redis continuam pendentes e não são cobertas pela suíte simulada.
+A ativação real foi concluída na Netlify e o fluxo principal com Groq foi verificado em produção nessa entrega histórica. O registro `ATIVACAO-IA.md` foi removido na limpeza posterior da documentação; [PLANO-IA-PUBLICA.md](PLANO-IA-PUBLICA.md) e [VERIFICACAO-PRODUCAO.md](VERIFICACAO-PRODUCAO.md) preservam o contexto histórico. A concorrência isolada e a expiração real dos scripts Redis continuam pendentes e não são cobertas pela suíte simulada.
 
 # Atualização — geradores, chat e fluxo XML
 

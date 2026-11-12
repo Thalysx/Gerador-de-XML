@@ -87,7 +87,7 @@ document.addEventListener('invalid', event => {
 
 function atualizarPreferenciasVisuais() {
   if (!window.document) return;
-  document.getElementById('docs-advanced').hidden = document.getElementById('docs-preferencias').hidden;
+  document.getElementById('docs-advanced').hidden = document.getElementById('docs-preferencias').hidden || (!selectedGeneratorId && !currentType);
 }
 new MutationObserver(atualizarPreferenciasVisuais).observe(document.getElementById('docs-preferencias'), {attributes:true,attributeFilter:['hidden']});
 atualizarPreferenciasVisuais();

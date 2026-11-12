@@ -1,4 +1,4 @@
-const { test, expect, openApp } = require('./fixtures.cjs');
+const { test, expect, openApp, openWorkspace } = require('./fixtures.cjs');
 
 test('E2E-08: controles da busca respeitam fechamento e ativação por teclado', async ({ page }) => {
   await openApp(page);
@@ -47,7 +47,7 @@ test('E2E-08: controles da busca respeitam fechamento e ativação por teclado',
 
 test('E2E-09: anexo longo preserva espaço e envio por clique em todas as larguras', async ({ page }, testInfo) => {
   await openApp(page);
-  await page.locator('#tab-btn-chat').click();
+  await openWorkspace(page,'chat');
   const source=await page.evaluate(()=>serializarXml(xmlsGerados.nfe));
   await page.locator('#chat-anexo-area > summary').click();
   await page.locator('#chat-anexo-arquivo').setInputFiles({

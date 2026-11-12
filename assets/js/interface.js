@@ -24,7 +24,7 @@ function switchTab(tab, btn) {
     document.body.scrollTop = 0;
   }
   atualizarCabecalhoLayout();
-  if (window.matchMedia?.('(max-width: 700px)').matches) {
+  if (window.matchMedia?.('(max-width: 1000px)').matches) {
     definirSidebar(true, false);
     document.getElementById(panelId).focus({preventScroll:true});
   }
@@ -70,11 +70,11 @@ function toggleTheme() {
   body.classList.toggle('dark');
   body.setAttribute('data-bs-theme', body.classList.contains('dark') ? 'dark' : 'light');
   if (body.classList.contains('dark')) {
-    btn.innerHTML = `<i data-lucide="sun" aria-hidden="true"></i> Tema claro`;
+    btn.innerHTML = `<i data-lucide="sun" aria-hidden="true"></i><span>Tema claro</span>`;
     btn.setAttribute('aria-pressed', 'true');
     btn.setAttribute('aria-label', 'Alternar para tema claro');
   } else {
-    btn.innerHTML = `<i data-lucide="moon" aria-hidden="true"></i> Tema escuro`;
+    btn.innerHTML = `<i data-lucide="moon" aria-hidden="true"></i><span>Tema escuro</span>`;
     btn.setAttribute('aria-pressed', 'false');
     btn.setAttribute('aria-label', 'Alternar para tema escuro');
   }
@@ -142,6 +142,7 @@ function atualizarCabecalhoLayout() {
   const chave=tab?.getAttribute('aria-controls')?.replace('tab-','');
   const item=navigationById(chave);
   if (!item) return;
+  document.body.dataset.activeTab=chave;
   document.getElementById('app-title').textContent=item.label;
   document.querySelector('.page-header-text p').textContent=item.description;
 }
@@ -161,6 +162,9 @@ atualizarCabecalhoLayout();
 // Shell: one state, one reachable control in every viewport.
 function definirSidebar(collapsed, persist = true) {
   document.body.classList.toggle('sidebar-collapsed', collapsed);
+  const mobile = window.matchMedia?.('(max-width: 1000px)').matches;
+  document.getElementById('sidebar-scrim').hidden = !mobile || collapsed;
+  document.getElementById('workspace-navigation').inert = !!mobile && collapsed;
   const button = document.getElementById('sidebar-collapse-btn');
   const label = collapsed ? 'Expandir navegação' : 'Recolher navegação';
   button.setAttribute('aria-expanded', String(!collapsed));
@@ -174,8 +178,15 @@ function definirSidebar(collapsed, persist = true) {
   });
   if (persist) storageSet('thegenerator:sidebar-collapsed', collapsed);
 }
-definirSidebar(storageGet('thegenerator:sidebar-collapsed', window.matchMedia?.('(max-width: 700px)').matches || false) === true, false);
+definirSidebar(window.matchMedia?.('(max-width: 1000px)').matches || storageGet('thegenerator:sidebar-collapsed', false) === true, false);
+window.matchMedia?.('(max-width: 1000px)').addEventListener?.('change', event => {
+  definirSidebar(event.matches || storageGet('thegenerator:sidebar-collapsed', false) === true, false);
+});
 document.getElementById('sidebar-collapse-btn').addEventListener('click', () => definirSidebar(!document.body.classList.contains('sidebar-collapsed')));
+document.getElementById('sidebar-scrim').addEventListener('click', () => {
+  definirSidebar(true, false);
+  document.getElementById('sidebar-collapse-btn').focus({preventScroll:true});
+});
 document.addEventListener('keydown', event => {
   if(event.key === 'Escape' && !document.body.classList.contains('sidebar-collapsed')) {
     definirSidebar(true); document.getElementById('sidebar-collapse-btn').focus();

@@ -13,6 +13,12 @@ function openGenerator(id) {
     if(selectedId==='placa')document.getElementById('gerador-placa-tipo').value=id==='placa-antiga'?'antiga':'mercosul';
     document.getElementById('docs-selected-title').textContent=selectedItem.label;
     document.getElementById('docs-selected-description').textContent=selectedItem.description;
+    document.getElementById('docs-picker-current').textContent=selectedItem.label;
+    if(window.matchMedia?.('(max-width: 1000px)').matches) {
+      const picker=document.getElementById('docs-picker');
+      picker.open=false;
+      document.getElementById('docs-selected-title').focus({preventScroll:true});
+    }
     const generateButton=document.getElementById('docs-generate-btn');
     const canGenerate=!!selectedItem.run&&!item.batchOnly;
     generateButton.hidden=!canGenerate;
@@ -52,7 +58,7 @@ function clearDocumentResult() {
   if(typeof limparCrachaAtual==='function')limparCrachaAtual();
   document.getElementById('docs-result-label').textContent='Resultado';
   esconderPlaca();esconderConteiner();document.getElementById('nome-box').classList.remove('visible');
-  const output=document.getElementById('output-val');output.replaceChildren('Escolha um gerador. Opções simples geram o resultado imediatamente.');output.scrollTop=0;output.classList.add('placeholder');output.classList.remove('is-structured');
+  const output=document.getElementById('output-val');output.replaceChildren('Seu resultado aparece aqui, pronto para copiar.');output.scrollTop=0;output.classList.add('placeholder');output.classList.remove('is-structured');
   for(const id of ['new-doc-btn','copy-btn','download-doc-btn','docs-expand-btn','docs-clear-btn'])document.getElementById(id).disabled=true;
   document.getElementById('docs-result-details').hidden=true;
   document.getElementById('docs-result-details').textContent='';

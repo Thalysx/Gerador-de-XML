@@ -24,15 +24,25 @@ atualizarInterfacePorAmbiente();
 const buscaGerador=document.getElementById('docs-search');
 const categoriaGerador=document.getElementById('docs-category');
 const listaGeradores=document.getElementById('docs-generator-list');
+// A small starting palette; search and categories always cover the full registry.
+const geradoresRapidos=new Set(['cpf','rg','cnpj','cnh','telefone','email','endereco','placa']);
+const mostrarTodosGeradores=document.getElementById('docs-show-all');
 function filtrarGeradores() {
   const normalizar=valor=>valor.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
   const termo=normalizar(buscaGerador.value);
+  const filtrando=!!termo||categoriaGerador.value!=='todas';
+  if(filtrando)document.getElementById('docs-picker').open=true;
+  const compacto=!filtrando&&mostrarTodosGeradores.getAttribute('aria-expanded')!=='true';
+  listaGeradores.classList.toggle('is-compact',compacto);
+  document.getElementById('docs-catalog-title').textContent=compacto?'Acesso rápido':'Todos os geradores';
+  mostrarTodosGeradores.hidden=filtrando;
+  mostrarTodosGeradores.textContent=compacto?'Ver todos os geradores':'Mostrar acesso rápido';
   document.getElementById('docs-search-clear').hidden=!buscaGerador.value;
   let total=0;
   listaGeradores.querySelectorAll('.btn-grid').forEach(grupo=>{
     let visiveis=0;
     grupo.querySelectorAll('button').forEach(botao=>{
-      botao.hidden=!matchesGenerator(generatorById(botao.dataset.generatorId),termo,categoriaGerador.value);
+      botao.hidden=!matchesGenerator(generatorById(botao.dataset.generatorId),termo,categoriaGerador.value)||(compacto&&!geradoresRapidos.has(botao.dataset.generatorId));
       if(!botao.hidden)visiveis++;
     });
     const secao=grupo.closest('.docs-generator-group');
@@ -40,12 +50,20 @@ function filtrarGeradores() {
     if(secao) secao.hidden=visiveis===0;
     total+=visiveis;
   });
-  document.getElementById('docs-search-status').textContent=total?`${total} opções disponíveis.`:'Nenhum gerador encontrado. Tente outro nome ou limpe a busca.';
+  const totalCatalogo=listaGeradores.querySelectorAll('[data-generator-id]').length;
+  document.getElementById('docs-search-status').textContent=total?(compacto?`${totalCatalogo} opções disponíveis · ${total} acessos rápidos`:`${total} opções disponíveis.`):'Nenhum gerador encontrado. Tente outro nome ou limpe a busca.';
 }
+mostrarTodosGeradores.addEventListener('click',()=>{
+  mostrarTodosGeradores.setAttribute('aria-expanded',String(mostrarTodosGeradores.getAttribute('aria-expanded')!=='true'));
+  filtrarGeradores();
+});
 buscaGerador.addEventListener('input',filtrarGeradores);
 categoriaGerador.addEventListener('change',filtrarGeradores);
-document.getElementById('docs-search-clear').addEventListener('click',()=>{buscaGerador.value='';categoriaGerador.value='todas';filtrarGeradores();buscaGerador.focus();});
+document.getElementById('docs-search-clear').addEventListener('click',()=>{buscaGerador.value='';categoriaGerador.value='todas';filtrarGeradores();document.getElementById('docs-picker').open=true;buscaGerador.focus();});
 filtrarGeradores();
+window.matchMedia?.('(min-width: 1001px)').addEventListener?.('change',event=>{
+  if(event.matches)document.getElementById('docs-picker').open=true;
+});
 document.getElementById('docs-empty-action').addEventListener('click',()=>{
   buscaGerador.focus();
   buscaGerador.scrollIntoView({block:'center',behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});

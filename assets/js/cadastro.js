@@ -145,7 +145,7 @@ function formatCEP(raw) { return `${raw.slice(0,5)}-${raw.slice(5)}`; }
 
 function gerarCEPFormatado() { return formatCEP(gerarCEPRaw()); }
 
-function gerarEnderecoBR() {
+function gerarEnderecoEstruturadoBR() {
   const tipos = ['Rua', 'Avenida', 'Travessa', 'Alameda', 'Rodovia'];
   const nomes = ['das Acácias', 'Brasil', 'Santos Dumont', 'Getúlio Vargas', 'Rio Branco', 'dos Expedicionários', 'da Indústria', 'do Comércio', 'Central', 'da Estação'];
   const bairros = ['Centro', 'Jardim América', 'Vila Nova', 'Distrito Industrial', 'Boa Vista', 'Santa Maria', 'Jardim Europa', 'São José'];
@@ -156,7 +156,15 @@ function gerarEnderecoBR() {
     { nome: 'Itajaí', uf: 'SC' }, { nome: 'Rondonópolis', uf: 'MT' }
   ];
   const cidade = pick(cidades);
-  return `${pick(tipos)} ${pick(nomes)}, ${rand(8999) + 100} - ${pick(bairros)}, ${cidade.nome}/${cidade.uf} - CEP ${gerarCEPFormatado()}`;
+  return {
+    cep: gerarCEPFormatado(), logradouro: `${pick(tipos)} ${pick(nomes)}`,
+    numero: String(rand(8999) + 100), bairro: pick(bairros), cidade: cidade.nome, estado: cidade.uf
+  };
+}
+
+function gerarEnderecoBR() {
+  const endereco = gerarEnderecoEstruturadoBR();
+  return `${endereco.logradouro}, ${endereco.numero} - ${endereco.bairro}, ${endereco.cidade}/${endereco.estado} - CEP ${endereco.cep}`;
 }
 
 function gerarPassaporte() {

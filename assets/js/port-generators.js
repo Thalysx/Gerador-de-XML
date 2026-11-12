@@ -71,6 +71,10 @@ function gerarCadastroPortuarioPorTipo(tipo) {
 }
 
 function gerarDadoPortuarioEssencial(tipo) {
+  if(tipo==='carga') {
+    const carga=gerarCargaPortuaria(pick(Object.keys(PORT_CARGO_TYPES)));
+    return {tipo_carga:carga.tipo_carga,descricao:carga.descricao,ncm:carga.ncm,referencia:'CARGA-'+randomDigits(10).join(''),...(carga.conteiner?{conteiner:carga.conteiner}:{})};
+  }
   const completo=gerarCadastroPortuarioPorTipo(tipo);
   if(['motorista','operador-portuario','visitante-portuario','pessoa-portuaria'].includes(tipo))return {nome:completo.nome,cpf:completo.cpf};
   if(['transportadora','cliente-portuario','depositante','importador','exportador'].includes(tipo))return {razao_social:completo.razao_social,cnpj:completo.cnpj};

@@ -512,6 +512,7 @@ const RESULT_FIELD_LABELS = Object.freeze({
   capacidade_tracao_kg:'Capacidade de tração (kg)',categoria_cnh:'Categoria CNH',cep:'CEP',cnh:'CNH',
   cnpj:'CNPJ',contato:'Contato',cpf:'CPF',cracha:'Crachá',descricao:'Descrição',documento:'Documento',
   email:'E-mail',empresa:'Empresa',empresa_origem:'Empresa de origem',endereco:'Endereço',entidade:'Entidade',
+  logradouro:'Rua / Avenida',numero:'Número',estado:'Estado (UF)',
   funcao:'Função',ie:'IE',matricula:'Matrícula',ncm:'NCM',nome:'Nome',nome_fantasia:'Nome fantasia',
   observacoes:'Observações',perfil:'Perfil',placa:'Placa',razao_social:'Razão social',recinto_teste:'Recinto de teste',
   renavam:'RENAVAM',rg:'RG',status:'Status',telefone:'Telefone',treinamento_nr29:'Treinamento NR-29',
@@ -571,7 +572,7 @@ function renderizarResultadoDocumento(elemento,texto,dados) {
   const lista=document.createElement('dl');
   lista.className='structured-result-grid';
   const entradas=Object.entries(estrutura);
-  const entradasVisiveis=entradas.slice(0,4);
+  const entradasVisiveis=currentType==='endereco'?entradas:entradas.slice(0,4);
   elemento.dataset.totalFields=String(entradas.length);
   for(const [chave,valorOriginal] of entradasVisiveis) {
     const valor=typeof valorOriginal==='object'?JSON.stringify(valorOriginal):String(valorOriginal);
@@ -589,7 +590,7 @@ function renderizarResultadoDocumento(elemento,texto,dados) {
     copiar.type='button';
     copiar.className='btn-sm structured-result-copy';
     copiar.setAttribute('aria-label',`Copiar ${rotulo}`);
-    copiar.innerHTML='<i data-lucide="copy" aria-hidden="true"></i> Copiar';
+    copiar.innerHTML='<i data-lucide="copy" aria-hidden="true"></i><span>Copiar</span>';
     copiar.addEventListener('click',()=>copiarCampoResultado(copiar,valor,rotulo));
     linha.append(descricao,copiar);
     campo.append(termo,linha);
@@ -602,7 +603,7 @@ function renderizarResultadoDocumento(elemento,texto,dados) {
 function rotuloDetalhesResultado(aberto=false) {
   const total=Number(document.getElementById('output-val')?.dataset.totalFields || 0);
   if(aberto)return 'Ocultar detalhes';
-  return total>4?'Ver todos os dados':'Ver detalhes';
+  return total>4&&currentType!=='endereco'?'Ver todos os dados':'Ver detalhes';
 }
 
 function restaurarTopoResultadoAposRender(elemento,renderToken) {
@@ -635,20 +636,23 @@ function setOutput(val, structuredData = null) {
   document.getElementById('docs-result-details').hidden=true;
   document.getElementById('docs-expand-btn').setAttribute('aria-expanded','false');
   document.getElementById('docs-expand-btn').textContent=rotuloDetalhesResultado();
+  animarResultado(el);
 }
 
 function atualizarOpcoesDocumento(tipoAtual = currentType, tipoLote = document.getElementById('lote-tipo')?.value || '') {
   const comNome=!!generatorById(tipoAtual)?.name;
-  const comMascara=!!generatorById(tipoAtual)?.mask || !!generatorById(tipoLote)?.mask;
-  const comTelefone=tipoAtual==='telefone' || tipoLote==='telefone';
+  const comMascara=!!generatorById(tipoAtual)?.mask;
+  const comTelefone=tipoAtual==='telefone';
   const comPlaca=tipoAtual==='placa';
-  const comCracha=tipoAtual==='cracha' || tipoLote==='cracha';
+  const comCracha=tipoAtual==='cracha';
   document.getElementById('docs-option-name').hidden=!comNome;
   document.getElementById('docs-option-mask').hidden=!comMascara;
   document.getElementById('docs-preferencias').hidden=!comNome&&!comMascara;
   document.getElementById('docs-phone-options').hidden=!comTelefone;
   document.getElementById('docs-plate-options').hidden=!comPlaca;
   document.getElementById('docs-badge-options').hidden=!comCracha;
+  if(typeof atualizarPreferenciasVisuais==='function')atualizarPreferenciasVisuais();
+  if(typeof atualizarOpcoesLote==='function')atualizarOpcoesLote(tipoLote);
 }
 
 function copyResult() {
@@ -656,20 +660,7 @@ function copyResult() {
   copiarTexto(val, 'Resultado copiado.').then((ok) => {
     if (!ok) return;
     const button = document.getElementById('copy-btn');
-    const original = button.innerHTML;
-    button.innerHTML = '<i data-lucide="check" aria-hidden="true"></i> Copiado';
-    renderLucideIcons(button);
-    button.classList.add('is-copied');
-    button.setAttribute('aria-label', 'Resultado copiado');
-    const msg = document.getElementById('copied-msg');
-    msg.style.opacity = '1';
-    setTimeout(() => {
-      msg.style.opacity = '0';
-      button.innerHTML = original;
-      renderLucideIcons(button);
-      button.classList.remove('is-copied');
-      button.setAttribute('aria-label', 'Copiar resultado gerado');
-    }, 1500);
+    confirmarCopiaVisual(button, 'Resultado');
   });
 }
 

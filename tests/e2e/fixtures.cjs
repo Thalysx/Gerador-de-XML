@@ -44,6 +44,13 @@ async function openDetails(page, selector) {
   await expect(details).toHaveAttribute('open', '');
 }
 
+async function openWorkspace(page, workspace) {
+  const target=page.locator('#tab-btn-'+workspace);
+  if(!await target.isVisible())await page.locator('#sidebar-collapse-btn').click();
+  await target.click();
+  await expect(page.locator('#tab-'+workspace)).toBeVisible();
+}
+
 async function readDownload(download) {
   expect(await download.failure()).toBeNull();
   const stream = await download.createReadStream();
@@ -52,4 +59,4 @@ async function readDownload(download) {
   return Buffer.concat(chunks).toString('utf8');
 }
 
-module.exports = { test, expect, openApp, openDetails, readDownload, isolateNetwork };
+module.exports = { test, expect, openApp, openDetails, openWorkspace, readDownload, isolateNetwork };

@@ -72,7 +72,7 @@ function gerarRegistro(tipo, opcoes = {}) {
     case 'motorista': case 'operador-portuario': case 'visitante-portuario': case 'pessoa-portuaria':
     case 'transportadora': case 'cliente-portuario': case 'depositante': case 'importador': case 'exportador':
     case 'cavalo-mecanico': case 'carreta': case 'conjunto-veicular': case 'conteiner-detalhado':
-    case 'carga-solta': case 'granel-solido': case 'granel-liquido': case 'carga-conteinerizada':
+    case 'carga': case 'carga-solta': case 'granel-solido': case 'granel-liquido': case 'carga-conteinerizada':
     case 'documento-carga': valor = gerarDadoPortuarioEssencial(tipo); break;
     case 'chave-cte': case 'di': case 'duimp': valor = gerarDocumentoPortuario(tipo); break;
     case 'cadastro': {
@@ -149,6 +149,15 @@ function exportarRegistros(registros, formato, nomeBase = 'dados-teste') {
 }
 
 function gerarDocumentoExtra(tipo) {
+  if(tipo==='endereco') {
+    const endereco=gerarEnderecoEstruturadoBR();
+    const texto=Object.entries(endereco).map(([chave,valor])=>`${rotuloCampoResultado(chave)}: ${valor}`).join('\n');
+    currentType=tipo;currentValue=texto;nomeAtualDoc='';
+    document.getElementById('nome-box').classList.remove('visible');
+    setOutput(texto,endereco);esconderPlaca();esconderConteiner();
+    registrarHistoricoDocs(TIPOS_DADOS[tipo],texto,{estrutura:endereco});
+    return;
+  }
   const registro = gerarRegistro(tipo, { mascara: document.getElementById('toggle-mascara').checked });
   currentType = tipo;
   currentValue = ['rg','cep'].includes(tipo) ? registro.valor.replace(/\W/g,'') : registro.valor;

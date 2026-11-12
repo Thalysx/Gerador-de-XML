@@ -636,11 +636,12 @@ function geraDownloadLinks(xmlDoc, docNome) {
   const area = document.getElementById('downloadArea');
   const arquivo = docNome + ".xml";
   const a = document.createElement('a');
+  const rotulo = { NFe: 'NF-e', CTe: 'CT-e' }[docNome] || docNome;
   a.href = url;
   a.download = arquivo;
   a.className = 'download-badge';
   a.setAttribute('aria-label', `Baixar arquivo ${arquivo}`);
-  a.innerHTML = `<i data-lucide="download" aria-hidden="true"></i>Baixar ${escapeHtml(arquivo)}`;
+  a.innerHTML = `<i data-lucide="download" aria-hidden="true"></i>Baixar ${escapeHtml(rotulo)}`;
   renderLucideIcons(a);
   area.appendChild(a);
   return arquivo;

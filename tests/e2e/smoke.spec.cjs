@@ -1,9 +1,9 @@
-const { test, expect, openApp, openDetails, readDownload, isolateNetwork } = require('./fixtures.cjs');
+const { test, expect, openApp, openWorkspace, openDetails, readDownload, isolateNetwork } = require('./fixtures.cjs');
 
 test('E2E-07: importação adiada fica no grupo de origem sem trocar a seleção', async ({ page }) => {
   await openApp(page);
   const source=await page.evaluate(()=>serializarXml(xmlsGerados.nfe));
-  await page.locator('#tab-btn-xml').click();
+  await openWorkspace(page,'xml');
   await page.locator('#xml-form-tipo').selectOption('nfe');
   await page.locator('#xml-preview-tipo').selectOption('nfe');
   await page.getByRole('button',{name:'Abrir no editor',exact:true}).click();
@@ -35,7 +35,7 @@ test('E2E-07: importação adiada fica no grupo de origem sem trocar a seleção
 
 test('E2E-06: validar texto durante upload libera o seletor e permite outro arquivo', async ({ page }) => {
   await openApp(page);
-  await page.locator('#tab-btn-validacao').click();
+  await openWorkspace(page,'validacao');
   await page.evaluate(() => {
     const read=lerArquivoValidacao, upload=validarArquivosXml;
     lerArquivoValidacao=async file=>{
@@ -89,6 +89,7 @@ test('E2E-01: Home gera uma vez; abrir não gera; copiar e baixar preservam o re
   await page.locator('#copy-btn').click();
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(cnpj);
   const company = await page.locator('#nome-val').innerText();
+  await openDetails(page,'#docs-output-box .action-disclosure');
   const downloadEvent = page.waitForEvent('download');
   await page.locator('#download-doc-btn').click();
   const download = await downloadEvent;
@@ -101,12 +102,12 @@ test('E2E-02: catálogo único reúne busca e favoritos; preferências persistem
   await expect(page.locator('.environment-switcher')).toHaveCount(0);
   await expect(page.locator('body')).toHaveAttribute('data-environment', 'unified');
   await page.locator('[data-home-favorite="cpf"]').click();
-  await page.locator('[data-home-favorite="transportadora"]').click();
+  await page.locator('[data-home-favorite="carga"]').click();
   await page.locator('#theme-btn').click();
-  await expect(page.locator('body')).not.toHaveClass(/dark/);
+  await expect(page.locator('body')).toHaveClass(/dark/);
   const sidebarToggle = page.locator('#sidebar-collapse-btn');
   if (await sidebarToggle.getAttribute('aria-expanded') === 'true') await sidebarToggle.click();
-  for (const term of ['transportadora', 'CPF']) {
+  for (const term of ['Carga', 'CPF']) {
     await page.keyboard.press('Control+k');
     await page.locator('#command-palette-input').fill(term);
     await expect(page.locator('#command-palette-results [role="option"]')).not.toHaveCount(0);
@@ -115,11 +116,11 @@ test('E2E-02: catálogo único reúne busca e favoritos; preferências persistem
     await page.keyboard.press('Escape');
   }
   await page.reload();
-  await expect(page.locator('body')).not.toHaveClass(/dark/);
+  await expect(page.locator('body')).toHaveClass(/dark/);
   await expect(page.locator('body')).toHaveClass(/sidebar-collapsed/);
-  for (const id of ['cpf', 'transportadora']) await expect(page.locator('[data-home-favorite="' + id + '"]')).toHaveAttribute('aria-pressed', 'true');
+  for (const id of ['cpf', 'carga']) await expect(page.locator('[data-home-favorite="' + id + '"]')).toHaveAttribute('aria-pressed', 'true');
   await page.locator('#home-generator-search').fill('conteiner');
-  await expect(page.locator('[data-home-card="conteiner"]')).toBeVisible();
+  await expect(page.locator('[data-home-card="conteiner-lacre"]')).toBeVisible();
   const isolated = await browser.newContext({ baseURL, locale: 'pt-BR', timezoneId: 'America/Sao_Paulo' });
   const unexpected = [];
   try {
@@ -127,7 +128,7 @@ test('E2E-02: catálogo único reúne busca e favoritos; preferências persistem
     const fresh = await isolated.newPage();
     await openApp(fresh);
     await expect(fresh.locator('body')).toHaveAttribute('data-environment', 'unified');
-    await expect(fresh.locator('body')).toHaveClass(/dark/);
+    await expect(fresh.locator('body')).not.toHaveClass(/dark/);
     expect(await fresh.evaluate(() => JSON.parse(localStorage.getItem('thegenerator:favorite-generators') || '[]'))).toEqual([]);
     expect(await fresh.evaluate(() => JSON.parse(localStorage.getItem('gerador:historico_docs') || '[]'))).toEqual([]);
     expect(unexpected).toEqual([]);
@@ -136,7 +137,9 @@ test('E2E-02: catálogo único reúne busca e favoritos; preferências persistem
 
 test('E2E-03: Cadastro gera grupos, edita e restaura o tipo correto sem trocar o catálogo', async ({ page }) => {
   await openApp(page);
-  await page.locator('#tab-btn-cadastro').click();
+  await openWorkspace(page,'cadastro');
+  await expect(page.locator('#cadastro-edit')).toHaveAttribute('open', '');
+  await expect(page.locator('#cad_nome')).toBeVisible();
   await page.getByRole('button', { name: 'Limpar seleção', exact: true }).click();
   await page.locator('input[name="cadastro-grupo"][value="identificacao"]').check();
   await page.locator('input[name="cadastro-grupo"][value="documentos"]').check();
@@ -182,7 +185,7 @@ test('E2E-03: Cadastro gera grupos, edita e restaura o tipo correto sem trocar o
 
 test('E2E-04: XML abre cópia, edita, exporta e importa sem alterar o documento-fonte', async ({ page }) => {
   await openApp(page);
-  await page.locator('#tab-btn-xml').click();
+  await openWorkspace(page,'xml');
   await page.locator('#xml-form-tipo').selectOption('nfe');
   await page.locator('#xml-preview-tipo').selectOption('nfe');
   const original = await page.evaluate(() => serializarXml(xmlsGerados.nfe));
@@ -214,7 +217,7 @@ test('E2E-05: comandos revisáveis, lote completo e erro preservam rascunho e an
   const remoteChat = [];
   page.on('request', request => { if (/\/api\/(?:chat|status)(?:\?|$)/.test(request.url())) remoteChat.push(request.url()); });
   await openApp(page);
-  await page.locator('#tab-btn-chat').click();
+  await openWorkspace(page,'chat');
   await page.locator('#chat-sugestoes').getByRole('button', { name: '3 CPFs e 2 CNPJs', exact: true }).click();
   await expect(page.locator('#chat-pedido')).toHaveValue('3 CPFs e 2 CNPJs');
   await expect(page.locator('#chat-mensagens .chat-troca')).toHaveCount(0);

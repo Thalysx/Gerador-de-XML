@@ -183,8 +183,28 @@ function limparLoteInterface() {
   document.getElementById('lote-tipo').focus();
 }
 
+// Batch controls edit the existing preferences, without exposing them for unrelated individuals.
+const preferenciasLote=[['lote-mascara','toggle-mascara','checked'],['lote-uf','gerador-uf','value'],['lote-telefone-tipo','gerador-telefone-tipo','value'],['lote-codigo-barras','gerador-cracha-codigo-barras','checked']];
+function atualizarOpcoesLote(tipo=document.getElementById('lote-tipo').value) {
+  const mask=!!generatorById(tipo)?.mask,phone=tipo==='telefone',badge=tipo==='cracha';
+  document.getElementById('lote-settings').hidden=!mask&&!phone&&!badge;
+  document.getElementById('lote-mask-option').hidden=!mask;
+  document.getElementById('lote-phone-options').hidden=!phone;
+  document.getElementById('lote-badge-option').hidden=!badge;
+  for(const [batch,original,property] of preferenciasLote)document.getElementById(batch)[property]=document.getElementById(original)[property];
+}
+for(const [batch,original,property] of preferenciasLote) {
+  document.getElementById(batch).addEventListener('change',()=>{
+    const control=document.getElementById(original);
+    control[property]=document.getElementById(batch)[property];
+    control.dispatchEvent(new Event('change',{bubbles:true}));
+  });
+  document.getElementById(original).addEventListener('change',()=>atualizarOpcoesLote());
+}
+
 function inicializarGeracao() {
   document.getElementById('gerador-uf').innerHTML = '<option value="">Todas as UFs</option>' + Object.keys(DDD_POR_UF).sort().map(uf => `<option>${uf}</option>`).join('');
+  document.getElementById('lote-uf').innerHTML=document.getElementById('gerador-uf').innerHTML;
   atualizarTiposLotePorAmbiente();
   atualizarChatPorAmbiente();
   inicializarComposerChat();

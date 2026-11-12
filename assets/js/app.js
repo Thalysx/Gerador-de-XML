@@ -2,7 +2,7 @@ window.onload = () => {
   initializeTabs();
   initializeBootstrapUi();
 
-  const temaSalvo = storageGet('gerador:tema', 'dark');
+  const temaSalvo = storageGet('gerador:tema', 'light');
   if (temaSalvo === 'dark') toggleTheme();
 
   processarXML(acao.inicio);

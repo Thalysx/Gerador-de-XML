@@ -11,6 +11,7 @@ const NOMES_COMANDOS = Object.freeze({
   motorista:['motoristas','(?:dados para (?:um |uma )?)?motoristas?'],'operador-portuario':['operadores portuários','operadores? portuarios?'],'visitante-portuario':['visitantes portuários','visitantes? portuarios?'],'pessoa-portuaria':['pessoas portuárias','pessoas? portuarias?'],
   transportadora:['transportadoras','transportadoras?'],'cliente-portuario':['clientes portuários','clientes? portuarios?'],depositante:['depositantes','depositantes?'],importador:['importadores','importador(?:es)?'],exportador:['exportadores','exportador(?:es)?'],
   'cavalo-mecanico':['cavalos mecânicos','cavalos? mecanicos?'],carreta:['carretas','carretas?'],'conjunto-veicular':['conjuntos veiculares','conjuntos? veicular(?:es)?'],
+  carga:['cargas','cargas?'],
   'carga-solta':['cargas soltas','cargas? soltas?'],'granel-solido':['granéis sólidos','granel solido|graneis solidos'],'granel-liquido':['granéis líquidos','granel liquido|graneis liquidos'],'carga-conteinerizada':['cargas conteinerizadas','cargas? conteinerizadas?'],
   'chave-cte':['chaves de CT-e','chaves? de ct-?e'],di:['DIs de teste','dis?(?: de teste)?'],duimp:['DUIMPs de teste','duimps?(?: de teste)?'],'documento-carga':['documentos de carga','documentos? de carga']
 });

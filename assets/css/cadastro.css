@@ -14,8 +14,8 @@
 .cadastro-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .cadastro-header h2 { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 0; }
 .cadastro-header p { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
-.cadastro-form { background:transparent; border:0; border-radius:0; overflow:visible; padding:0; }
-.cadastro-section { padding: var(--ui-space-4) 0; border-bottom: 1px solid var(--border); }
+.cadastro-form { background:var(--surface); border:1px solid var(--border); border-radius:var(--ui-radius-lg); overflow:hidden; padding:0; }
+.cadastro-section { padding:16px 20px; border-bottom:1px solid var(--border); }
 .cadastro-section:last-child { border-bottom: none; }
 .cadastro-section-title { font-family: 'Inter', sans-serif; font-size: .9375rem; font-weight: 700; color: var(--text); letter-spacing: -.02em; margin-bottom: var(--ui-space-3); display: flex; align-items: center; gap: 8px; }
 .section-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; display: none; }
@@ -41,21 +41,21 @@
 .cad-select { font-family: 'Inter', sans-serif; font-size: 12px; padding: 7px 8px; border-radius: var(--ui-radius-sm); border: 1px solid var(--border); background: var(--input-bg); color: var(--text); outline: none; width: 100%; min-width: 0; transition: border-color var(--motion-fast), box-shadow var(--motion-fast), background-color var(--motion-fast), color var(--motion-fast); min-height: var(--ui-control); }
 .cad-select:hover { border-color: var(--border-strong); }
 .cad-select:focus { border-color: var(--accent); background: var(--surface); outline: 2px solid var(--accent); outline-offset: 2px; }
-.cad-gen-btn { padding: 0 9px; font-size: 10.5px; font-weight: 600; border-radius: 6px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; transition: background-color var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast); font-family: 'Inter', sans-serif; white-space: nowrap; min-height: 36px; border-color: transparent; }
+.cad-gen-btn { padding:0 9px; font-size:11px; font-weight:600; border-radius:6px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted); cursor:pointer; transition:background-color var(--motion-fast),border-color var(--motion-fast),color var(--motion-fast); font-family:'Inter',sans-serif; white-space:nowrap; min-height:36px; }
 .cad-gen-btn:hover { background: var(--surface-2); color: var(--accent); border-color: transparent; }
 .cad-gen-btn:focus-visible { background: var(--btn-hover); border-color: var(--accent); color: var(--text); }
-.cad-copy-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; min-height: 36px; padding: 0; font-size: 13px; border-radius: 6px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; transition: background-color var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast); border-color: transparent; }
+.cad-copy-btn { display:inline-flex; align-items:center; justify-content:center; width:32px; min-height:36px; padding:0; font-size:13px; border-radius:6px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted); cursor:pointer; transition:background-color var(--motion-fast),border-color var(--motion-fast),color var(--motion-fast); }
 .cad-copy-btn:hover { background: var(--surface-2); color: var(--accent); border-color: transparent; }
 .cad-copy-btn:focus-visible { background: var(--btn-hover); border-color: var(--accent); color: var(--text); }
 .cad-copy-btn.copied { background: var(--accent-green-bg); border-color: var(--accent-green-border); color: var(--accent-green); }
-.cadastro-actions { padding: var(--ui-space-3) 0 var(--ui-space-4); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: var(--surface-2); border-top: 1px solid var(--border); }
-.cadastro-layout { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; align-items:start; }
-@media (max-width: 1200px) {
+.cadastro-actions { padding:16px 20px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; background:var(--surface-2); border-top:1px solid var(--border); }
+.cadastro-layout { display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:24px; align-items:start; }
+@media (max-width: 1100px) {
 .cadastro-layout { grid-template-columns: 1fr; }
 }
-.cadastro-col-left { min-width:0; order:2; }
-.cadastro-col-right { position:static; display:flex; flex-direction:column; gap:16px; order:1; max-height:none; overflow:visible; }
-@media (max-width: 900px) {
+.cadastro-col-left { min-width:0; }
+.cadastro-col-right { min-width:0; position:sticky; top:16px; display:flex; flex-direction:column; gap:16px; max-height:none; overflow:visible; }
+@media (max-width: 1100px) {
 .cadastro-col-right { position: static; }
 }
 .cadastro-result { background: var(--surface); border: 1px solid var(--border); border-radius: var(--ui-radius); overflow: hidden; display: none; }
@@ -63,20 +63,21 @@
 .cadastro-col-right:has(.cadastro-result.visible) .cadastro-empty { display:none; }
 .cadastro-col-right .result-grid { grid-template-columns: 1fr; }
 .cadastro-col-right .result-item { border:0; border-bottom:1px solid var(--border); border-radius:0; background:transparent; }
-.result-sheet { display: grid; gap: var(--ui-space-3); padding: var(--ui-space-3); }
+.result-sheet { display:grid; gap:16px; padding:16px; }
 .result-sheet-section { overflow:hidden; border:0; background:transparent; }
-.result-sheet-title { padding:12px 0; border-bottom:1px solid var(--border); background:transparent; color:var(--text); font-family:Inter,sans-serif; font-size:16px; font-weight:600; }
-.result-sheet-section .result-grid { padding: 12px; gap: 10px; }
+.result-sheet-title { padding:0 0 8px; border-bottom:1px solid var(--border); background:transparent; color:var(--text); font-family:Inter,sans-serif; font-size:13px; font-weight:600; }
+.result-sheet-section .result-grid { padding:8px 0 0; gap:0; }
+.cadastro-col-right .result-item { padding:10px 0; }
 .field-copy-action { flex-shrink: 0; }
 .field-copy-action.is-copied { border-color:var(--accent-green-border); background:var(--accent-green-bg); color:var(--success); }
 .field-copy-action :is(i,svg) { width:14px; height:14px; }
 @media (max-width: 600px) {
 .cad-input-wrap.with-select { grid-template-columns: 1fr; }
 }
-@media (min-width:901px) {
+@media (min-width:1101px) {
 .cadastro-col-right { align-self: start; max-height: calc(100dvh - 2rem); overflow: auto; scrollbar-gutter: stable; }
 }
-@media (min-width:901px) {
+@media (min-width:1101px) {
 .cadastro-col-right > * { flex-shrink: 0; }
 }
 .cadastro-primary-action { min-height: auto; margin: 0 0 12px; padding: 0; justify-content: flex-end; border: 0; background: transparent; }
@@ -95,8 +96,7 @@
 .cadastro-group-footer .btn-accent { width: 100%; }
 }
 
-.cadastro-layout:has(#cadastro-edit[open]) { grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); }
-.cadastro-layout:has(#cadastro-edit[open]) .cadastro-col-left { order:1; }
-.cadastro-layout:has(#cadastro-edit[open]) .cadastro-col-right { order:2; }
+.cadastro-layout:has(.cadastro-col-left[hidden]) { grid-template-columns:minmax(0,1fr); }
+#cadastro-edit { margin:0; border:0; }
+#cadastro-edit > summary { padding-top:0; }
 .cadastro-portuario-form { margin-bottom:24px; }
-@media(max-width:1100px) { .cadastro-layout:has(#cadastro-edit[open]) { grid-template-columns:minmax(0,1fr); } }

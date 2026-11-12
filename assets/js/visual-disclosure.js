@@ -23,7 +23,7 @@ function fecharAcoesVisuais(disclosure, recoverFocus = false) {
 }
 
 function posicionarAcoesVisuais(disclosure) {
-  if (!disclosure.open) return;
+  if (!disclosure.open || disclosure.classList.contains('xml-downloads')) return;
   const panel = disclosure.querySelector('.action-disclosure-content');
   const trigger = disclosure.querySelector(':scope > summary');
   if (!panel || !trigger) return;
@@ -87,7 +87,7 @@ document.addEventListener('invalid', event => {
 
 function atualizarPreferenciasVisuais() {
   if (!window.document) return;
-  document.getElementById('docs-advanced').hidden = document.getElementById('docs-preferencias').hidden;
+  document.getElementById('docs-advanced').hidden = document.getElementById('docs-preferencias').hidden || (!selectedGeneratorId && !currentType);
 }
 new MutationObserver(atualizarPreferenciasVisuais).observe(document.getElementById('docs-preferencias'), {attributes:true,attributeFilter:['hidden']});
 atualizarPreferenciasVisuais();

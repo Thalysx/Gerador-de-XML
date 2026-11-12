@@ -21,6 +21,50 @@ function escapeInlineValue(value) {
   return escapeAttr(jsSafe);
 }
 
+// Keep the latest result visible immediately; motion never delays a domain action.
+const animacoesResultado = new Map();
+const preferenciaMovimento = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+preferenciaMovimento?.addEventListener?.('change', event => {
+  if (!event.matches) return;
+  for (const animacao of animacoesResultado.values()) animacao.cancel();
+  animacoesResultado.clear();
+});
+
+function animarResultado(elemento) {
+  animacoesResultado.get(elemento)?.cancel();
+  animacoesResultado.delete(elemento);
+  if (!elemento?.animate || preferenciaMovimento?.matches) return;
+  const animacao = elemento.animate([
+    { opacity: .65, transform: 'translateY(4px)' },
+    { opacity: 1, transform: 'translateY(0)' }
+  ], { duration: 220, easing: 'cubic-bezier(.2,.7,.2,1)' });
+  animacoesResultado.set(elemento, animacao);
+  const limpar = () => {
+    if (animacoesResultado.get(elemento) === animacao) animacoesResultado.delete(elemento);
+  };
+  animacao.finished.then(limpar, limpar);
+}
+
+const estadosCopia = new WeakMap();
+function confirmarCopiaVisual(botao, rotulo) {
+  const anterior = estadosCopia.get(botao);
+  if (anterior) clearTimeout(anterior.timer);
+  const estado = anterior || { conteudo: botao.innerHTML, nome: botao.getAttribute('aria-label') };
+  botao.innerHTML = '<i data-lucide="check" aria-hidden="true"></i><span>Copiado</span>';
+  botao.setAttribute('aria-label', `${rotulo} copiado`);
+  botao.classList.add('copied', 'is-copied');
+  renderLucideIcons(botao);
+  estado.timer = setTimeout(() => {
+    botao.innerHTML = estado.conteudo;
+    if (estado.nome === null) botao.removeAttribute('aria-label');
+    else botao.setAttribute('aria-label', estado.nome);
+    botao.classList.remove('copied', 'is-copied');
+    estadosCopia.delete(botao);
+    if (botao.isConnected) renderLucideIcons(botao);
+  }, 1500);
+  estadosCopia.set(botao, estado);
+}
+
 let statusTimer = null;
 
 function mostrarStatus(mensagem, tipo = 'success') {
@@ -69,18 +113,7 @@ async function copiarTexto(texto, mensagemSucesso = 'Copiado para a área de tra
 async function copiarCampoResultado(botao, valor, rotulo = 'Valor') {
   const ok = await copiarTexto(valor, `${rotulo} copiado.`);
   if (!ok || !botao) return ok;
-  const conteudoOriginal = botao.innerHTML;
-  const nomeOriginal = botao.getAttribute('aria-label') || `Copiar ${rotulo}`;
-  botao.innerHTML = '<i data-lucide="check" aria-hidden="true"></i> Copiado';
-  botao.setAttribute('aria-label', `${rotulo} copiado`);
-  botao.classList.add('copied', 'is-copied');
-  renderLucideIcons(botao);
-  setTimeout(() => {
-    botao.innerHTML = conteudoOriginal;
-    botao.setAttribute('aria-label', nomeOriginal);
-    botao.classList.remove('copied', 'is-copied');
-    renderLucideIcons(botao);
-  }, 1500);
+  confirmarCopiaVisual(botao, rotulo);
   return true;
 }
 

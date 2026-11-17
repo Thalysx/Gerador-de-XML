@@ -1,5 +1,60 @@
 const { test, expect, openApp, openWorkspace } = require('./fixtures.cjs');
 
+test('menu de anexos oferece arquivo, XML atual e colagem com navegação por teclado', async ({ page }, testInfo) => {
+  await openApp(page);
+  await openWorkspace(page,'chat');
+  const trigger=page.locator('#chat-anexo-area > summary');
+  const popover=page.locator('#chat-anexo-popover');
+  const opcoes=page.getByRole('menu',{name:'Adicionar contexto'});
+  await trigger.click();
+  await expect(opcoes.getByRole('menuitem')).toHaveCount(4);
+  await expect(page.locator('#chat-anexo')).toBeHidden();
+  for(const dark of [false,true]) {
+    await page.evaluate(dark=>document.body.classList.toggle('dark',dark),dark);
+    const bounds=await popover.boundingBox();
+    expect(bounds.x).toBeGreaterThanOrEqual(8);
+    expect(bounds.x+bounds.width).toBeLessThanOrEqual(page.viewportSize().width-8);
+    expect(bounds.y).toBeGreaterThanOrEqual(8);
+    const triggerBounds=await trigger.boundingBox();
+    expect(bounds.y+bounds.height).toBeLessThanOrEqual(triggerBounds.y);
+    await page.screenshot({path:testInfo.outputPath(`attachment-menu-${dark?'dark':'light'}.png`)});
+  }
+  await trigger.press('ArrowDown');
+  await expect(opcoes.getByRole('menuitem',{name:/Arquivo XML/})).toBeFocused();
+  await page.keyboard.press('End');
+  await expect(opcoes.getByRole('menuitem',{name:/CT-e atual/})).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(popover).toBeHidden();
+  await expect(page.locator('#chat-anexo-tipo')).toHaveValue('cte');
+  await expect(page.locator('#chat-anexo-nome')).toContainText('CTE atual');
+  await expect(page.locator('#chat-pedido')).toBeFocused();
+  await trigger.click();
+  await opcoes.getByRole('menuitem',{name:/NF-e atual/}).click();
+  await expect(page.locator('#chat-anexo-tipo')).toHaveValue('nfe');
+  await expect(page.locator('#chat-anexo')).toHaveValue(/nfeProc/);
+  await trigger.click();
+  await opcoes.getByRole('menuitem',{name:/Colar XML/}).click();
+  await expect(page.locator('#chat-anexo')).toBeFocused();
+  await page.locator('#chat-anexo').fill('<consulta>teste local</consulta>');
+  await page.getByRole('button',{name:'Usar XML',exact:true}).click();
+  await expect(popover).toBeHidden();
+  await expect(page.locator('#chat-anexo-nome')).toContainText('XML colado');
+  await trigger.click();
+  await expect(opcoes).toBeVisible();
+  await opcoes.getByRole('menuitem',{name:/Colar XML/}).click();
+  await page.getByRole('button',{name:'Voltar às opções de anexo'}).click();
+  await expect(opcoes.getByRole('menuitem',{name:/Colar XML/})).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  const chooser=page.waitForEvent('filechooser');
+  await opcoes.getByRole('menuitem',{name:/Arquivo XML/}).click();
+  await (await chooser).setFiles({name:'contexto.xml',mimeType:'application/xml',buffer:Buffer.from('<arquivo/>')});
+  await expect(popover).toBeHidden();
+  await expect(page.locator('#chat-anexo')).toHaveValue('<arquivo/>');
+  await expect(page.locator('#chat-anexo-nome')).toContainText('contexto.xml');
+});
+
 test('E2E-08: controles da busca respeitam fechamento e ativação por teclado', async ({ page }) => {
   await openApp(page);
   const origin=page.locator('#theme-btn');

@@ -46,37 +46,52 @@ const LOCKABLE_FIELDS = [
   'Emitente_Nota','nfe_nomeEmit','nfe_cnpjDest','nfe_nomeDest','nfe_cnpjTransp','nfe_nomeTransp'
 ];
 
+function obterCamposPreservaveisXml() {
+  const ids = [...LOCKABLE_FIELDS];
+  document.querySelectorAll('.produto-item').forEach((item, idx) => {
+    ['select','nome','ncm','codigo','qCom','qTrib','valor','uCom'].forEach(campo => ids.push(`nfes_prod_${idx}_${campo}`));
+  });
+  return ids.map(id => document.getElementById(id)).filter(Boolean);
+}
+
+function atualizarIndicadoresPreservacaoXml() {
+  obterCamposPreservaveisXml().forEach(campo => {
+    const unidade = campo.type === 'hidden';
+    const controle = unidade ? campo.closest('.unit-toggle-row') : campo;
+    const rotulo = unidade ? document.getElementById(campo.id.replace(/_uCom$/, '_unidade_label')) : campo.labels?.[0];
+    controle?.classList.toggle('locked', lockAtivo);
+    if (!rotulo) return;
+    const indicador = rotulo.querySelector('.field-lock-status');
+    if (!lockAtivo) {
+      indicador?.remove();
+    } else if (!indicador) {
+      const status = document.createElement('span');
+      status.className = 'field-lock-status';
+      status.innerHTML = '<i data-lucide="lock" aria-hidden="true"></i> Preservado';
+      rotulo.append(status);
+    }
+  });
+  renderLucideIcons(document.getElementById('tab-xml'));
+}
+
 function toggleLock() {
   lockAtivo = !lockAtivo;
   const btn = document.getElementById('lock-btn');
-  const lockIcon = '<i data-lucide="lock" aria-hidden="true"></i>';
-  const unlockIcon = '<i data-lucide="lock-open" aria-hidden="true"></i>';
-  btn.innerHTML = lockAtivo ? lockIcon + ' Desbloquear alterações' : unlockIcon + ' Bloquear alterações';
+  const lockIcon = '<i data-lucide="lock" class="lock-feedback" aria-hidden="true"></i>';
+  const unlockIcon = '<i data-lucide="lock-open" class="lock-feedback" aria-hidden="true"></i>';
+  btn.innerHTML = lockAtivo ? lockIcon + ' Campos preservados' : unlockIcon + ' Preservar campos';
   renderLucideIcons(btn);
   btn.setAttribute('aria-pressed', String(lockAtivo));
-  btn.setAttribute('aria-label', lockAtivo ? 'Desbloquear alterações dos campos XML' : 'Bloquear alterações dos campos XML');
+  btn.setAttribute('aria-label', 'Preservar os campos XML ao gerar novamente');
   lockAtivo ? btn.classList.add('active') : btn.classList.remove('active');
-  LOCKABLE_FIELDS.forEach(id => { const el = document.getElementById(id); if (!el) return; lockAtivo ? el.classList.add('locked') : el.classList.remove('locked'); });
-  document.querySelectorAll('.produto-item').forEach((item, idx) => {
-    ['nome','ncm','codigo','qCom','qTrib','valor'].forEach(campo => {
-      const el = document.getElementById(`nfes_prod_${idx}_${campo}`);
-      if (!el) return;
-      lockAtivo ? el.classList.add('locked') : el.classList.remove('locked');
-    });
-  });
+  atualizarIndicadoresPreservacaoXml();
   salvarEstadoXml();
 }
 
 function salvarCamposTravados() {
   if (!lockAtivo) return null;
   const snap = {};
-  LOCKABLE_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) snap[id] = el.value; });
-  document.querySelectorAll('.produto-item').forEach((item, idx) => {
-    ['select','nome','ncm','codigo','qCom','qTrib','valor','uCom'].forEach(campo => {
-      const el = document.getElementById(`nfes_prod_${idx}_${campo}`);
-      if (el) snap[`nfes_prod_${idx}_${campo}`] = el.value;
-    });
-  });
+  obterCamposPreservaveisXml().forEach(campo => { snap[campo.id] = campo.value; });
   return snap;
 }
 
@@ -120,14 +135,6 @@ function processarXML(action) {
     xml = geraNovosNumerosCodigosAleatorios(xml, hierarquia);
     preencherCamposFormulario(xml, hierarquia);
     restaurarCamposTravados(snap);
-    if (lockAtivo) {
-      document.querySelectorAll('.produto-item').forEach((item, idx) => {
-        ['nome','ncm','codigo','qCom','qTrib','valor'].forEach(campo => {
-          const el = document.getElementById(`nfes_prod_${idx}_${campo}`);
-          if (el) el.classList.add('locked');
-        });
-      });
-    }
   }
   finalizarEGerarXML(xml, hierarquia, action === acao.regenerar);
   if (action !== acao.inicio) {
@@ -421,6 +428,7 @@ function preencherCamposFormulario(xml, hierarquia) {
         </div>
       </div>`;
   });
+  atualizarIndicadoresPreservacaoXml();
 }
 
 function onProdutoChange(idx) {

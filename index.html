@@ -799,7 +799,29 @@
           <div id="chat-anexo-pendente" class="chat-attachment-chip" hidden><span id="chat-anexo-nome">XML pendente</span><button type="button" id="chat-anexo-limpar" onclick="limparAnexoChat()" aria-label="Remover anexo">×</button></div>
           <div class="chat-compose-main">
             <div id="chat-anexo-fluxo" class="chat-attachment-tools">
-              <details id="chat-anexo-area" class="chat-attachment-menu"><summary aria-label="Adicionar anexo" data-tooltip="Adicionar anexo"><i data-lucide="plus" aria-hidden="true"></i></summary><div class="chat-attachment-popover"><strong>Adicionar anexo</strong><p class="texto-apoio">O XML fica neste navegador para consultas e testes. Até 100 KB.</p><div class="acoes-inline"><label class="btn" for="chat-anexo-arquivo">Adicionar arquivo</label><input class="sr-only" type="file" id="chat-anexo-arquivo" accept=".xml,text/xml,application/xml"><select id="chat-anexo-tipo" aria-label="Tipo de XML atual"><option value="nfe">NF-e atual</option><option value="cte">CT-e atual</option></select><button type="button" onclick="anexarXmlAtualChat()">Adicionar XML atual</button></div><label for="chat-anexo">Ou cole o conteúdo XML</label><textarea id="chat-anexo" spellcheck="false" placeholder="Cole o XML que deseja consultar" aria-describedby="chat-anexo-status"></textarea><p id="chat-anexo-status" class="texto-apoio" role="status">Nenhum anexo pendente.</p></div></details>
+              <details id="chat-anexo-area" class="chat-attachment-menu">
+                <summary aria-label="Adicionar anexo" aria-haspopup="menu" aria-controls="chat-anexo-popover" data-tooltip="Adicionar anexo"><i data-lucide="plus" aria-hidden="true"></i></summary>
+                <div id="chat-anexo-popover" class="chat-attachment-popover">
+                  <div id="chat-anexo-opcoes" role="menu" aria-label="Adicionar contexto">
+                    <p class="chat-attachment-heading">Adicionar</p>
+                    <button type="button" class="chat-attachment-option" role="menuitem" onclick="document.getElementById('chat-anexo-arquivo').click()"><i data-lucide="file-up" aria-hidden="true"></i><span><span class="chat-attachment-title">Arquivo XML</span><span class="chat-attachment-description">Do computador</span></span></button>
+                    <button type="button" class="chat-attachment-option" role="menuitem" data-chat-anexo-colar onclick="alternarColagemAnexoChat(true)"><i data-lucide="code-2" aria-hidden="true"></i><span><span class="chat-attachment-title">Colar XML</span><span class="chat-attachment-description">Usar conteúdo copiado</span></span></button>
+                    <p class="chat-attachment-heading">Do gerador</p>
+                    <button type="button" class="chat-attachment-option" role="menuitem" onclick="anexarXmlAtualChat('nfe')"><i data-lucide="file-text" aria-hidden="true"></i><span><span class="chat-attachment-title">NF-e atual</span><span class="chat-attachment-description">Nota fiscal gerada</span></span></button>
+                    <button type="button" class="chat-attachment-option" role="menuitem" onclick="anexarXmlAtualChat('cte')"><i data-lucide="truck" aria-hidden="true"></i><span><span class="chat-attachment-title">CT-e atual</span><span class="chat-attachment-description">Transporte gerado</span></span></button>
+                    <p class="chat-attachment-footnote">XML de até 100 KB. O anexo fica neste navegador.</p>
+                  </div>
+                  <div id="chat-anexo-colagem" class="chat-attachment-paste" hidden>
+                    <button type="button" class="chat-attachment-back" onclick="alternarColagemAnexoChat(false)" aria-label="Voltar às opções de anexo"><i data-lucide="chevron-left" aria-hidden="true"></i> Colar XML</button>
+                    <label class="sr-only" for="chat-anexo">Conteúdo XML</label>
+                    <textarea id="chat-anexo" spellcheck="false" placeholder="Cole o XML que deseja consultar" aria-describedby="chat-anexo-status"></textarea>
+                    <div class="chat-attachment-paste-actions"><span>Até 100 KB</span><button type="button" onclick="confirmarColagemAnexoChat()">Usar XML</button></div>
+                  </div>
+                  <p id="chat-anexo-status" class="chat-attachment-status" role="status"></p>
+                  <input type="file" id="chat-anexo-arquivo" accept=".xml,text/xml,application/xml" hidden>
+                  <select id="chat-anexo-tipo" aria-label="Tipo de XML atual" hidden><option value="nfe">NF-e atual</option><option value="cte">CT-e atual</option></select>
+                </div>
+              </details>
             </div>
             <label class="sr-only" for="chat-pedido">Mensagem</label><textarea id="chat-pedido" rows="1" maxlength="500" autocomplete="off" placeholder="Pergunte ou peça para gerar algo..." aria-describedby="chat-status" required></textarea>
             <button id="chat-enviar" type="submit" class="btn-accent ui-primary" aria-label="Enviar mensagem"><span class="sr-only">Enviar</span><i data-lucide="arrow-up" aria-hidden="true"></i></button>
@@ -820,7 +842,6 @@
     <div class="screen-toolbar"><p class="texto-apoio">Análise local e XSD.</p><div class="acoes-inline"><button type="button" id="validacao-exportar" onclick="exportarRelatorioXml()" disabled>Exportar relatório</button><button type="button" class="ui-danger" onclick="limparValidacaoXml()">Limpar análise</button></div></div>
     <div class="validacao-layout">
       <section class="painel-novo validacao-entrada" aria-labelledby="validacao-entrada-title"><h3 id="validacao-entrada-title">Escolha o XML</h3>
-        <p class="texto-apoio">Sintaxe e regras locais são verificadas no navegador. Ao selecionar ou arrastar arquivos, ou acionar uma validação, XMLs de NF-e ou CT-e na versão 4.00, com sintaxe válida e até 4 MiB, são enviados ao servidor da aplicação para verificar o XSD. O serviço não armazena nem registra o conteúdo do XML.</p>
         <div class="validacao-dropzone" id="validacao-dropzone">
           <input type="file" id="validacao-arquivos" accept=".xml,application/xml,text/xml" multiple hidden aria-label="Selecionar arquivos XML para validação">
           <button type="button" class="validacao-dropzone-inner" onclick="document.getElementById('validacao-arquivos').click()" aria-label="Selecionar arquivos XML para validação">
@@ -841,7 +862,6 @@
           </div>
           <button type="button" class="ui-danger" onclick="gerarXmlNegativo()">Gerar XML intencionalmente inválido</button>
         </section>
-        <p class="texto-apoio">Se o serviço XSD estiver indisponível, as verificações locais continuam e o relatório informa a cobertura reduzida. CT-e 3.00 não tem cobertura XSD. A análise não verifica assinatura digital, todas as regras fiscais ou autorização na SEFAZ.</p>
       </section>
       <section class="validacao-resultados" aria-label="Relatórios de validação">
         <p id="validacao-resumo" class="texto-apoio" role="status" aria-live="polite"></p>

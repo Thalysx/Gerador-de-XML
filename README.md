@@ -2,7 +2,7 @@
 
 Plataforma de dados sintéticos para desenvolvimento e QA. Versão **3.0.0-alpha.8**: [abrir aplicação](https://gerador-de-xml.vercel.app/).
 
-O catálogo reúne ferramentas gerais e portuárias, com busca e filtros por categoria. O assistente executa comandos locais no navegador. A aplicação gera dados fictícios para testes; não emite documentos fiscais nem consulta cadastros oficiais.
+O catálogo reúne ferramentas gerais e portuárias, com busca e filtros por categoria. Dados cadastrais inicia com oito acessos rápidos; Ver todos, a busca e as categorias dão acesso ao catálogo completo. O assistente executa comandos locais no navegador. A aplicação gera dados fictícios para testes; não emite documentos fiscais nem consulta cadastros oficiais.
 
 ## Áreas disponíveis
 

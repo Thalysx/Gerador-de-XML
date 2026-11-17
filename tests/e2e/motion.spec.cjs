@@ -1,5 +1,67 @@
 const { test, expect, openApp, openWorkspace, openDetails } = require('./fixtures.cjs');
 
+test('campos preservados ficam identificados após regenerar, adicionar produtos e recarregar', async ({ page }) => {
+  await openApp(page);
+  await openWorkspace(page,'xml');
+  await page.locator('#xml-form-tipo').selectOption('ambos');
+  await page.locator('#lock-btn').click();
+  for (const id of ['cte_nomeEmit','nfe_nomeEmit','nfes_prod_0_nome','nfes_prod_0_select']) {
+    await expect(page.locator(`label[for="${id}"] .field-lock-status`)).toHaveText('Preservado');
+    await expect(page.locator(`label[for="${id}"] .field-lock-status svg`)).toBeVisible();
+  }
+  await expect(page.locator('#nfes_prod_0_unidade_label .field-lock-status')).toBeVisible();
+  await expect(page.locator('label[for="nfe_codigo"] .field-lock-status')).toHaveCount(0);
+  await expect(page.locator('#tab-xml .field-lock-status')).toHaveCount(22);
+  const cores=await page.evaluate(()=>['nfe_nomeEmit','cte_nomeEmit','nfes_prod_0_select','nfe_codigo'].map(id=>getComputedStyle(document.getElementById(id)).backgroundColor));
+  expect(cores[0]).toBe(cores[1]);
+  expect(cores[0]).toBe(cores[2]);
+  expect(cores[0]).not.toBe(cores[3]);
+  await page.getByRole('button',{name:'Gerar novos dados',exact:true}).click();
+  await expect(page.locator('#tab-xml .field-lock-status')).toHaveCount(22);
+  await page.getByRole('button',{name:'Adicionar produto',exact:true}).click();
+  await expect(page.locator('label[for="nfes_prod_1_nome"] .field-lock-status')).toBeVisible();
+  await expect(page.locator('#tab-xml .field-lock-status')).toHaveCount(30);
+  await page.reload();
+  await openWorkspace(page,'xml');
+  await expect(page.locator('#tab-xml .field-lock-status')).toHaveCount(30);
+  await page.locator('#theme-btn').click();
+  await expect(page.locator('label[for="nfe_nomeEmit"] .field-lock-status')).toBeVisible();
+  await page.locator('#lock-btn').click();
+  await expect(page.locator('#tab-xml .field-lock-status')).toHaveCount(0);
+  await expect(page.locator('#tab-xml .locked')).toHaveCount(0);
+});
+
+test('preservar campos XML anima a cada clique e mantém os dados ao gerar novamente', async ({ page }) => {
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await openApp(page);
+  await openWorkspace(page,'xml');
+  const lock=page.locator('#lock-btn');
+  const empresa=page.locator('#nfe_nomeEmit');
+  await empresa.fill('Empresa preservada');
+  await lock.click();
+  await expect(lock).toHaveAttribute('aria-pressed','true');
+  await expect(lock).toHaveText('Campos preservados');
+  await expect(empresa).toHaveClass(/locked/);
+  await page.getByRole('button',{name:'Gerar novos dados',exact:true}).click();
+  await expect(empresa).toHaveValue('Empresa preservada');
+  // New icons must restart feedback even when toggled rapidly in the same frame.
+  const animations=await lock.evaluate(button=>Array.from({length:3},()=>{
+    button.click();
+    return button.querySelector('svg').getAnimations().map(animation=>animation.animationName);
+  }));
+  expect(animations).toEqual([['lockFeedback'],['lockFeedback'],['lockFeedback']]);
+  await expect(lock).toHaveAttribute('aria-pressed','false');
+  await expect(lock).toHaveText('Preservar campos');
+  await expect(empresa).not.toHaveClass(/locked/);
+  await page.locator('#theme-btn').click();
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await lock.click();
+  await expect(lock).toHaveAttribute('aria-pressed','true');
+  await expect(lock).toHaveText('Campos preservados');
+  expect(await lock.locator('svg').evaluate(icon=>icon.getAnimations().length)).toBe(0);
+  await expect(empresa).toHaveValue('Empresa preservada');
+});
+
 test('movimento acompanha geração, cópia repetida, menus e navegação', async ({ page }) => {
   await page.emulateMedia({reducedMotion:'no-preference'});
   await openApp(page);

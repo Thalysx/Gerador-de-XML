@@ -80,16 +80,23 @@ Search and category filtering SHALL precede configuration and results, operate o
 
 #### Scenario: Clear a filter
 - **WHEN** search is cleared
-- **THEN** category filtering resets and the complete discoverable workspace collection is restored.
+- **THEN** category filtering resets and the previous quick-access or full-catalog view is restored.
 
 ### Requirement: Primary content visibility
-Primary categories SHALL remain directly discoverable. Accordions SHALL be reserved for secondary or advanced content.
+Individual generation SHALL start with eight quick-access tools. Search and category filters SHALL cover the complete catalog, and an explicit action SHALL reveal all tools grouped by category. Configuration and result SHALL remain together. The picker MAY collapse after selection on narrow screens, while remaining reachable through a named summary.
 
 #### Scenario: Browse primary generator categories
 - GIVEN the user opens a generator page
 - WHEN the primary generator categories are rendered
-- THEN the categories and their options are directly visible
-- AND an accordion is used only for secondary or advanced content.
+- THEN eight quick-access tools are directly visible
+- AND all tools remain available through search, category filters or View all
+- AND categories in the full catalog are not individually hidden behind accordions.
+
+#### Scenario: Contextual individual and batch options
+- WHEN the user chooses a batch type unrelated to the current individual generator
+- THEN its mask, telephone or badge options are available in the batch section
+- AND unrelated options do not appear in the individual workspace
+- AND the existing shared preferences remain synchronized.
 
 ### Requirement: Full-page assistant
 

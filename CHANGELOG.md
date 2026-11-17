@@ -4,6 +4,9 @@ Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). Docume
 
 ## [Não publicado]
 
+- Dados individuais com oito acessos rápidos e catálogo completo pela busca, categoria ou Ver todos; configuração junto do resultado e seleção recolhida após a escolha em telas menores.
+- Preferências de lote acessíveis no próprio lote, sem exibir campos irrelevantes no gerador individual; downloads em Mais ações e modelo único do crachá retirado da configuração visível.
+- Superfícies claras mais discretas, tema escuro em grafite e navegação neutra; mantidos os geradores, formatos e preferências existentes.
 - Documentação consolidada em guias atuais; relatórios de execução, planos antigos e propostas arquivadas removidos da árvore versionada, sem alteração do aplicativo.
 
 ## [3.0.0-alpha.8] — 2026-11-07

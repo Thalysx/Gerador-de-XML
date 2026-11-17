@@ -309,9 +309,16 @@
           <label class="badge-barcode-option" for="gerador-cracha-codigo-barras"><input type="checkbox" id="gerador-cracha-codigo-barras" checked> Exibir código de barras ilustrativo</label>
         </div>
         <div class="output-box" id="docs-output-box" aria-labelledby="docs-result-label">
-          <div class="output-label" id="docs-result-label">Resultado</div>
-          <div class="output-value is-empty" id="output-val" aria-label="Resultado gerado" role="status" aria-live="polite" aria-atomic="true">Escolha um gerador ao lado. O resultado aparecerá aqui, pronto para copiar ou baixar.</div>
-          <p class="docs-result-status" id="docs-generation-status" hidden><i data-lucide="check" aria-hidden="true"></i> Gerado com sucesso</p>
+          <div class="docs-result-main">
+            <div class="docs-result-text">
+              <div class="output-label" id="docs-result-label">Resultado</div>
+              <div class="output-value is-empty" id="output-val" aria-label="Resultado gerado" role="status" aria-live="polite" aria-atomic="true">Escolha um gerador ao lado. O resultado aparecerá aqui, pronto para copiar ou baixar.</div>
+              <p class="docs-result-status" id="docs-generation-status" hidden><i data-lucide="check" aria-hidden="true"></i> Gerado com sucesso</p>
+            </div>
+            <div class="placa-preview" id="placa-preview">
+              <div class="placa-wrapper" id="placa-wrapper"></div>
+            </div>
+          </div>
           <div class="copy-row">
 
             <button type="button" class="ui-ghost" onclick="copyResult()" id="copy-btn" disabled aria-label="Copiar resultado gerado"><i data-lucide="copy" aria-hidden="true"></i> Copiar</button>
@@ -319,6 +326,17 @@
             <button type="button" class="ui-ghost" onclick="baixarResultadoDocumento()" id="download-doc-btn" disabled aria-label="Baixar resultado gerado em arquivo de texto"><i data-lucide="download" aria-hidden="true"></i> Baixar TXT</button>
             <button type="button" class="ui-ghost" onclick="gerarNovoDocumentoAtual()" id="new-doc-btn" disabled aria-label="Gerar novamente o documento atual"><i data-lucide="refresh-cw" aria-hidden="true"></i> Gerar novamente</button>            <button type="button" id="docs-expand-btn" aria-expanded="false" aria-controls="docs-result-details" disabled>Ver detalhes</button><button type="button" class="ui-danger" id="docs-clear-btn" disabled>Limpar</button></div></details>
             <span class="copied-msg" id="copied-msg">Copiado!</span>
+          </div>
+          <div class="nome-box" id="nome-box" role="group" aria-labelledby="nome-label">
+            <div class="output-label" id="nome-label">Nome</div>
+            <div class="nome-row">
+              <div class="nome-value" id="nome-val" aria-labelledby="nome-label" aria-live="polite" aria-atomic="true"></div>
+              <div class="nome-actions">
+                <button type="button" class="btn-sm" onclick="gerarNovoNome()" aria-label="Gerar novo nome para o documento atual">Novo nome</button>
+                <button type="button" class="btn-primary btn-sm" onclick="copyNome()" aria-label="Copiar nome gerado">Copiar</button>
+                <span class="nome-copied-msg" id="nome-copied-msg">Copiado!</span>
+              </div>
+            </div>
           </div>
           <pre id="docs-result-details" hidden></pre>
         </div>
@@ -351,10 +369,6 @@
           </article>
         </section>
 
-        <div class="placa-preview" id="placa-preview">
-          <div class="placa-wrapper" id="placa-wrapper"></div>
-        </div>
-
         <!-- Contêiner e lacre -->
         <div class="container-preview" id="container-preview" aria-live="polite" aria-atomic="true" aria-label="Resultado de contêiner e lacre">
           <div class="container-card shadow-sm" id="container-num-card" role="group" aria-labelledby="container-num-label">
@@ -379,17 +393,6 @@
           </div>
         </div>
 
-        <div class="nome-box shadow-sm" id="nome-box" role="group" aria-labelledby="nome-label">
-          <div class="output-label" id="nome-label">Nome</div>
-          <div class="nome-row">
-            <div class="nome-value" id="nome-val" aria-labelledby="nome-label" aria-live="polite" aria-atomic="true"></div>
-            <div class="nome-actions">
-              <button type="button" class="btn-sm" onclick="gerarNovoNome()" aria-label="Gerar novo nome para o documento atual">Novo nome</button>
-              <button type="button" class="btn-primary btn-sm" onclick="copyNome()" aria-label="Copiar nome gerado">Copiar</button>
-              <span class="nome-copied-msg" id="nome-copied-msg">Copiado!</span>
-            </div>
-          </div>
-        </div>
       </div>
 
     </div>
@@ -818,7 +821,7 @@
                     <div class="chat-attachment-paste-actions"><span>Até 100 KB</span><button type="button" onclick="confirmarColagemAnexoChat()">Usar XML</button></div>
                   </div>
                   <p id="chat-anexo-status" class="chat-attachment-status" role="status"></p>
-                  <input type="file" id="chat-anexo-arquivo" accept=".xml,text/xml,application/xml" hidden>
+                  <input type="file" id="chat-anexo-arquivo" accept=".xml,text/xml,application/xml" aria-label="Selecionar arquivo XML para anexar" hidden>
                   <select id="chat-anexo-tipo" aria-label="Tipo de XML atual" hidden><option value="nfe">NF-e atual</option><option value="cte">CT-e atual</option></select>
                 </div>
               </details>
@@ -841,19 +844,30 @@
   <div class="tab-panel" id="tab-validacao" role="tabpanel" aria-labelledby="tab-btn-validacao" tabindex="0" hidden>
     <div class="screen-toolbar"><p class="texto-apoio">Análise local e XSD.</p><div class="acoes-inline"><button type="button" id="validacao-exportar" onclick="exportarRelatorioXml()" disabled>Exportar relatório</button><button type="button" class="ui-danger" onclick="limparValidacaoXml()">Limpar análise</button></div></div>
     <div class="validacao-layout">
+      <div class="validacao-inputs">
       <section class="painel-novo validacao-entrada" aria-labelledby="validacao-entrada-title"><h3 id="validacao-entrada-title">Escolha o XML</h3>
         <div class="validacao-dropzone" id="validacao-dropzone">
-          <input type="file" id="validacao-arquivos" accept=".xml,application/xml,text/xml" multiple hidden aria-label="Selecionar arquivos XML para validação">
-          <button type="button" class="validacao-dropzone-inner" onclick="document.getElementById('validacao-arquivos').click()" aria-label="Selecionar arquivos XML para validação">
+          <input type="file" id="validacao-arquivos" accept=".xml,application/xml,text/xml" multiple hidden aria-label="Selecionar arquivos XML para validação" aria-describedby="validacao-upload-status validacao-upload-help">
+          <button type="button" class="validacao-dropzone-inner" onclick="document.getElementById('validacao-arquivos').click()" aria-label="Selecionar arquivos XML para validação" aria-describedby="validacao-upload-status validacao-upload-help">
             <i data-lucide="file-up" class="editor-dropzone-icon" aria-hidden="true"></i>
             <strong>Adicione seus arquivos XML</strong>
             <span>Arraste aqui ou selecione no computador</span>
             <small id="validacao-upload-status" role="status" aria-live="polite">Até 10 arquivos, com no máximo 5 MB cada</small>
+            <small id="validacao-upload-help">NF-e e CT-e 4.00 até 4 MiB são enviados ao servidor para validação XSD, sem armazenar o XML.</small>
           </button>
         </div>
-        <form onsubmit="return validarXmlColado(event)"><label for="validacao-texto">Ou cole o conteúdo XML</label><textarea id="validacao-texto" spellcheck="false" placeholder="Cole aqui o conteúdo de um arquivo XML"></textarea><button type="submit" class="btn-accent ui-primary">Validar conteúdo</button></form>
-        <hr class="divider"><div class="campo-novo"><label for="validacao-gerado-tipo">Documento atual do gerador</label><select id="validacao-gerado-tipo"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select></div><button type="button" onclick="validarXmlDoGerador()">Validar XML do gerador</button>
-        <section class="validacao-negativa" aria-labelledby="validacao-negativa-title">
+        <form class="validacao-texto-form" onsubmit="return validarXmlColado(event)">
+          <label for="validacao-texto">Ou cole o conteúdo XML</label>
+          <textarea id="validacao-texto" rows="14" spellcheck="false" aria-describedby="validacao-upload-help" placeholder="Cole aqui o conteúdo de um arquivo XML"></textarea>
+          <button type="submit" class="btn-accent ui-primary">Validar conteúdo</button>
+        </form>
+        <div class="validacao-gerado">
+          <div class="campo-novo"><label for="validacao-gerado-tipo">Documento atual do gerador</label><select id="validacao-gerado-tipo"><option value="nfe">NF-e</option><option value="cte">CT-e</option></select></div>
+          <button type="button" onclick="validarXmlDoGerador()">Validar XML do gerador</button>
+        </div>
+        <p class="texto-apoio">Se o serviço XSD estiver indisponível, as verificações locais continuam e o relatório informa a cobertura reduzida. CT-e 3.00 não tem cobertura XSD. A análise não verifica assinatura digital, todas as regras fiscais ou autorização na SEFAZ.</p>
+      </section>
+        <section class="painel-novo validacao-negativa" aria-labelledby="validacao-negativa-title">
           <h4 id="validacao-negativa-title">Criar teste negativo</h4>
           <p class="texto-apoio">Gera uma cópia sintética intencionalmente inválida. O XML fiscal atual permanece inalterado.</p>
           <div class="validacao-negativa-campos">
@@ -862,7 +876,7 @@
           </div>
           <button type="button" class="ui-danger" onclick="gerarXmlNegativo()">Gerar XML intencionalmente inválido</button>
         </section>
-      </section>
+      </div>
       <section class="validacao-resultados" aria-label="Relatórios de validação">
         <p id="validacao-resumo" class="texto-apoio" role="status" aria-live="polite"></p>
         <div class="campo-novo" id="validacao-filtro-area" hidden><label for="validacao-filtro">Mostrar verificações</label><select id="validacao-filtro" onchange="renderValidacaoXml()"><option value="todos">Todas</option><option value="erro">Erros</option><option value="aviso">Avisos</option><option value="informacao">Informações</option></select></div>

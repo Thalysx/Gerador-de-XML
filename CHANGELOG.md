@@ -4,6 +4,8 @@ Este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/). Docume
 
 ## [Não publicado]
 
+- Integração do último commit da main com as alterações locais: mantidos o menu de anexos, a identificação de campos XML preservados, os downloads responsivos e os resultados com razão social e prévia de placa.
+- Corrigido o nome acessível do seletor de anexo e alinhadas as regressões ao catálogo e às seções expansíveis atuais.
 - Dados individuais com oito acessos rápidos e catálogo completo pela busca, categoria ou Ver todos; configuração junto do resultado e seleção recolhida após a escolha em telas menores.
 - Preferências de lote acessíveis no próprio lote, sem exibir campos irrelevantes no gerador individual; downloads em Mais ações e modelo único do crachá retirado da configuração visível.
 - Superfícies claras mais discretas, tema escuro em grafite e navegação neutra; mantidos os geradores, formatos e preferências existentes.

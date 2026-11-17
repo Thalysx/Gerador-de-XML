@@ -1,6 +1,6 @@
 # Design vigente do FUTURE G
 
-Referência da interface local, atualizada em **12/11/2026**. A reformulação dos temas claro e escuro usa uma área de trabalho contínua, ferramentas compactas e navegação recolhível em tablet/celular. A disponibilidade das ferramentas está no [README](README.md#áreas-disponíveis).
+Referência da interface integrada, atualizada em **17/11/2026**. A reformulação dos temas claro e escuro usa uma área de trabalho contínua, ferramentas compactas e navegação recolhível em tablet/celular. A disponibilidade das ferramentas está no [README](README.md#áreas-disponíveis).
 
 ## Identidade e linguagem
 
@@ -64,7 +64,7 @@ Setas de ação avançam 4 px no hover ou foco em 160 ms; movimento reduzido eli
 
 ## Hierarquia e superfícies
 
-**XML fiscal preservado:** a reformulação visual altera somente seu encaixe na estrutura externa da aplicação. Manter os formulários NF-e/CT-e, a ordem dos campos e seções, os botões, a prévia e os fluxos existentes. Não aplicar a reorganização de Início/Dados cadastrais ao conteúdo interno dessa tela.
+**XML fiscal preservado:** manter os formulários NF-e/CT-e, a ordem dos campos, a prévia e os fluxos existentes. Cenários salvos e NCMs manuais usam seções expansíveis; Baixar documentos reúne os dois arquivos acima da configuração, sem sobrepor os cenários. Preservar campos identifica os valores mantidos com rótulo e ícone, inclusive nos produtos, após regeneração e recarga.
 
 `ui-primary`, `ui-secondary`, `ui-ghost` e `ui-danger` expressam ações principais, complementares, discretas e destrutivas. O resultado vazio permanece visível; ações que dependem de resultado ficam desabilitadas quando não há valor. Copiar fica próximo do resultado; em Dados cadastrais, Baixar TXT e as demais ações complementares ficam em Mais ações. A prévia pode ser limitada, mas cópia/download/histórico mantêm o conteúdo integral.
 
@@ -73,9 +73,9 @@ Setas de ação avançam 4 px no hover ou foco em 160 ms; movimento reduzido eli
 | Início | Busca, ferramentas e recentes; categorias/favoritos/resumo acessíveis em suas seções |
 | Dados cadastrais | Oito acessos rápidos; busca/categoria cobrem o catálogo completo, também disponível em Ver todos; configuração junto do resultado; lote após o resultado e antes do histórico |
 | Cadastro geral | Tipo de ficha/grupos para geração; resultado e edição dos campos existentes, com histórico do tipo correto |
-| XML fiscal | Documento, geração, cenários XML salvos, NCMs e campos aplicáveis diretamente disponíveis; prévia com suas ações |
+| XML fiscal | Documento, geração e campos aplicáveis diretamente disponíveis; cenários e NCMs expansíveis, downloads agrupados e prévia com suas ações |
 | Editor XML | Uma entrada compacta de arquivos, grupos/abas, revisão e exportação de cópias; foco acompanha a abertura pelo gerador |
-| Validação XML | Aviso de processamento antes da entrada; relatório único com Resumo/XML/Validação, severidades e cobertura explícitas |
+| Validação XML | Entrada com aviso de processamento e editor amplo; teste negativo em cartão próprio; relatório único com Resumo/XML/Validação, severidades e cobertura explícitas |
 | Comandos locais | Conversa central, sugestões antes do composer inferior, mensagem/anexo/enviar acessíveis; catálogo/favoritos/máscara/nova conversa em opções |
 
 Disclosures reutilizam `details/summary`. Recolher não apaga valores nem desabilita controles necessários. As opções de lote têm controles na própria seção, sincronizados com as preferências existentes; seu tipo não faz aparecer opções irrelevantes no gerador individual. Em telas de até 1000 px, escolher um gerador recolhe o seletor e leva o foco ao título da configuração sem rolar a página. O seletor permanece acessível para trocar a escolha. O modelo único do crachá fica interno; a opção de código de barras continua disponível. A organização fiscal restaurada substitui a proposta antiga de esconder todos os campos XML em gavetas. Limpar lote preserva configuração e resultado individual.

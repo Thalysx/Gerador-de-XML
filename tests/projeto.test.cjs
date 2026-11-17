@@ -137,9 +137,9 @@ test('repetição, favoritos e catálogo preservam revisão no catálogo único'
     input.value='repetir último comando';w.enviarChat();assert.equal(run('conversasChat.at(-1).registros.length'),3);assert.notEqual(run('conversasChat.at(-1).registros[0].valor'),primeiro);
     w.definirAmbiente('port');assert.equal(w.document.querySelectorAll('#chat-favoritos-lista button').length,2);
     input.value='repetir último comando';w.enviarChat();assert.equal(run('conversasChat.at(-1).registros.length'),3);
-    w.definirAmbiente('general');w.document.getElementById('chat-catalogo-busca').value='UUID';w.renderCatalogoChat();
-    const comandos=w.document.querySelectorAll('#chat-catalogo-lista button');assert.equal(comandos.length,1);comandos[0].click();assert.equal(input.value,'3 UUIDs');
-    input.value='uuid';input.dispatchEvent(new w.Event('input'));assert.equal(w.document.getElementById('chat-completar').hidden,false);
+    w.definirAmbiente('general');w.document.getElementById('chat-catalogo-busca').value='CNH';w.renderCatalogoChat();
+    const comandos=w.document.querySelectorAll('#chat-catalogo-lista button');assert.equal(comandos.length,1);comandos[0].click();assert.equal(input.value,'3 CNHs');
+    input.value='cnh';input.dispatchEvent(new w.Event('input'));assert.equal(w.document.getElementById('chat-completar').hidden,false);
     input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true}));assert.equal(w.document.activeElement.parentElement.id,'chat-completar');w.document.activeElement.click();assert.equal(w.document.activeElement,input);
     w.limparChat();assert.equal(run('ultimoComandoChat'),'');assert.equal(run('conversasChat.length'),0);assert.equal(w.document.getElementById('chat-anexo').value,'');assert.deepEqual(JSON.parse(w.localStorage.getItem(chave)),['3 CPFs']);
     assert.equal(w.document.getElementById('chat-modo'),null);assert.equal(run('typeof enviarChatIa'),'undefined');
@@ -286,13 +286,18 @@ test('formulário XML mantém NF-e e CT-e juntos e preserva edições entre ambi
   } finally {dom.window.close();}
 });
 
-test('campos completos da NF-e e cenários ficam visíveis sem gavetas', async () => {
+test('campos completos da NF-e ficam visíveis e cenários preservam acesso pelo seletor', async () => {
   const {dom,w,run}=await abrir();
   try {
     const recinto=w.document.getElementById('nfe_recinto');
     const transportador=w.document.getElementById('nfe_nomeTransp');
     assert.equal(w.document.querySelector('#xml-form-nfe details.xml-avancado'),null);
-    assert.equal(w.document.querySelector('.xml-scenarios').tagName,'SECTION');
+    const scenarios=w.document.querySelector('.xml-scenarios');
+    assert.equal(scenarios.tagName,'DETAILS');
+    assert.equal(scenarios.querySelector('summary').textContent,'Cenários salvos');
+    scenarios.querySelector('summary').click();
+    assert.equal(scenarios.open,true);
+    assert.ok(scenarios.contains(w.document.getElementById('cenario-lista')));
     assert.ok(w.document.querySelector('#xml-form-nfe .produto-detalhes'));
     recinto.value='0121300';transportador.value='Transportadora Teste';
     w.gerarXMLComCampos();
@@ -1635,7 +1640,9 @@ test('divulgação progressiva preserva preferências, edição e resultados exi
     assert.equal(mask.checked,false);
     assert.equal(run('currentResultText'),text);
     assert.equal(w.document.querySelector('.productivity-dashboard').open,false);
-    assert.ok(w.document.getElementById('home-favorites').closest('details'));
+    const favorites=w.document.getElementById('home-favorites');
+    assert.equal(favorites.closest('details'),null);
+    assert.equal(favorites.closest('section').getAttribute('aria-labelledby'),'home-favorites-title');
 
     w.switchTab('cadastro');w.gerarCadastroCompleto();
     const edit=w.document.getElementById('cadastro-edit');
@@ -1656,13 +1663,24 @@ test('divulgação progressiva preserva preferências, edição e resultados exi
   } finally {dom.window.close();}
 });
 
-test('XML restaura campos, cenários, NCM e ações diretamente disponíveis', async () => {
+test('XML mantém campos diretos e cenários e NCMs acessíveis sem perder valores', async () => {
   const {dom,w,run}=await abrir();
   try {
     w.switchTab('xml');
     assert.equal(w.document.getElementById('xml-advanced'),null);
-    for(const id of ['xml-form-tipo','cenario-nome','cenario-lista','ncm-manual-input','nfe_nomeEmit','cte_nomeEmit']) {
+    for(const id of ['xml-form-tipo','nfe_nomeEmit','cte_nomeEmit']) {
       assert.equal(w.document.getElementById(id).closest('details'),null,id);
+    }
+    for(const id of ['cenario-nome','cenario-lista','ncm-manual-input']) {
+      const input=w.document.getElementById(id);
+      const disclosure=input.closest('details');
+      assert.ok(disclosure,id);
+      const value=input.value;
+      disclosure.querySelector('summary').click();
+      assert.equal(disclosure.open,true,id);
+      disclosure.querySelector('summary').click();
+      assert.equal(disclosure.open,false,id);
+      assert.equal(input.value,value,id);
     }
     const workspace=w.document.querySelector('.xml-workbench');
     assert.equal(workspace.firstElementChild.classList.contains('xml-grid-2'),true);

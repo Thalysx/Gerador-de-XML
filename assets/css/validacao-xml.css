@@ -1,11 +1,17 @@
 /* validacao-xml: regras consolidadas por componente; não adicionar overrides globais. */
-.validacao-layout { display: grid; grid-template-columns: minmax(280px,.85fr) minmax(0,1.15fr); gap: 1.25rem; align-items: start; }
+.validacao-layout { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); gap: 1.25rem; align-items: start; }
+.validacao-inputs { display: grid; min-width: 0; gap: 1.25rem; }
+.validacao-inputs > .painel-novo { margin-bottom: 0; }
 .validacao-entrada { min-width: 0; border: 1px solid var(--border); border-radius: var(--ui-radius); }
+.validacao-texto-form { display: grid; grid-template-columns: minmax(0,1fr); gap: .75rem; }
+.validacao-texto-form > button { justify-self: start; }
+.validacao-gerado { display: grid; gap: .75rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.validacao-gerado > button { justify-self: start; }
 .validacao-resultados { min-width: 0; }
 .validacao-dropzone { border: 1px dashed var(--border-strong); border-radius: var(--ui-radius); padding: 0; text-align: center; margin: 1rem 0; background: var(--surface-2); overflow: hidden; }
 .validacao-dropzone.arrastando { border-color: var(--accent); background: var(--info-bg); }
 .validacao-dropzone input { width: 100%; color: var(--text); font-size: .8rem; margin-top: .7rem; }
-.validacao-entrada textarea { display: block; width: 100%; min-height: 280px; resize: vertical; padding: .9rem; margin: .5rem 0 1rem; border: 1px solid var(--border); border-radius: var(--ui-radius-sm); background: var(--input-bg); color: var(--text); font: 12px/1.6 'DM Mono',monospace; }
+.validacao-entrada textarea { display: block; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; resize: vertical; padding: .9rem; margin: 0; border: 1px solid var(--border); border-radius: var(--ui-radius-sm); background: var(--input-bg); color: var(--text); font: 13px/1.6 'DM Mono',monospace; }
 .validacao-entrada label { font-size: .8rem; font-weight: 600; }
 .validacao-relatorio h3 { overflow-wrap: anywhere; }
 .validacao-selos { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .4rem; }
@@ -32,20 +38,22 @@
 .validacao-lista .validacao-aviso { border-left-color:var(--warning); background:var(--warning-soft); }
 .validacao-lista .validacao-informacao { border-left-color: var(--accent); }
 .validacao-xml-fonte { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 430px; overflow: auto; background: var(--input-bg); border: 1px solid var(--border); border-radius: var(--ui-radius-sm); padding: .75rem; color: var(--text); font: 12px/1.6 'DM Mono',monospace; }
-.validacao-negativa { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.validacao-negativa { min-width: 0; }
 .validacao-negativa h4 { margin: 0 0 .35rem; font-size: .9rem; }
 .validacao-negativa > button { max-width: 100%; white-space: normal; text-align: center; }
 .validacao-negativa-campos { display: grid; grid-template-columns: .75fr 1.25fr; gap: .75rem; margin: .75rem 0; }
 .validacao-fonte { margin-top: 1rem; font-size: .8rem; }
 .validacao-fonte pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 300px; overflow: auto; background: var(--input-bg); border: 1px solid var(--border); padding: .75rem; margin: .5rem 0 0; color: var(--text); }
-@media (max-width:900px) {
+@media (max-width:1150px) {
 .validacao-layout { grid-template-columns: 1fr; }
 }
 @media (max-width:560px) {
 .validacao-resumo-grade,.validacao-negativa-campos,.validacao-cobertura { grid-template-columns: 1fr; }
 .validacao-abas { overflow-x: auto; }
+.validacao-texto-form > button,.validacao-gerado > button { width: 100%; }
 }
-.validacao-dropzone-inner { display: flex; width: 100%; min-height: 190px; padding: 28px; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border: 0; background: transparent; text-align: center; }
+.validacao-dropzone-inner { display: flex; width: 100%; min-height: 190px; padding: 28px; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border: 0; background: transparent; text-align: center; white-space: normal; overflow-wrap: anywhere; }
+.validacao-dropzone-inner > * { max-width: 100%; }
 .validacao-dropzone-inner:hover { border: 0; background: var(--info-bg); }
 .validacao-dropzone-inner strong { color: var(--text); }
 .validacao-dropzone-inner span { color: var(--accent); font-size: .8125rem; font-weight: 500; }

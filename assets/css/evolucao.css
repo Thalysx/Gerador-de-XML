@@ -133,6 +133,16 @@
 #chat-enviar span { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 }
 .xml-setup-row { display: grid; grid-template-columns: minmax(300px,.8fr) minmax(360px,1.2fr); gap: 12px; margin-bottom: 18px; }
+.xml-toolbar { align-items: flex-start; }
+.xml-downloads { width: 200px; max-width: 100%; }
+.xml-downloads > summary { width: 100%; border-color: var(--border); background: var(--surface); }
+.xml-downloads .action-disclosure-content { position: static; width: 100%; max-height: none; margin-top: 8px; }
+.xml-downloads .download-area { display: grid; grid-template-columns: minmax(0,1fr); width: 100%; gap: 8px; margin: 0; }
+.xml-downloads .download-badge { width: 100%; justify-content: flex-start; padding: 10px 12px; white-space: normal; }
+@media (max-width:640px) {
+  .xml-toolbar { align-items: stretch; }
+  .xml-downloads { width: 100%; }
+}
 .xml-setup-row .xml-form-selector { min-width: 0; margin: 0; padding: 16px 18px; }
 .xml-setup-row .xml-scenarios { min-width: 0; margin: 0; padding: 16px 18px; }
 .xml-form-selector .texto-apoio { margin: 7px 0 0; }

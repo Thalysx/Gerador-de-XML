@@ -30,7 +30,7 @@
 .placa-wrapper { position: relative; width: 230px; }
 .placa-body { background: var(--barcode-background); border: 3px solid var(--artifact-ink); border-radius: 11px; padding: 7px 14px 11px; text-align: center; }
 .placa-pais { font-size: 9px; font-weight: 700; color: var(--artifact-blue); letter-spacing: 0.14em; text-transform: none; margin-bottom: 2px; }
-.placa-numero { font-family: 'DM Mono', 'Courier New', monospace; font-size: 38px; font-weight: 700; color: var(--artifact-ink); letter-spacing: 3px; line-height: 1; }
+.placa-numero { font-family: 'DM Mono', 'Courier New', monospace; font-size: 34px; font-weight: 700; color: var(--artifact-ink); letter-spacing: 3px; line-height: 1; white-space: nowrap; }
 .placa-mercosul-stripe { position: absolute; left: 0; top: 0; width: 25px; height: 100%; background: var(--artifact-blue); border-radius: 8px 0 0 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
 .placa-mercosul-stripe span { color: var(--on-primary); font-size: 7px; writing-mode: vertical-rl; font-weight: 700; letter-spacing: 1px; }
 .placa-tag { font-size: 10px; color: var(--artifact-muted); margin-top: 4px; font-style: normal; }
@@ -235,19 +235,31 @@
 .docs-workspace-heading h2 { margin:0; font-size:24px; font-weight:600; line-height:1.3; letter-spacing:-.025em; }
 .docs-workspace-heading p { margin:6px 0 0; font-size:13px; }
 .docs-workspace #docs-advanced { margin:0 0 16px; border:0; }
-.docs-workspace #docs-advanced > summary { justify-content:flex-start; width:fit-content; gap:12px; padding:4px 0; min-height:36px; font-size:13px; }
-.docs-workspace #docs-advanced > summary::after { margin-left:0; }
+.docs-workspace #docs-advanced > summary { justify-content:space-between; width:fit-content; gap:16px; padding:10px 14px; min-height:44px; border:1px solid var(--border); border-radius:var(--ui-radius-sm); background:var(--surface); color:var(--text); font-size:13px; }
+.docs-workspace #docs-advanced > summary:hover { border-color:var(--border-strong); background:var(--surface-hover); }
+.docs-workspace #docs-advanced > summary:focus-visible { outline:3px solid var(--focus-ring); outline-offset:3px; }
+.docs-workspace #docs-advanced > summary::after { content:''; width:8px; height:8px; margin:0 2px 4px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(45deg); }
+.docs-workspace #docs-advanced[open] > summary::after { margin-block:4px 0; transform:rotate(225deg); }
 .docs-workspace .toggles-row { margin:12px 0 0; padding:0; }
 .docs-workspace .opcoes-geracao { margin:0 0 20px; }
 .docs-workspace .output-box { margin:0; padding:28px; border:1px solid var(--border); background:var(--surface-elevated); border-radius:10px; }
+.docs-result-main { display:grid; gap:16px; align-items:center; }
+.docs-result-text { min-width:0; }
+.docs-result-main .placa-preview { justify-content:flex-start; margin:0; }
 .docs-workspace .output-value:not(.placeholder):not(.is-structured) { font-size:clamp(24px,2.8vw,38px); line-height:1.5; letter-spacing:-.035em; }
 .docs-workspace .output-value.placeholder { display:flex; align-items:center; justify-content:center; min-height:144px; padding:24px; text-align:center; line-height:1.6; }
 .docs-workspace .copy-row { margin-top:20px; padding-top:16px; border-top:1px solid var(--border); }
 .docs-workspace #copy-btn { background:var(--surface); border-color:var(--border); color:var(--text); }
 .docs-workspace .copy-row .copied-msg { display:none; }
-.doc-gen-right .nome-box { margin:16px 0 0; padding:16px 0 0; border:0; border-top:1px solid var(--border); border-radius:0; background:transparent; box-shadow:none !important; }
+.docs-workspace .nome-box { margin:20px 0 0; padding:16px 0 0; border:0; border-top:1px solid var(--border); border-radius:0; background:transparent; }
+.docs-workspace .nome-row { justify-content:flex-start; gap:12px; }
+.docs-workspace .nome-actions { width:auto; gap:8px; }
+.docs-workspace .nome-actions button { width:auto; }
 .docs-batch-content [hidden] { display:none !important; }
 .opcoes-geracao > [hidden] { display:none; }
+@media(min-width:1200px) {
+  .docs-result-main:has(.placa-preview.visible) { grid-template-columns:minmax(0,1fr) 230px; gap:24px; }
+}
 @media(min-width:1001px) {
   .docs-generator-group .btn-grid { grid-template-columns:minmax(0,1fr); gap:4px; }
   .docs-generator-group .btn-grid button { justify-content:flex-start; padding:10px 12px; border-color:transparent; background:transparent; text-align:left; }

@@ -39,7 +39,7 @@ function anexarXmlAtualChat(tipoAtual) {
 function inicializarAnexoChat() {
   const texto=document.getElementById('chat-anexo'),arquivo=document.getElementById('chat-anexo-arquivo');
   const menu=document.getElementById('chat-anexo-area'),opcoes=document.getElementById('chat-anexo-opcoes');
-  menu.addEventListener('toggle',()=>{if(!menu.open)alternarColagemAnexoChat(false,false);});
+  menu.addEventListener('toggle',()=>{if(window.document&&!menu.open)alternarColagemAnexoChat(false,false);});
   menu.addEventListener('keydown',event=>{
     if(!['ArrowDown','ArrowUp','Home','End'].includes(event.key)||!opcoes.contains(event.target)&&event.target!==menu.querySelector('summary'))return;
     event.preventDefault();menu.open=true;

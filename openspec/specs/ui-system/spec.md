@@ -189,13 +189,15 @@ Each workspace SHALL keep its primary task, essential configuration and persiste
 
 #### Scenario: Discover tools from a simplified Home
 - **WHEN** the user opens Home
-- **THEN** search, tools and recent destinations are directly available
-- **AND** favorites, catalog metrics and activity remain accessible in secondary disclosures
+- **THEN** search, tools, favorites and recent destinations are directly available
+- **AND** catalog metrics and activity remain accessible in secondary disclosures
 - **AND** no stored personalization or activity is removed.
 
 #### Scenario: Use the restored XML Fiscal workspace
 - **WHEN** the user opens XML Fiscal
-- **THEN** document selection, saved scenarios, manual NCM and applicable XML fields are directly available in the previous workspace organization
+- **THEN** document selection and applicable XML fields are directly available
+- **AND** saved scenarios and manual NCM remain accessible through named disclosures without losing their values
+- **AND** the Download documents disclosure expands both files in the page flow above the configuration
 - **AND** Copy, Download, Validate and Open Editor are visible without a secondary disclosure
 - **AND** edited fields, validation, exports, history and the unified catalog retain their existing behavior
 - **AND** the workspace adapts to narrow screens without horizontal overflow.
